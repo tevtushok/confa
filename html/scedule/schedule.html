@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="rooms row">
+            <div class="room col available">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Available</div>
+                                <div class="room_event-time"><span class="from">10:30</span> &dash; <span class="until"></span>
+                                </div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark">Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col available">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Available</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark">Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock prev"><img src="../images/icons/back.svg"/></button>
+                        <button type="button" class="btn btn-dark room_timeblock available">14PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">14:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">15PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">15:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">16PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">16:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col occupied">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Reserved</div>
+                                <div class="room_occupied_title">Greeting meating</div>
+                                <div class="room_occupied_name">Augusto Pinochet</div>
+                                <div class="room_occupied_time">10:00am - 11:30am</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark">Release</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock unavailable" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock unavailable" disabled>11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col pending">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_attention-time">Event pending in 10 min</div>
+                                <div class="room_occupied_title">Hello freak bithes</div>
+                                <div class="room_occupied_name">Freak bitch</div>
+                                <div class="room_occupied_time">10:00am - 10:00am</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark" disabled>Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col available">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Available</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark">Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                   <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col available">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Available</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark">Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col occupied">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_status-txt">Reserved</div>
+                                <div class="room_occupied_title">Greeting meating</div>
+                                <div class="room_occupied_name">Freak bitch</div>
+                                <div class="room_occupied_time">10:00am - 10:00am</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark" disabled>Release</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col pending">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_attention-time">Event pending in 10 min</div>
+                                <div class="room_occupied_title">Greeting meating</div>
+                                <div class="room_occupied_name">Freak bitch</div>
+                                <div class="room_occupied_time">10:00am - 10:00am</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark" disabled>Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+            <div class="room col pending">
+                <div class="room_wrapper">
+                    <div class="room_info-wrapper">
+                        <div class="room_status-bar"></div>
+                        <div class="room_info-details-wrapper">
+                            <div class="room_info-details">
+                                <strong class="room_title">Main conference room</strong>
+                                <div class="room_attention-time">Event pending in 10 min</div>
+                                <div class="room_occupied_title">Greeting meating</div>
+                                <div class="room_occupied_name">Freak bitch</div>
+                                <div class="room_occupied_time">10:00am - 10:00am</div>
+                            </div>
+                            <div class="room_buttons-wrapper">
+                                <button type="button" class="room_reserve btn btn-dark" disabled>Reserve</button>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="room_timeblocks btn-group" role="group">
+                        <button type="button" class="btn btn-dark room_timeblock available" disabled>10:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11AM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">11:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">12:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13PM</button>
+                        <button type="button" class="btn btn-dark room_timeblock available">13:30</button>
+                        <button type="button" class="btn btn-dark room_timeblock next"><img src="../images/icons/next.svg"/></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+</body>
+
+</html

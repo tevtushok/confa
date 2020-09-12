@@ -1,0 +1,125 @@
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+        function fib(n) {
+            let golden_ratio = (1 + (5 ** 0.5)) / 2;
+            let fi = -(1 / golden_ratio);
+            let f = ((golden_ratio ** n) - (fi ** n)) / 5 ** 0.5
+            console.log(typeof (f));
+            return Number(f);
+        }
+        function fibpn(n) {
+            let val = parseInt(document.querySelector('#n').value);
+            val += (n);
+            document.querySelector('#n').value = val;
+            dofib(val);
+        }
+        function dofib(n) {
+            n = fib(n);
+            document.querySelector('#res').value = n;
+        }
+    </script>
+</head>
+
+<body>
+    <input type="text" id="n" />
+    <button onclick="dofib(document.querySelector('#n').value)">
+        click
+    </button>
+    <input type="text" disabled id="res" />
+
+    <div class="scheduler">
+        <div class="scheduler_calendar">
+            <div class="calendar">
+                <div class="prevnext">
+                    <button class="prev" onclick="fibpn(-1);">&lt;</button>
+                </div>
+                <div class="body">
+                    <div class="row ym">
+                        <div class="month">&lt; February &gt;</div>
+                        <div class="year">&lt; 2020 &gt;</div>
+                    </div>
+                    <hr />
+                    <div class="row header">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thur</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="row">
+                        <div class="day past">26</div>
+                        <div class="day past">27</div>
+                        <div class="day past">28</div>
+                        <div class="day past">29</div>
+                        <div class="day past">30</div>
+                        <div class="day past">31</div>
+                        <div class="day">1</div>
+                    </div>
+                    <div class="row">
+                        <div class="day">2</div>
+                        <div class="day">3</div>
+                        <div class="day">4</div>
+                        <div class="day">5</div>
+                        <div class="day">6</div>
+                        <div class="day">7</div>
+                        <div class="day">8</div>
+                    </div>
+                    <div class="row">
+                        <div class="day">9</div>
+                        <div class="day">10</div>
+                        <div class="day">11</div>
+                        <div class="day">12</div>
+                        <div class="day">13</div>
+                        <div class="day">14</div>
+                        <div class="day">15</div>
+                    </div>
+                    <div class="row">
+                        <div class="day">16</div>
+                        <div class="day">17</div>
+                        <div class="day">18</div>
+                        <div class="day">19</div>
+                        <div class="day">20</div>
+                        <div class="day">21</div>
+                        <div class="day">22</div>
+                    </div>
+                    <div class="row">
+                        <div class="day">23</div>
+                        <div class="day">24</div>
+                        <div class="day">25</div>
+                        <div class="day">26</div>
+                        <div class="day">27</div>
+                        <div class="day">28</div>
+                        <div class="day">29</div>
+                    </div>
+                    <div class="row">
+                        <div class="day past">1</div>
+                        <div class="day past">2</div>
+                        <div class="day past">3</div>
+                        <div class="day past">4</div>
+                        <div class="day past">5</div>
+                        <div class="day past">6</div>
+                        <div class="day past">7</div>
+                    </div>
+                </div>
+                <div class="prevnext">
+                    <button class="next" onclick="fibpn(1);">&gt;</button>
+                </div>
+            </div>
+        </div>
+        <div class="scheduler_dayinfo">
+            <p class="event">08:00 &dash; 09:30</p>
+            <p class="free">09:30 &dash; 11:00</p>
+            <p class="event">12:00 &dash; 13:00</p>
+            <p class="free">13:00 &dash; 14:00</p>
+            <p class="event">14:00 &dash; 14:00</p>
+        </div>
+    </div>
+</body>
+
+</html>

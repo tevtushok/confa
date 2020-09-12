@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <link rel="stylesheet" href="./room.css">
+</head>
+
+<body>
+    <div class="container">
+    <div class="rooms">
+        <div class="room available">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Available</div>
+                            <div class="room_event-time"><span class="from">10:30</span><span class="until"></span></div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve">Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock from">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room available">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Available</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve">Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room occupied">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Reserved</div>
+                            <div class="room_occupied_title">Greeting meating</div>
+                            <div class="room_occupied_name">Augusto Pinochet</div>
+                            <div class="room_occupied_time">10:00am - 10:00am</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve">Release</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room pending">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_attention-time">Event pending in 10 min</div>
+                            <div class="room_occupied_title">Hello freak bithes</div>
+                            <div class="room_occupied_name">Freak bitch</div>
+                            <div class="room_occupied_time">10:00am - 10:00am</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve" disabled>Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room available">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Available</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve">Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room available">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Available</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve">Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room occupied">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_status-txt">Reserved</div>
+                            <div class="room_occupied_title">Greeting meating</div>
+                            <div class="room_occupied_name">Freak bitch</div>
+                            <div class="room_occupied_time">10:00am - 10:00am</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve" disabled>Release</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+        <div class="room pending">
+            <div class="room_wrapper">
+                <div class="room_info-wrapper">
+                    <div class="room_status-bar"></div>
+                    <div class="room_info-details-wrapper">
+                        <div class="room_info-details">
+                            <h4 class="room_title">Main conference room</h4>
+                            <div class="room_attention-time">Event pending in 10 min</div>
+                            <div class="room_occupied_title">Greeting meating</div>
+                            <div class="room_occupied_name">Freak bitch</div>
+                            <div class="room_occupied_time">10:00am - 10:00am</div>
+                        </div>
+                        <div class="room_buttons-wrapper">
+                            <button class="room_reserve" disabled>Reserve</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="room_timeblocks">
+                    <div class="room_timeblock current">10:30</div>
+                    <div class="room_timeblock">11AM</div>
+                    <div class="room_timeblock">11:30</div>
+                    <div class="room_timeblock">12PM</div>
+                    <div class="room_timeblock">12:30</div>
+                    <div class="room_timeblock">13PM</div>
+                    <div class="room_timeblock">13:30</div>
+                    <div class="room_timeblock dots">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+</html

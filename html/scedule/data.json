@@ -1,0 +1,25 @@
+//Event
+{
+   "room": "int|not null",
+   "from": "datetime|not null",
+   "to": "datetime:not null",
+   "title": "string:nout null",
+   "occuper": "int|not null",
+   "status": "int|not null",
+   "parcipiants": "json|null"
+}
+
+//Room
+{
+    "number": "int|not null",
+    "title": "string",
+    "floor": "int|not null"
+}
+// User
+{
+    "first_name": "string|not null",
+    "last_name": "string|not null",
+    "email": "string|not null",
+    "role": "int|not null",
+    "password": "string"
+}

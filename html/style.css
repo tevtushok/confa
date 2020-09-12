@@ -1,0 +1,72 @@
+.calendar {
+    position: relative;
+    display: flex;
+}
+
+.calendar .prev, .calendar .next {
+    margin: 50px 0 0 0;
+    border: 0;
+    outline:none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 40px;
+    transition: color .3s linear;
+    background: transparent;
+    background-attachment: fixed;
+}
+.prevnext {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.calendar .prev::-moz-focus-inner, .calendar .next::-moz-focus-inner{
+    border:0;
+}
+
+.calendar .next:hover, .calendar .prev:hover {
+    color: gray
+}
+
+.calendar .row {
+    display: flex;
+    width: 100%;
+}
+
+.day {
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2 linear;
+    align-items: center;
+}
+
+.calendar .row div.day:hover {
+    color: #000;
+    border: 1px solid #555;
+}
+
+.past {
+    color: gray;
+}
+
+.calendar .row div {
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+}
+
+.calendar div.year {
+    width: 50%;
+    justify-content: right;
+}
+
+.calendar div.month {
+    width: 50%;
+    justify-content: left;
+}
+
+.scheduler {
+    display: flex;
+}

@@ -1,0 +1,107 @@
+* {
+    box-sizing: border-box;
+    margin:0;
+    padding: 0;
+}
+html {
+    font-size: 15px;
+}
+body {
+    padding:0;
+    margin:0;
+}
+.container {
+    overflow: hidden;
+}
+.rooms {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -15px;
+}
+.room_wrapper {
+    background-color: #b8b8b4;
+    min-height: 13em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+.room {
+    width: 25%;
+    padding:15px;
+}
+
+.room_info-wrapper {
+    display: flex;
+    flex:1;
+    padding: 1em 1em 1em .6em;
+}
+
+.room_status-bar {
+    width: 20px;
+    margin-right: 1rem;
+}
+.available .room_status-bar{
+    background-color: green;
+}
+.occupied .room_status-bar{
+    background-color: rgb(192, 56, 56);
+}
+.pending .room_status-bar {
+    background-color: yellow;
+}
+
+.room_timeblocks {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.room_timeblock {
+    color: #fff;
+    background-color: #333;
+    border-right: 1px solid #fff;
+    min-width: 12.5%;
+    max-width: 12.5%;
+    height: 2.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: 2px solid green;
+    font-size: .8em;
+    cursor: pointer;
+    transition: color .3s linear;
+}
+.room_timeblock:hover {
+    color: #666;
+}
+
+.room_timeblock.from{
+    color: #000;
+    background-color: #fff;
+}
+
+.room_timeblock.dots {
+    border-color: #333;
+}
+
+.room_timeblock:last-child {
+    border-right-color: #333;
+}
+
+.room_info-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+.room_buttons-wrapper {
+    flex:1;
+    justify-content: left;
+    display: flex;
+    align-items: flex-end;
+}
+.room_buttons-wrapper button {
+}
+.available .room_buttons-wrapper button {
+}
