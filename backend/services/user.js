@@ -1,11 +1,12 @@
 const User = require('../models/user');
 
-const {
-  refreshTokens, COOKIE_OPTIONS, generateToken, generateRefreshToken,
-  getCleanUser, verifyToken, clearTokens, handleResponse,
-} = require('../utils/utils');
+const { handleResponse } = require('../utils/utils');
+
+const jwt = require('../utils/jwt')
 
 const API_CODES = require('../utils/apiCodes')
+
+const config = require('../configs/config')
 
 
 const register = async (req, res, next) => {
@@ -43,21 +44,21 @@ const login = async (req, res, next) => {
 	  		//clearTokens(req, res);
 
 	  		// get basic user details
-	  		const userObj = getCleanUser(user);
+	  		const userObj = jwt.getCleanUser(user);
 
 	  		// generate access token
-	  		const tokenObj = generateToken(userObj);
+	  		const tokenObj = jwt.generateToken(userObj);
 
 	  		// generate refresh token
-	  		const refreshToken = generateRefreshToken(userObj.id);
+	  		const refreshToken = jwt.generateRefreshToken(userObj.id);
 
 	  		
 
 	  		// refresh token list to manage the xsrf token
-	  		refreshTokens[refreshToken] = tokenObj.xsrfToken;
+	  		jwt.refreshTokens[refreshToken] = tokenObj.xsrfToken;
 
 			  // set cookies
-			res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
+			res.cookie('refreshToken', refreshToken, config.COOKIE_OPTIONS);
 			res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
 
 			return handleResponse(req, res, 200, {
@@ -74,7 +75,7 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
 	try {
-		clearTokens(req, res);
+		jwt.clearTokens(req, res);
 		return handleResponse(req, res, 204);
 	}
 	catch(err) {
@@ -82,53 +83,58 @@ const logout = async (req, res, next) => {
 	}
 }
 
-const verifyToken = async (req, res, next) => {
-	try {
-		const { signedCookies = {} } = req;
+const verifyToken = (req, res, next) => {
+	const { signedCookies = {} } = req;
 
-		const { refreshToken } = signedCookies;
-		if (!refreshToken) {
-			return handleResponse(req, res, 204);
+	const { refreshToken } = signedCookies;
+	if (!refreshToken) {
+		return handleResponse(req, res, 204, API_CODES.EROR_UNSIGNED_TOKEN, 'Unsigned token');
+	}
+
+
+	// verify xsrf token
+	const xsrfToken = req.headers['x-xsrf-token'];
+	if (!xsrfToken || !(refreshToken in jwt.refreshTokens) || jwt.refreshTokens[refreshToken] !== xsrfToken) {
+		return handleResponse(req, res, 401, API_CODES.ERROR_VERIFY_XSRF_TOKEN, 'Unverified xsrf token');
+	}
+
+	console.debug('debug!');
+	console.log('xsrfToken: ', xsrfToken);
+	console.log('refreshToken: ', refreshToken)
+	console.log((refreshToken in jwt.refreshTokens));
+	console.log('jwt.refreshTokens: ', jwt.refreshTokens);
+	console.log('jwt.refreshTokens[refreshToken]', jwt.refreshTokens[refreshToken])
+	console.debug('debug!');
+
+	//return handleResponse(req, res, 200, null, API_CODES.SUCCESS, 'xxxx');
+
+	// verify refresh token
+	verifyToken(refreshToken, '', (err, payload) => {
+		if (err) {
+			return handleResponse(req, res, 401, API_CODES.ERROR_PAYLOAD, 'Incorrect payload');
+		}
+		const dbUser = User.findById(payload.userId);
+		if (!dbUser) {
+			return handleResponse(req, res, 401, API_CODES.ERROR_PAYLOAD_USER, 'Invalid payload user')
 		}
 
-		// verify xsrf token
-		const xsrfToken = req.headers['x-xsrf-token'];
-		if (!xsrfToken || !(refreshToken in refreshTokens) || refreshTokens[refreshToken] !== xsrfToken) {
-			return handleResponse(req, res, 401, API_CODE_ERROR_VERIFY_XSRF_TOKEN);
-		}
+		// get basic user details
+		const userObj = jwt.getCleanUser(user);
 
-		// verify refresh token
-		verifyToken(refreshToken, '', (err, payload) => {
-			if (err) {
-				return handleResponse(req, res, 401, API_CODE_ERROR_PAYLOAD);
-			}
-			const dbUser = User.findById(payload.userId);
-			if (!dbUser) {
-				return handleResponse(req, res, 401, API_CODE_ERROR_PAYLOAD_USER)
-			}
+		// generate access token
+		const tokenObj = jwt.generateToken(user);
 
-			// get basic user details
-			const userObj = getCleanUser(user);
+		// refresh token list to manage the xsrf token
+		jwt.refreshTokens[refreshToken] = tokenObj.xsrfToken;
+		res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
 
-			// generate access token
-			const tokenObj = generateToken(user);
-
-			// refresh token list to manage the xsrf token
-			refreshTokens[refreshToken] = tokenObj.xsrfToken;
-			res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
-
-			// return the token along with user details
-			return handleResponse(req, res, 200, {
-				user: userObj,
-				token: tokenObj.token,
-				expiredAt: tokenObj.expiredAt
-			});
-		})
-
-	}
-	catch(err) {
-		return handleResponse(req, res, 500, err, API_CODES.FAILURE, 'Error while verifyToken');
-	}
+		// return the token along with user details
+		return handleResponse(req, res, 200, {
+			user: userObj,
+			token: tokenObj.token,
+			expiredAt: tokenObj.expiredAt
+		});
+	})
 }
 
 

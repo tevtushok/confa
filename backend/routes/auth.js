@@ -3,8 +3,6 @@ const {
   getCleanUser, verifyToken, clearTokens, handleResponse,
 } = require('../utils/utils');
 
-const JWTClient = require('../utils/jwtClient');
-const jwtClient = new JWTClient();
 
 const router = require('express').Router();
 

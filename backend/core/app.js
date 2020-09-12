@@ -9,10 +9,12 @@ const mongoose = require('mongoose')
 
 const authRoute = require('../routes/auth');
 
+
 const app = express();
 
 let server = {
 	create: () => {
+
 		mongoose.connect(
 			process.env.DB_CONNECT,
 			{
@@ -39,11 +41,16 @@ let server = {
 		app.use(cookieParser(process.env.COOKIE_SECRET));
 
 		// import routes
-		app.use('/api/auth', authRoute);
+		//app.use('/api/auth', authRoute);
 
-		app.get('/', (req, res) => {
-			res.send('Welcome to confa api');
-		})
+		//app.get('/', (req, res) => {
+		//	res.send('Welcome to confa api');
+		//})
+
+		// Set up routes
+		let routes = require('../routes');
+        routes.init(app);
+
 	},
 	start: () => {
 		const port = process.env.PORT || 4000;
