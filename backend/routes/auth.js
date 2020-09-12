@@ -8,7 +8,7 @@ const jwtClient = new JWTClient();
 
 const router = require('express').Router();
 
-const User = require('../models/User');
+const User = require('../models/user');
 
 router.post('/register', async (req, res) => {
 	const user = new User({
@@ -17,12 +17,17 @@ router.post('/register', async (req, res) => {
 		password: req.body.password
 	})
 
+	const isEmailExists = await User.findOne({ email: user.email});
+	if (isEmailExists) {
+		return handleResponse(req, res, 400, null, API_CODE_ERROR_EMAIL_EXISTS, 'Email should be unique');
+	}
+
 	try {
 		const savedUser = await user.save();
-		return handleResponse(req, res, 201, null, 'User added');
+		return handleResponse(req, res, 201, null, API_CODE_SUCCESS, 'User added');
 	}
-	catch(e) {
-		return handleResponse(req, res, 400, e, API_CODE_ERROR_REGISTER_USER, 'Error while adding user');
+	catch(err) {
+		return handleResponse(req, res, 400, err, API_CODE_ERROR_REGISTER_USER, 'Error while adding user');
 	}
 });
 

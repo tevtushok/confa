@@ -4,7 +4,7 @@ const validator = require('validator');
 const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: true,
+		required : [ true, 'name is required'],
 		min: 3,
 		max: 255,
 		required: true,
@@ -21,10 +21,6 @@ const userSchema = new mongoose.Schema({
         validate: validator.isEmail,
         message: '{VALUE} is not a valid email',
 	},
-	date: {
-		type: Date,
-		default: Date.now
-	},
 	password: {
 		type: String,
 		required: true,
@@ -32,7 +28,8 @@ const userSchema = new mongoose.Schema({
 		max: 1024,
 		required: true,
 	}
-
+},{
+	timestamps: true,
 })
 
 module.exports = mongoose.model('User', userSchema)

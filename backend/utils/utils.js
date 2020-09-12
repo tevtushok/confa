@@ -15,7 +15,7 @@ const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: !dev,
     signed: true
-};
+  };
 
 /////////////////////// define api codes
 
@@ -34,88 +34,89 @@ const API_CODE_FAILURE = 1000;
   API_CODE_ERROR_AUTH_MIDDLEEARE_EMPTY_XSRF_TOKEN =       1008;
   API_CODE_ERROR_AUTH_MIDDLEEARE_UNMATCHED_XSRF_TOKEN =   1009;
   API_CODE_ERROR_AUTH_MIDDLEEARE_UNVERIFIED_XSRF_TOKEN =  1010;
+  API_CODE_ERROR_EMAIL_EXISTS =                           1011;
 }
 
 function generateToken(user) {
-    if (!user) return null;
+  if (!user) return null;
 
-    const u = {
-        id: user.id,
-        email: user.email,
-    };
+  const u = {
+    id: user.id,
+    email: user.email,
+  };
 
-    const xsrfToken = randtoken.generate(24);
-    const privateKey = process.env.JWT_SECRET + xsrfToken;
-    const token = jwt.sign(u, privateKey, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
-    const expiredAt = moment().add(ms(process.env.ACCESS_TOKEN_LIFE), 'ms').valueOf()
+  const xsrfToken = randtoken.generate(24);
+  const privateKey = process.env.JWT_SECRET + xsrfToken;
+  const token = jwt.sign(u, privateKey, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
+  const expiredAt = moment().add(ms(process.env.ACCESS_TOKEN_LIFE), 'ms').valueOf()
 
-    return {
-        token, 
-        expiredAt,
-        xsrfToken,
-    }
+  return {
+    token, 
+    expiredAt,
+    xsrfToken,
+  }
 
 }
 
 function generateRefreshToken(userId) {
-    if (!userId) return null;
+  if (!userId) return null;
 
-    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
 }
 
 function verifyToken(token, xsrfToken, cb) {
-    const privateKey = process.env.JWT_SECRET + xsrfToken;
-    jwt.verify(token, privateKey, cb);
+  const privateKey = process.env.JWT_SECRET + xsrfToken;
+  jwt.verify(token, privateKey, cb);
 }
 
 function getCleanUser(user) {
-    if (!user) return null;
-    return {
-        id: user.id,
-        email: user.email,
-    };
+  if (!user) return null;
+  return {
+    id: user.id,
+    email: user.email,
+  };
 }
 
 function clearTokens(req, res) {
-    const { signedCookies = {} } = req;
-    const { refreshToken } = signedCookies;
-    delete refreshTokens[refreshToken];
-    res.clearCookie('XSRF-TOKEN');
-    res.clearCookie('refreshToken', COOKIE_OPTIONS);
+  const { signedCookies = {} } = req;
+  const { refreshToken } = signedCookies;
+  delete refreshTokens[refreshToken];
+  res.clearCookie('XSRF-TOKEN');
+  res.clearCookie('refreshToken', COOKIE_OPTIONS);
 }
 
 function handleResponse(req, res, statusCode, data, apiCode = null, message) {
-    let isError = false;
-    let errorMessage = message;
-    switch (statusCode) {
-        case 204:
-          return res.sendStatus(204);
-        case 400:
-          isError = true;
-          apiCode = apiCode || API_CODE_FAILURE;
-          break;
-        case 401:
-          isError = true;
-          apiCode = apiCode || API_CODE_FAILURE;
-          clearTokens(req, res);
-          break;
-        case 403:
-          isError = true;
-          apiCode = apiCode || API_CODE_FAILURE;
-          clearTokens(req, res);
-          break;
-        default:
-          break;
-    }
+  let isError = false;
+  let errorMessage = message;
+  switch (statusCode) {
+    case 204:
+    return res.sendStatus(204);
+    case 400:
+    isError = true;
+    apiCode = apiCode || API_CODE_FAILURE;
+    break;
+    case 401:
+    isError = true;
+    apiCode = apiCode || API_CODE_FAILURE;
+    clearTokens(req, res);
+    break;
+    case 403:
+    isError = true;
+    apiCode = apiCode || API_CODE_FAILURE;
+    clearTokens(req, res);
+    break;
+    default:
+    break;
+  }
 
-    const response = data || {};
-    response.apiCode = apiCode || API_CODE_SUCCESS;
-    if (isError) {
-        response.error = true;
-        response.message = errorMessage;
-    }
+  const response = data || {};
+  response.code = apiCode || API_CODE_SUCCESS;
+  if (isError) {
+    response.message = errorMessage;
+    response.error = true;
+  }
 
-    return res.status(statusCode).json(response);
+  return res.status(statusCode).json(response);
 }
 
 // middleware that checks if JWT token exists and verifies it if it does exist.
@@ -126,19 +127,19 @@ const authMiddleware = function (req, res, next) {
   if (!token) return handleResponse(req, res, 401, 
     API_CODE_ERROR_AUTH_MIDDLEEARE_TOKEN,
     'Empty token'
-  );
- 
-  token = token.replace('Bearer ', '');
- 
+    );
+
+    token = token.replace('Bearer ', '');
+
   // get xsrf token from the header
   const xsrfToken = req.headers['x-xsrf-token'];
   if (!xsrfToken) {
     return handleResponse(req, res, 403,
       API_CODE_ERROR_AUTH_MIDDLEEARE_XSRF_TOKEN,
       'Empty xsrf token'
-    );
+      );
   }
- 
+
   // verify xsrf token
   const { signedCookies = {} } = req;
   const { refreshToken } = signedCookies;
@@ -147,16 +148,16 @@ const authMiddleware = function (req, res, next) {
     return handleResponse(req, res, 401,
       API_CODE_ERROR_AUTH_MIDDLEEARE_UNMATCHED_XSRF_TOKEN,
       'Unmatched input token'
-    );
-  }
- 
+      );
+}
+
   // verify token with secret key and xsrf token
   verifyToken(token, xsrfToken, (err, payload) => {
     if (err)
       return handleResponse(req, res, 401,
         API_CODE_ERROR_AUTH_MIDDLEEARE_UNVERIFIED_XSRF_TOKEN,
         'Unverified XSRF token'
-      );
+        );
     else {
       req.user = payload; //set the user to req so other routes can use it
       next();
