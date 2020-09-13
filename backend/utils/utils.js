@@ -22,8 +22,6 @@ function handleResponse(req, res, statusCode, data, apiCode = null, message) {
     break;
   }
 
-  console.log(apiCode);
-
   const response = data || {};
   response._code = apiCode || API_CODES.SUCCESS;
 
@@ -41,21 +39,20 @@ function handleResponse(req, res, statusCode, data, apiCode = null, message) {
 // middleware that checks if JWT token exists and verifies it if it does exist.
 // In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
-  return false;
   // check header or url parameters or post parameters for token
   var token = req.headers['authorization'];
   if (!token) return handleResponse(req, res, 401, 
-    API_CODE_ERROR_AUTH_MIDDLEEARE_TOKEN,
+    API_CODES.ERROR_AUTH_MIDDLEEARE_TOKEN,
     'Empty token'
     );
 
-    token = token.replace('Bearer ', '');
+  token = token.replace('Bearer ', '');
 
   // get xsrf token from the header
   const xsrfToken = req.headers['x-xsrf-token'];
   if (!xsrfToken) {
     return handleResponse(req, res, 403,
-      API_CODE_ERROR_AUTH_MIDDLEEARE_XSRF_TOKEN,
+      API_CODES.ERROR_AUTH_MIDDLEEARE_XSRF_TOKEN,
       'Empty xsrf token'
       );
   }
@@ -66,7 +63,7 @@ const authMiddleware = function (req, res, next) {
   if (!refreshToken || !(refreshToken in refreshTokens)
     || refreshTokens[refreshToken] !== xsrfToken) {
     return handleResponse(req, res, 401,
-      API_CODE_ERROR_AUTH_MIDDLEEARE_UNMATCHED_XSRF_TOKEN,
+      API_CODES.ERROR_AUTH_MIDDLEEARE_UNMATCHED_XSRF_TOKEN,
       'Unmatched input token'
       );
 }
@@ -75,7 +72,7 @@ const authMiddleware = function (req, res, next) {
   verifyToken(token, xsrfToken, (err, payload) => {
     if (err)
       return handleResponse(req, res, 401,
-        API_CODE_ERROR_AUTH_MIDDLEEARE_UNVERIFIED_XSRF_TOKEN,
+        API_CODES.ERROR_AUTH_MIDDLEEARE_UNVERIFIED_XSRF_TOKEN,
         'Unverified XSRF token'
         );
     else {
@@ -84,7 +81,6 @@ const authMiddleware = function (req, res, next) {
     }
   });
 }
-
 
 module.exports = {
   handleResponse,
