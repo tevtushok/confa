@@ -97,12 +97,12 @@ function handleResponse(req, res, statusCode, data, apiCode = null, message) {
     case 401:
     isError = true;
     apiCode = apiCode || API_CODE_FAILURE;
-    jwt.clearTokens(req, res);
+    // jwt.clearTokens(req, res);
     break;
     case 403:
     isError = true;
     apiCode = apiCode || API_CODE_FAILURE;
-    jwt.clearTokens(req, res);
+    // jwt.clearTokens(req, res);
     break;
     default:
     break;

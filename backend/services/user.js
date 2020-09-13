@@ -1,12 +1,10 @@
 const User = require('../models/user');
-
 const { handleResponse } = require('../utils/utils');
+const jwt = require('../utils/jwt');
+const API_CODES = require('../utils/apiCodes');
+const config = require('../configs/config');
 
-const jwt = require('../utils/jwt')
-
-const API_CODES = require('../utils/apiCodes')
-
-const config = require('../configs/config')
+const bcrypt = require('bcryptjs');
 
 
 const register = async (req, res, next) => {
@@ -15,7 +13,7 @@ const register = async (req, res, next) => {
 			name: req.body.name,
 			email: req.body.email,
 			password: req.body.password
-		})
+		});
 
 		const isEmailExists = await User.findOne({ email: user.email});
 		if (isEmailExists) {
@@ -38,10 +36,17 @@ const login = async (req, res, next) => {
 		if (!email || !password) {
 			return handleResponse(req, res, 400, null, API_CODE_ERROR_EMPTY_CREDENTIALS, "Email and password is required")
 		}
-		await User.findOne({ email: email, password: password}, (err, user) => {
-			if (err) return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
+		await User.findOne({ email: email }, (err, user) => {
+			if (!user) {
+				return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
+			}
+			if(!bcrypt.compareSync(password, user.password)) {
+				return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
+			}
 			// 1 token for 1 user only
 	  		//clearTokens(req, res);
+
+	  		console.log('err', user);
 
 	  		// get basic user details
 	  		const userObj = jwt.getCleanUser(user);

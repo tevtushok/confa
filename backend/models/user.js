@@ -27,9 +27,12 @@ const userSchema = new mongoose.Schema({
 		min: 6,
 		max: 1024,
 		required: true,
+		bcrypt: true,
 	}
 },{
 	timestamps: true,
 })
+
+userSchema.plugin(require('mongoose-bcrypt'));
 
 module.exports = mongoose.model('User', userSchema)
