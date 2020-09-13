@@ -33,7 +33,7 @@ const Jwt = {
 	  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LIFE });
 	},
 
-	verifyToken: (token, xsrfToken, cb) => {
+	verifyToken: (token, xsrfToken = '', cb) => {
 	  const privateKey = process.env.JWT_SECRET + xsrfToken;
 	  jwt.verify(token, privateKey, cb);
 	},

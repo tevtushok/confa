@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 
 const app = express();
 
-let server = {
+const server = {
 	create: () => {
 
 		mongoose.connect(
