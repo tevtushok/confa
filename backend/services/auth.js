@@ -34,14 +34,14 @@ const login = async (req, res, next) => {
 		const email = req.body.email;
 		const password = req.body.password;
 		if (!email || !password) {
-			return handleResponse(req, res, 400, null, API_CODE_ERROR_EMPTY_CREDENTIALS, "Email and password is required")
+			return handleResponse(req, res, 400, null, API_CODES.ERROR_EMPTY_CREDENTIALS, "Email and password is required")
 		}
 		await User.findOne({ email: email }, (err, user) => {
 			if (!user) {
-				return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
+				return handleResponse(req, res, 401, null, API_CODES.ERROR_INVALID_CREDENTIALS, "Invalid credentials");
 			}
 			if(!bcrypt.compareSync(password, user.password)) {
-				return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
+				return handleResponse(req, res, 401, null, API_CODES.ERROR_INVALID_CREDENTIALS, "Invalid credentials");
 			}
 
 			const token = jsonwebtoken.sign({email: user.email, password: user.password}, process.env.JWT_SECRET);
