@@ -1,13 +1,18 @@
+const jsonwebtoken = require('jsonwebtoken');
 const API_CODES = require('./apiCodes');
+
 function handleResponse(req, res, statusCode, data, apiCode = null, message) {
   let isError = false;
   switch (statusCode) {
     case 204:
     case 400:
     case 500:
-    isError = true;
-    apiCode = apiCode || API_CODES.FAILURE;
-    break;
+    case 401:
+    case 403:
+      isError = true;
+      apiCode = apiCode || API_CODES.FAILURE;
+      break;
+    /*
     case 401:
     isError = true;
     apiCode = apiCode || API_CODES.FAILURE;
@@ -18,8 +23,9 @@ function handleResponse(req, res, statusCode, data, apiCode = null, message) {
     apiCode = apiCode || API_CODES.FAILURE;
     // jwt.clearTokens(req, res);
     break;
+    */
     default:
-    break;
+      break;
   }
 
   const response = data || {};
@@ -53,6 +59,12 @@ function errorHandler(err, req, res, next) {
             handleResponse(req, res, 401, null, null, err.message);
     }
 }
+
+function signJWT(data) {
+  const token = jsonwebtoken.sign(data, process.env.JWT_SECRET);
+  return token;
+}
+
 
 /*
 
@@ -106,5 +118,6 @@ const authMiddleware = function (req, res, next) {
 module.exports = {
   handleResponse,
   errorHandler,
+  signJWT,
   //authMiddleware
 }

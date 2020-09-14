@@ -1,6 +1,5 @@
 const User = require('../models/user');
-const { handleResponse } = require('../utils/utils');
-const jsonwebtoken = require('jsonwebtoken');
+const { handleResponse, signJWT } = require('../utils/utils');
 const API_CODES = require('../utils/apiCodes');
 const {cookie_options} = require('../configs/config');
 
@@ -36,15 +35,12 @@ const login = async (req, res, next) => {
 		if (!email || !password) {
 			return handleResponse(req, res, 400, null, API_CODES.ERROR_EMPTY_CREDENTIALS, "Email and password is required")
 		}
-		await User.findOne({ email: email }, (err, user) => {
-			if (!user) {
-				return handleResponse(req, res, 401, null, API_CODES.ERROR_INVALID_CREDENTIALS, "Invalid credentials");
-			}
-			if(!bcrypt.compareSync(password, user.password)) {
+		User.authenticate(email, password,  function (err, user) {
+			if (err || !user) {
 				return handleResponse(req, res, 401, null, API_CODES.ERROR_INVALID_CREDENTIALS, "Invalid credentials");
 			}
 
-			const token = jsonwebtoken.sign({email: user.email, password: user.password}, process.env.JWT_SECRET);
+			const token = signJWT({email: user.email, password: user.password});
 
 			// save token to client cookies
 			res.cookie('token', token, cookie_options);
@@ -68,6 +64,20 @@ const logout = async (req, res, next) => {
 		console.log(err);
 		return handleResponse(req, res, 500, err, API_CODES.FAILURE, 'Error while logout');
 	}
+}
+
+const verify = async (req, res) => {
+	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
+		return handleResponse(req, res, 401, null, API_CODES.EROR_UNSIGNED_TOKEN, 'Unsigned token');
+	}
+
+	await User.findOne({email: req.user.email}, (err, user) => {
+		if (err || req.user.password != user.password) {
+			return handleResponse(req, res, 401, null, API_CODES.EROR_INVALID_TOKEN, 'Invalid token');
+		}
+	})
+
+	return handleResponse(req, res, 200, null, null, 'Token verified');
 }
 
 
@@ -120,5 +130,6 @@ module.exports = {
 	register: register,
 	login: login,
 	logout: logout,
+	verify: verify,
 	//verifyToken: verifyToken
 }
