@@ -54,6 +54,8 @@ function errorHandler(err, req, res, next) {
     }
 }
 
+/*
+
 // middleware that checks if JWT token exists and verifies it if it does exist.
 // In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
@@ -99,9 +101,10 @@ const authMiddleware = function (req, res, next) {
     }
   });
 }
+*/
 
 module.exports = {
   handleResponse,
   errorHandler,
-  authMiddleware
+  //authMiddleware
 }
