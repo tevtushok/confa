@@ -1,12 +1,22 @@
 const dev = process.env.NODE_ENV !== 'production';
 
-const config = {
-	COOKIE_OPTIONS: {
+const cookie_options = {
 	    // domain: "localhost",
 	    httpOnly: true,
 	    secure: !dev,
 	    signed: true
-	}
 }
 
-module.exports = config;
+const public_routes = [
+	'/api/',
+	'/api/v1',
+	'/api/v1/auth/login',
+];
+
+const jwt_algorithms = ['HS256'];
+
+module.exports = {
+	cookie_options: cookie_options,
+	public_routes: public_routes,
+	jwt_algorithms: jwt_algorithms
+};

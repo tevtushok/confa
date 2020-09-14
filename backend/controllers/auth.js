@@ -9,6 +9,6 @@ router.post('/login', userService.login);
 
 router.post('/logout', userService.logout);
 
-router.post('/verifyToken', userService.verifyToken);
+//router.post('/verifyToken', userService.verifyToken);
 
 module.exports = router;

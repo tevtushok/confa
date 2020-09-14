@@ -36,6 +36,24 @@ function handleResponse(req, res, statusCode, data, apiCode = null, message) {
   return res.status(statusCode).json(response);
 }
 
+function errorHandler(err, req, res, next) {
+    switch (true) {
+        case typeof err === 'string':
+            // custom application error
+            const is404 = err.toLowerCase().endsWith('not found');
+            const statusCode = is404 ? 404 : 400;
+            handleResponse(req, res, statusCode, null, null, err);
+        case err.name === 'ValidationError':
+            // mongoose validation error
+            handleResponse(req, res, 400, null, null, err.message);
+        case err.name === 'UnauthorizedError':
+            // jwt authentication error
+            handleResponse(req, res, 401, null, API_CODES.EROR_JWT_UNAUTHORIZED, 'Unauthorized');
+        default:
+            handleResponse(req, res, 401, null, null, err.message);
+    }
+}
+
 // middleware that checks if JWT token exists and verifies it if it does exist.
 // In all private routes, this helps to know if the request is authenticated or not.
 const authMiddleware = function (req, res, next) {
@@ -84,5 +102,6 @@ const authMiddleware = function (req, res, next) {
 
 module.exports = {
   handleResponse,
+  errorHandler,
   authMiddleware
 }

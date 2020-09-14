@@ -1,8 +1,8 @@
 const User = require('../models/user');
 const { handleResponse } = require('../utils/utils');
-const jwt = require('../utils/jwt');
+const jsonwebtoken = require('jsonwebtoken');
 const API_CODES = require('../utils/apiCodes');
-const config = require('../configs/config');
+const {cookie_options} = require('../configs/config');
 
 const bcrypt = require('bcryptjs');
 
@@ -43,29 +43,14 @@ const login = async (req, res, next) => {
 			if(!bcrypt.compareSync(password, user.password)) {
 				return handleResponse(req, res, 401, null, API_CODE_ERROR_INVALID_CREDENTIALS, "Invalid credentials");
 			}
-			// 1 token for 1 user only
-	  		//clearTokens(req, res);
 
-	  		// get basic user details
-	  		const userObj = jwt.getCleanUser(user);
+			const token = jsonwebtoken.sign({email: user.email, password: user.password}, process.env.JWT_SECRET);
 
-	  		// generate access token
-	  		const tokenObj = jwt.generateToken(userObj);
-
-	  		// generate refresh token
-	  		const refreshToken = jwt.generateRefreshToken(userObj.id);
-
-	  		// refresh token list to manage the xsrf token
-	  		jwt.refreshTokens[refreshToken] = tokenObj.xsrfToken;
-
-			  // set cookies
-			res.cookie('refreshToken', refreshToken, config.COOKIE_OPTIONS);
-			res.cookie('XSRF-TOKEN', tokenObj.xsrfToken);
+			// save token to client cookies
+			res.cookie('token', token, cookie_options);
 
 			return handleResponse(req, res, 200, {
-				user: userObj,
-				token: tokenObj.token,
-				expiredAt: tokenObj.expiredAt
+				token: token,
 			});
 		});
 	}
@@ -76,14 +61,17 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
 	try {
-		jwt.clearTokens(req, res);
+		res.clearCookie('token', cookie_options);
 		return handleResponse(req, res, 204);
 	}
 	catch(err) {
+		console.log(err);
 		return handleResponse(req, res, 500, err, API_CODES.FAILURE, 'Error while logout');
 	}
 }
 
+
+/*
 const verifyToken = (req, res, next) => {
 	const { signedCookies = {} } = req;
 	const { refreshToken } = signedCookies;
@@ -125,11 +113,12 @@ const verifyToken = (req, res, next) => {
 		});
 	})
 }
+*/
 
 
 module.exports = {
 	register: register,
 	login: login,
 	logout: logout,
-	verifyToken: verifyToken
+	//verifyToken: verifyToken
 }
