@@ -35,7 +35,7 @@ const login = async (req, res, next) => {
 		if (!email || !password) {
 			return handleResponse(req, res, 400, null, API_CODES.ERROR_EMPTY_CREDENTIALS, "Email and password is required")
 		}
-		User.authenticate(email, password,  function (err, user) {
+		await User.authenticate(email, password,  function (err, user) {
 			if (err || !user) {
 				return handleResponse(req, res, 401, null, API_CODES.ERROR_INVALID_CREDENTIALS, "Invalid credentials");
 			}

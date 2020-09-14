@@ -1,16 +1,16 @@
 const express = require('express');
-const userService = require('../services/auth');
+const authService = require('../services/auth');
 let router = express.Router();
 
 
-router.post('/register', userService.register);
+router.post('/register', authService.register);
 
-router.post('/login', userService.login);
+router.post('/login', authService.login);
 
-router.post('/logout', userService.logout);
+router.post('/logout', authService.logout);
 
-router.get('/verify', userService.verify);
+router.get('/verify', authService.verify);
 
-//router.post('/verifyToken', userService.verifyToken);
+//router.post('/verifyToken', authService.verifyToken);
 
 module.exports = router;
