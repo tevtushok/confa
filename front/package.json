@@ -2,6 +2,7 @@
   "name": "front",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:4000",
   "homepage": "./",
   "dependencies": {
     "@babel/core": "7.9.0",

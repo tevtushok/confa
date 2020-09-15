@@ -7,7 +7,7 @@ import { Router } from 'react-router';
 
 import '../node_modules/bootstrap/scss/bootstrap.scss';
 import './index.scss';
-import App from './components/App';
+import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 
@@ -21,15 +21,6 @@ const stores = {
 };
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
-
-/*
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-*/
 
 ReactDOM.render(
   <Provider {...stores}>
