@@ -23,7 +23,7 @@ class App extends React.Component {
             if (result && result.success) {
                 UserStore.loading = false;
                 UserStore.isLoggedIn = true;
-                // UserStore.username = result.username;
+                UserStore.name = result.name;
             }
             else {
                 UserStore.loading = false;
