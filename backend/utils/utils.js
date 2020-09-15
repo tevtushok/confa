@@ -1,42 +1,30 @@
 const jsonwebtoken = require('jsonwebtoken');
 const API_CODES = require('./apiCodes');
 
-function handleResponse(req, res, statusCode, data, apiCode = null, message) {
-  let isError = false;
+function handleResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
+  let isSuccess = true;
   switch (statusCode) {
     case 204:
     case 400:
     case 500:
     case 401:
     case 403:
-      isError = true;
+      isSuccess = false;
       apiCode = apiCode || API_CODES.FAILURE;
       break;
-    /*
-    case 401:
-    isError = true;
-    apiCode = apiCode || API_CODES.FAILURE;
-    // jwt.clearTokens(req, res);
-    break;
-    case 403:
-    isError = true;
-    apiCode = apiCode || API_CODES.FAILURE;
-    // jwt.clearTokens(req, res);
-    break;
-    */
     default:
       break;
   }
 
-  const response = data || {};
-  response._code = apiCode || API_CODES.SUCCESS;
-
-  if (isError) {
-    response.error = true;
-  }
-
+  let response = {};
+  response.code = apiCode || API_CODES.SUCCESS;
   if (message) {
-    response._message = message;
+    response.message = message;
+  }
+  response.success = isSuccess;
+
+  if (data) {
+    response.data = data;
   }
 
   return res.status(statusCode).json(response);
