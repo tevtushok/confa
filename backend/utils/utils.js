@@ -42,9 +42,9 @@ function errorHandler(err, req, res, next) {
             handleResponse(req, res, 400, null, null, err.message);
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            handleResponse(req, res, 401, null, API_CODES.EROR_JWT_UNAUTHORIZED, 'Unauthorized');
+            handleResponse(req, res, 401, API_CODES.EROR_JWT_UNAUTHORIZED, null, 'Unauthorized');
         default:
-            handleResponse(req, res, 401, null, null, err.message);
+            handleResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
     }
 }
 
