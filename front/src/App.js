@@ -1,50 +1,67 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
-import UserStore from './stores/UserStore';
+import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 
-import './App.scss';
+import Loader from './components/loader';
+import Header from './components/header'
+import Footer from './components/footer'
+import Login from './pages/login';
+import Register from './pages/register'
+import Profile from './pages/profile'
 
-import Login from './pages/Login';
-import LogoutButton from './components/LogoutButton'
-import Loader from './components/Loader';
+import {verifyAuthService} from './services/auth';
+
+import './App.scss'
 
 
-@inject('routing')
+
+@inject("routing", "userStore", "commonStore")
+@withRouter
 @observer
 class App extends React.Component {
     async componentDidMount() {
-        try {
-            let res = await fetch('/api/v1/auth/verify', {
-                method: 'get',
-            });
+        const auth = await verifyAuthService();
 
-            let result = await res.json();
-
-            if (result && result.success) {
-                UserStore.loading = false;
-                UserStore.isLoggedIn = true;
-                UserStore.name = result.name;
-            }
-            else {
-                UserStore.loading = false;
-                UserStore.isLoggedIn = false;
-            }
+        const userStore = {}
+        if (auth.success) {
+            userStore.loading = false;
+            userStore.isLoggedIn = true;
+            userStore.name = auth.name;
         }
 
-        catch (e) {
-            UserStore.loading = false;
-            UserStore.isLoggedIn = false;
+        else {
+            userStore.loading = false;
+            userStore.isLoggedIn = false;
+            console.log('redirecting to login')
+            
         }
     }
 
     render() {
+            console.log(this.props.location.pathname);
+  
+        if (!this.props.userStore.isLoggedIn &&
+            this.props.location.pathname !== '/login') {
+            this.props.userStore.setLoggedIn();
+            return (
+                <Redirect to="/login"/>
+            );
+        }
+
         return (
             <div className="app">
                 <Loader/>
-            </div>
+                <Header/>
+                <Switch>
+                    <Route path="/login" component={Login} />
+                    <Route path="/register" component={Register} />
+                    <Route path="/profile" component={Profile} />
+                </Switch>
+                <Footer/>
+            </div>  
         );
     }
 
 }
 
-export default observer(App);
+export default App;

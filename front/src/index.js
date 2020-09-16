@@ -1,12 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import createBrowserHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
+
 import { Provider } from 'mobx-react';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { Router } from 'react-router';
 
+import userStore from './stores/userStore';
+import commonStore from './stores/commonStore';
+
 import '../node_modules/bootstrap/scss/bootstrap.scss';
 import './index.scss';
+import './App.scss'
+
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
@@ -17,6 +23,8 @@ const routingStore = new RouterStore();
 const stores = {
   // Key can be whatever you want
   routing: routingStore,
+  userStore,
+  commonStore,
   // ...other stores
 };
 
