@@ -1,4 +1,7 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button'
+import {Link} from "react-router-dom";
+
 import './index.scss';
 
 
@@ -22,6 +25,7 @@ class Login extends React.Component {
 	}
 
 	render() {
+
 		return (
 			<div className="login container">
 			<div className="row">
@@ -36,8 +40,10 @@ class Login extends React.Component {
 						<input type="text" className="form-control" name="password" id="password"/>
 						<small className="text-danger">Password is required</small>
 					</div>
-					<button type="submit" className="btn btn-block btn-danger">Login</button>
-					<button type="submit" className="btn btn-block btn-danger">Register</button>
+					<Button variant="primary" type="submit" size="lg" block>Login</Button>
+					<Link to="/register" className="btn-block">
+						<Button variant="secondary" size="lg" block>Register</Button>
+					</Link>
 				</form>
 			</div>
 			</div>

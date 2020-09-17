@@ -1,61 +1,44 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
-import { Switch, Route, Redirect, withRouter } from "react-router-dom";
+import { Switch, withRouter } from "react-router-dom";
 
-import Loader from './components/loader';
-import Header from './components/header'
-import Footer from './components/footer'
-import Login from './pages/login';
-import Register from './pages/register'
-import Profile from './pages/profile'
+import PublicRoute from './routes/PublicRoute'
+import PrivateRoute from './routes/PrivateRoute'
 
-import {verifyAuthService} from './services/auth';
+import Loader from './components/Loader';
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Login from './pages/Login';
+import Register from './pages/Register'
+import Profile from './pages/Profile'
+import Schedule from './pages/Schedule'
 
 import './App.scss'
 
 
 
-@inject("routing", "userStore", "commonStore")
+@inject("userStore", "commonStore")
 @withRouter
 @observer
 class App extends React.Component {
     async componentDidMount() {
-        const auth = await verifyAuthService();
 
-        const userStore = {}
-        if (auth.success) {
-            userStore.loading = false;
-            userStore.isLoggedIn = true;
-            userStore.name = auth.name;
-        }
-
-        else {
-            userStore.loading = false;
-            userStore.isLoggedIn = false;
-            console.log('redirecting to login')
-            
-        }
     }
 
     render() {
-            console.log(this.props.location.pathname);
-  
-        if (!this.props.userStore.isLoggedIn &&
-            this.props.location.pathname !== '/login') {
-            this.props.userStore.setLoggedIn();
-            return (
-                <Redirect to="/login"/>
-            );
-        }
-
+        const isLoggedIn = this.props.userStore.isLoggedIn;
         return (
             <div className="app">
                 <Loader/>
                 <Header/>
                 <Switch>
-                    <Route path="/login" component={Login} />
-                    <Route path="/register" component={Register} />
-                    <Route path="/profile" component={Profile} />
+                    <PublicRoute path="/login" component={Login} exact
+                        isLoggedIn={isLoggedIn} restricted={true} />
+                    <PublicRoute path="/register" component={Register} exact
+                        isLoggedIn={isLoggedIn} restricted={true}/>
+
+                    <PrivateRoute path="/@:username" component={Profile} exact isLoggedIn={isLoggedIn}/>
+                    <PrivateRoute path="/schedule" component={Schedule} exact isLoggedIn={isLoggedIn} />
                 </Switch>
                 <Footer/>
             </div>  

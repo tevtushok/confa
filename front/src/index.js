@@ -9,7 +9,7 @@ import { Router } from 'react-router';
 import userStore from './stores/userStore';
 import commonStore from './stores/commonStore';
 
-import '../node_modules/bootstrap/scss/bootstrap.scss';
+
 import './index.scss';
 import './App.scss'
 
@@ -21,11 +21,8 @@ const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
 const stores = {
-  // Key can be whatever you want
-  routing: routingStore,
   userStore,
   commonStore,
-  // ...other stores
 };
 
 const history = syncHistoryWithStore(browserHistory, routingStore);

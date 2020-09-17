@@ -1,11 +1,25 @@
+import API from './api.js';
+
 export const verifyAuthService = async () => {
 	try {
-		let response =  await fetch('/api/v1/auth/verify', { method: 'get'});
-		let result = await response.json();
-		return result;
+		return await API.get('/auth/verify');
 	}
+	catch (error) {
+		return {
+			error: true,
+			response: error.response
+		};
+	}
+}
 
-	catch (e) {
-		return e;
+export const loginAuthService = async (email, password) => {
+	try {
+		return await API.post('/auth/login', {email: email, password: password});
+	}
+	catch (error) {
+		return {
+			error: true,
+			response: error.response
+		};
 	}
 }
