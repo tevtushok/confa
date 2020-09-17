@@ -12,6 +12,7 @@ const init = (server) => {
         return next();
     });
 
+
     server.use(
         jwt({
             secret: process.env.JWT_SECRET,
@@ -22,6 +23,7 @@ const init = (server) => {
 
     // global error handler
     server.use(errorHandler);
+
 
     server.get('/api', (req, res ) => {
     	res.sendFile(__dirname + '/index.html');
