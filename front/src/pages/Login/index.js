@@ -1,7 +1,8 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button'
-import {Link} from 'react-router-dom';
-import API from '../../services/api'
+import {Link, Redirect} from 'react-router-dom';
+import { loginAuthService } from '../../services/auth'
+import { inject } from 'mobx-react';
 
 import './index.scss';
 
@@ -9,31 +10,46 @@ const emailRegExp = RegExp(
     /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
 )
 
-
+@inject('userStore')
 class Login extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			email: 'tim@ukr.net',
-			password: 'password123',
-			errors: {}
+			email: 'a5q@uskr.net',
+			password: 'test123',
+			errors: {},
+			serviceMsg: '',
+			isLoading: false,
 		}
+		console.log(this.props.history)
 	}
 
 	onSubmit = e => {
 		e.preventDefault();
-		console.log(this.state);
+		this.setState({serviceMsg: ''});
 		this.validateEmail(this.state.email);
 		this.validatePassword(this.state.password);
 		if (Object.keys(this.state.errors).length) {
 			console.log('invalid');
 		}
 		else {
-			const data = {'email': this.state.email, 'password': this.state.password};
-			const result = API.get('/auth/login', data);
-			console.log(result)
+			this.setState({isLoading: true});
+			loginAuthService(this.state.email, this.state.password)
+				.then((res) => {
+					this.setState({isLoading: false});
+					console.log('then', res)
+					if (res.error) {
+						console.log('is error', res)
+						let message = (res.response.data.message)
+							? res.response.data.message : res.response.statusText;
+						this.setState({serviceMsg: message})
+					}
+					else {
+						this.props.userStore.setLoggedIn();
+						this.setState({isLoading: false});
+					}
+				});
 		}
-		console.log(this.state.email, this.state.password)
 	};
 
 	handleChange = e => {
@@ -54,21 +70,17 @@ class Login extends React.Component {
 
 	validateEmail (email) {
 		let { errors } = this.state;
-		console.log(email, emailRegExp.test(email));
 		if (emailRegExp.test(email)) {
-			console.log('valid email')
 			delete errors.email;
 		}
 		else {
 			errors.email = 'Email address is invalid';
-			console.log('iiiiiivalid email')
 		}
 		this.setState({'errors': errors});
 	}
 
 	validatePassword(password) {
 		let { errors } = this.state;
-		console.log(this.state);
 		if (password.length > 5) {
 			delete errors.password;
 		}
@@ -79,29 +91,39 @@ class Login extends React.Component {
 	}
 
 	render() {
+		if (this.props.userStore.isLoggedIn) {
+			return (
+				<Redirect to="/schedule"/>
+			);
+		}
 		const { errors } = this.state;
+		const { serviceMsg } = this.state;
 		return (
 			<div className="login container">
-			<div className="row text-center">
-				<form onSubmit={this.onSubmit} noValidate>
-					<div className="form-group">
-						<label htmlFor="email">Email:</label>
-						<input type="text" name="email" id="email" onChange={this.handleChange} value={this.state.email}
-							className={'email' in errors ? "form-control is-invalid" : "form-control"}/>
-		
-					</div>
-					<div className="form-group">
-						<label htmlFor="password">Password:</label>
-						<input type="text" name="password" id="password" onChange={this.handleChange} value={this.state.password}
-						className={'password' in errors ? "form-control is-invalid" : "form-control"}/>
-			
-					</div>
-					<Button variant="primary" type="submit" block>Login</Button>
-					<Link to="/register" className="btn-block">
-						<Button variant="secondary" block>Register</Button>
-					</Link>
-				</form>
-			</div>
+				<div className="row text-center">
+					<form onSubmit={this.onSubmit} noValidate>
+						<div className="form-group">
+							<label htmlFor="email">Email:</label>
+							<input type="text" name="email" id="email" onChange={this.handleChange} value={this.state.email}
+								className={'email' in errors ? "form-control is-invalid" : "form-control"}/>
+						</div>
+						<div className="form-group">
+							<label htmlFor="password">Password:</label>
+							<input type="text" name="password" id="password" onChange={this.handleChange} value={this.state.password}
+							className={'password' in errors ? "form-control is-invalid" : "form-control"}/>
+						</div>
+							<div className="form-group">
+							<div className="text-danger serviceMsg">{serviceMsg}</div>
+						</div>
+						<div className="form-group">
+							<Button variant="primary" type="submit" block disabled={this.state.isLoading}>Login</Button>
+							<Link to="/register" className="btn-block">
+								<Button variant="secondary" block>Register</Button>
+							</Link>
+						</div>
+
+					</form>
+				</div>
 			</div>
 		);
 	}

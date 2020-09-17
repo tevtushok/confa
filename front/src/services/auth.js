@@ -14,7 +14,8 @@ export const verifyAuthService = async () => {
 
 export const loginAuthService = async (email, password) => {
 	try {
-		return await API.post('/auth/login', {email: email, password: password});
+		let res = await API.post('/auth/login', {email: email, password: password});
+		return res;
 	}
 	catch (error) {
 		return {
