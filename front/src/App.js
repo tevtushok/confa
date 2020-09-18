@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Switch, withRouter, Route } from "react-router-dom";
 
 import PrivateRoute from './routes/PrivateRoute'
+// import ProtectedRoute from './routes/ProtectedRoute'
 import { verifyAuthService } from './services/auth'
 
 import Loader from './components/Loader';
@@ -23,12 +24,13 @@ import './App.scss'
 @observer
 class App extends React.Component {
     async componentDidMount() {
-        await verifyAuthService()
-            .then((res) => {
-                if (!res.error) {
-                    this.props.userStore.setLoggedIn();
-                }
-            });
+        const auth = await verifyAuthService();
+        if (!auth.error && auth.data.data.user) {
+            this.props.userStore.setUser(auth.data.data.user);
+        }
+        else {
+            this.props.userStore.unsetUser();
+        }
         this.props.commonStore.setAppLoaded();
     }
 
@@ -50,10 +52,14 @@ class App extends React.Component {
                         
                             <Route path="/login" component={Login} exact/>
                             <Route path="/register" component={Register} exact/>
+                            
+                            <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn}/>
+                            {/*
+                            <ProtectedRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn} />
 
-                            <PrivateRoute path="/@:username" component={Profile} isLoggedIn={isLoggedIn}/>
-                            <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn} />
-                            <PrivateRoute path="/" component={Schedule} exact isLoggedIn={isLoggedIn} />
+                            <ProtectedRoute path="/schedule" component={Schedule} exact isLoggedIn={isLoggedIn} />
+                            */}
+                            
                             <Route component={Page404} />
                         
                     </Switch>

@@ -21,32 +21,27 @@ class Login extends React.Component {
 			serviceMsg: '',
 			isLoading: false,
 		}
-		console.log(this.props.history)
 	}
 
-	onSubmit = e => {
+	onSubmit = async (e) => {
 		e.preventDefault();
 		this.setState({serviceMsg: ''});
 		this.validateEmail(this.state.email);
 		this.validatePassword(this.state.password);
 		if (Object.keys(this.state.errors).length) {
-			console.log('invalid');
 		}
 		else {
 			this.setState({isLoading: true});
-			loginAuthService(this.state.email, this.state.password)
+			await loginAuthService(this.state.email, this.state.password)
 				.then((res) => {
 					this.setState({isLoading: false});
-					console.log('then', res)
 					if (res.error) {
-						console.log('is error', res)
 						let message = (res.response.data.message)
 							? res.response.data.message : res.response.statusText;
 						this.setState({serviceMsg: message})
 					}
 					else {
-						this.props.userStore.setLoggedIn();
-						this.setState({isLoading: false});
+						this.props.userStore.setUser(res.data.data.user);
 					}
 				});
 		}

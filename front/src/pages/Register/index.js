@@ -1,4 +1,5 @@
 import React from 'react';
+import Bayan from '../../components/Bayan'
 import './index.scss';
 
 
@@ -28,6 +29,7 @@ class Register extends React.Component {
 					<input type="text" className="form-control" name="password" id="password"/>
 					<small className="text-danger">Password confirm is required</small>
 				</div>
+				<Bayan/>
 				<button type="submit" className="btn btn-block btn-danger">Register</button>
 			</form>
 		</div>
