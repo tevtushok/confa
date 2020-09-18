@@ -1,4 +1,3 @@
-const jsonwebtoken = require('jsonwebtoken');
 const API_CODES = require('./apiCodes');
 
 function handleResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
@@ -31,28 +30,25 @@ function handleResponse(req, res, statusCode, apiCode = null, data = null, messa
 }
 
 function errorHandler(err, req, res, next) {
-    if (res.headersSent) {
-      return next(err);
-    }
     switch (true) {
         case typeof err === 'string':
             // custom application error
             const is404 = err.toLowerCase().endsWith('not found');
             const statusCode = is404 ? 404 : 400;
-            handleResponse(req, res, statusCode, null, null, err);
+            return handleResponse(req, res, statusCode, null, null, err);
             break;
         case err.name === 'ValidationError':
             // mongoose validation error
-            handleResponse(req, res, 400, null, null, err.message);
+            return handleResponse(req, res, 400, null, null, err.message);
             break;
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            handleResponse(req, res, 401, API_CODES.EROR_JWT_UNAUTHORIZED, null, 'Unauthorized');
+            return handleResponse(req, res, 401, API_CODES.EROR_JWT_UNAUTHORIZED, null, 'Unauthorized');
             break;
         default:
-            handleResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
+            //handleResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
+            next();
     }
-    next();
 }
 
 function signJWT(data) {
@@ -113,6 +109,5 @@ const authMiddleware = function (req, res, next) {
 module.exports = {
   handleResponse,
   errorHandler,
-  signJWT,
   //authMiddleware
 }

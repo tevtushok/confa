@@ -2,9 +2,7 @@ const User = require('../models/user');
 const { handleResponse, signJWT } = require('../utils/utils');
 const API_CODES = require('../utils/apiCodes');
 const {cookie_options} = require('../configs/config');
-
-const bcrypt = require('bcryptjs');
-
+const jsonwebtoken = require('jsonwebtoken');
 
 const register = async (req, res, next) => {
 	try {
@@ -39,12 +37,19 @@ const login = async (req, res, next) => {
 				return handleResponse(req, res, 401, API_CODES.ERROR_INVALID_CREDENTIALS, null, "Invalid credentials");
 			}
 
-			const token = signJWT({email: user.email, password: user.password});
+			const jwtData = {email: user.email, password: user.password};
+            const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
 
 			// save token to client cookies
 			res.cookie('token', token, cookie_options);
 
-			const ret = { token: token };
+			const ret = {
+                token: token,
+                user: {
+                    name: user.name,
+                    email: user.email
+                }
+            };
 
 			return handleResponse(req, res, 200, API_CODES.SUCCESS, ret, 'Logged in');
 		});
@@ -60,24 +65,28 @@ const logout = async (req, res, next) => {
 		return handleResponse(req, res, 200, API_CODES.SUCCESS, null, 'Logged out');
 	}
 	catch(err) {
-		console.log(err);
 		return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while logout');
 	}
 }
 
 const verify = async (req, res) => {
-	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return handleResponse(req, res, 401, API_CODES.EROR_UNSIGNED_TOKEN, null, 'Unsigned token');
-	}
-
-	await User.findOne({email: req.user.email}, (err, user) => {
-		if (err || req.user.password != user.password) {
-			return handleResponse(req, res, 401, API_CODES.EROR_INVALID_TOKEN, null, 'Invalid token');
+	try {
+		if (!req.user || !('email' in req.user) || !('password' in req.user)) {
+			return handleResponse(req, res, 401, API_CODES.EROR_UNSIGNED_TOKEN, null, 'Unsigned token');
 		}
-		const resData = {email: user.email, name: user.name};
 
-		return handleResponse(req, res, 200, API_CODES.SUCCESS, resData, 'Token verified');
-	})
+		await User.findOne({email: req.user.email}, (err, user) => {
+			if (err || req.user.password != user.password) {
+				return handleResponse(req, res, 401, API_CODES.EROR_INVALID_TOKEN, null, 'Invalid token');
+			}
+			const resData = {user: { email: user.email, name: user.name }};
+
+			return handleResponse(req, res, 200, API_CODES.SUCCESS, resData, 'Token verified');
+		})
+	}
+	catch(err) {
+		return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while verify');
+	}	
 
 	
 }

@@ -17,7 +17,8 @@ const init = (server) => {
         jwt({
             secret: process.env.JWT_SECRET,
             algorithms: jwt_algorithms,
-            getToken: req => req.signedCookies.token
+            credentialsRequired: false,
+            getToken: req => req.signedCookies.token,
         }).unless({path: public_routes})
         );
 
