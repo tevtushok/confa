@@ -1,0 +1,34 @@
+.bayan {
+  display: flex;
+  justify-content: center;
+  background-color:#333;
+  align-items: center;
+}
+.container div{
+  color:#fff;
+  padding: 0 2px;
+  position: relative;
+}
+
+.bayan div:first-child {
+   animation: slide1 1s linear infinite; 
+}
+.bayan div:last-child {
+   animation: slide2 1s linear infinite; 
+}
+
+@keyframes slide1 {
+  0% {left:0px; }
+  25% { left:-5px; }
+  50% { left:-10px; }
+  75% { left:-5px; }
+  100% { left:0px; }
+}
+
+@keyframes slide2 {
+  0% {left:0px; }
+  25% { left:5px; }
+  50% { left:10px; }
+  75% { left:5px; }
+  100% { left:0px; }
+}
