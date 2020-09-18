@@ -8,8 +8,12 @@
 # testing
 /coverage
 
+
 # production
 /build
+
+# vim swap files 
+*.swp
 
 # misc
 .DS_Store
