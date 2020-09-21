@@ -37,3 +37,16 @@ export const logoutAuthService = async () => {
 		};
 	}
 }
+
+export const registerAuthService = async (user) => {
+	try {
+		let res = await api.post('/auth/register', user);
+		return res;
+	}
+	catch (error) {
+		return {
+			error: true,
+			response: error.response
+		};
+	}
+}

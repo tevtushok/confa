@@ -8,12 +8,13 @@ class Bayan extends React.Component {
 		this.color = this.props.color || 'inherit';
 	}
 	render() {
+		console.log(this.props.isLoading)
 		const bayanStyle = {
 			backgroundColor: this.backgroundColor,
-			color: this.color
+			color: this.color,
 		}
 		return (
-			<div class="bayan" style={bayanStyle}>
+			<div className="bayan" style={bayanStyle}>
 				<div>&middot;</div>
 				<div>&middot;</div>
 				<div>&middot;</div>

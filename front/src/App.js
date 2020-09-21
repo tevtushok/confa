@@ -1,6 +1,6 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
-import { Switch, withRouter, Route } from "react-router-dom";
+import { Switch, withRouter, Route, Redirect } from "react-router-dom";
 
 
 import { verifyAuthService } from './services/auth'
@@ -13,8 +13,6 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Schedule from './pages/Schedule'
 import Page404 from './pages/Page404'
-
-import Rregister from './pages/Rregister'
 
 
 import './App.scss'
@@ -36,31 +34,28 @@ class App extends React.Component {
     }
 
     render() {
-        const isLoggedIn = this.props.userStore.isLoggedIn;
-        const appLoaded = this.props.commonStore.appLoaded;
-        if (!appLoaded) {
+        if (!this.props.commonStore.appLoaded) {
             return (<Loader/>);
         }
 
         return (
             <div className="app">
-                {/* 
-                <Loader/>
-                */}  
                 <Header/>
                 <main>
-                    <Rregister/>
-                    <Switch>
-                        
+                    <div className="container">
+                        <div className="row">
+                            <Switch>
                             <Route path="/login" component={Login} exact/>
                             <Route path="/register" component={Register} exact/>
-                            
-                            <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn}/>
-                            <PrivateRoute path="/@username" component={Profile} isLoggedIn={isLoggedIn}/>
-                            
+
+                            <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/" exact component={Schedule} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/@username" component={Profile} isLoggedIn={this.props.userStore.isLoggedIn}/>
+
                             <Route component={Page404} />
-                        
-                    </Switch>
+                            </Switch>
+                        </div>
+                    </div>
                 </main>
                 <Footer/>
             </div>  
