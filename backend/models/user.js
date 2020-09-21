@@ -29,7 +29,15 @@ const userSchema = new mongoose.Schema({
 		max: 1024,
 		required: true,
 		bcrypt: true,
-	}
+	},
+    // role = 1 regular
+    // role = 2 admin
+    role: {
+        type: Number,
+        required: true,
+        default: 1,
+
+    }
 },{
 	timestamps: true,
 })
