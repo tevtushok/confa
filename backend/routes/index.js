@@ -1,4 +1,5 @@
 const apiRoute = require('./v1');
+const adminApiRoute = require('./v1/admin')
 const jwt = require('express-jwt');
 const {public_routes, jwt_algorithms} = require('../configs/config');
 const {errorHandler} = require('../utils/utils');
@@ -17,7 +18,7 @@ const init = (server) => {
         jwt({
             secret: process.env.JWT_SECRET,
             algorithms: jwt_algorithms,
-            credentialsRequired: false,
+            credentialsRequired: true,
             getToken: req => req.signedCookies.token,
         }).unless({path: public_routes})
         );
@@ -31,6 +32,7 @@ const init = (server) => {
     })
     
     server.use('/api', apiRoute);
+    server.use('/api', adminApiRoute);
 
 
 

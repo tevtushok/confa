@@ -56,7 +56,9 @@ function signJWT(data) {
   return token;
 }
 
-
+function adminMiddleware (req, res, next) {
+  console.log(req.user)
+}
 /*
 
 // middleware that checks if JWT token exists and verifies it if it does exist.

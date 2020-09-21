@@ -19,8 +19,7 @@ const register = async (req, res, next) => {
 		
 		const savedUser = await user.save();
 		return handleResponse(req, res, 201, API_CODES.SUCCESS, null, 'User added');
-	}
-	catch(err) {
+	} catch(err) {
 		return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while adding user');
 	}
 }
@@ -37,7 +36,11 @@ const login = async (req, res, next) => {
 				return handleResponse(req, res, 401, API_CODES.ERROR_INVALID_CREDENTIALS, null, "Invalid credentials");
 			}
 
-			const jwtData = {email: user.email, password: user.password};
+			const jwtData = {
+				email: user.email,
+				password: user.password,
+				role: user.role
+			};
             const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
 
 			// save token to client cookies
@@ -47,7 +50,8 @@ const login = async (req, res, next) => {
                 token: token,
                 user: {
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    role: user.role
                 }
             };
 
@@ -79,9 +83,15 @@ const verify = async (req, res) => {
 			if (err || req.user.password != user.password) {
 				return handleResponse(req, res, 401, API_CODES.EROR_INVALID_TOKEN, null, 'Invalid token');
 			}
-			const resData = {user: { email: user.email, name: user.name }};
+			const ret = {
+                user: {
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
+            };
 
-			return handleResponse(req, res, 200, API_CODES.SUCCESS, resData, 'Token verified');
+			return handleResponse(req, res, 200, API_CODES.SUCCESS, ret, 'Token verified');
 		})
 	}
 	catch(err) {
