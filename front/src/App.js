@@ -2,10 +2,9 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Switch, withRouter, Route } from "react-router-dom";
 
-import PrivateRoute from './routes/PrivateRoute'
-// import ProtectedRoute from './routes/ProtectedRoute'
-import { verifyAuthService } from './services/auth'
 
+import { verifyAuthService } from './services/auth'
+import PrivateRoute from './routes/PrivateRoute'
 import Loader from './components/Loader';
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -14,6 +13,8 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Schedule from './pages/Schedule'
 import Page404 from './pages/Page404'
+
+import Rregister from './pages/Rregister'
 
 
 import './App.scss'
@@ -48,17 +49,14 @@ class App extends React.Component {
                 */}  
                 <Header/>
                 <main>
+                    <Rregister/>
                     <Switch>
                         
                             <Route path="/login" component={Login} exact/>
                             <Route path="/register" component={Register} exact/>
                             
                             <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn}/>
-                            {/*
-                            <ProtectedRoute path="/schedule" component={Schedule} isLoggedIn={isLoggedIn} />
-
-                            <ProtectedRoute path="/schedule" component={Schedule} exact isLoggedIn={isLoggedIn} />
-                            */}
+                            <PrivateRoute path="/@username" component={Profile} isLoggedIn={isLoggedIn}/>
                             
                             <Route component={Page404} />
                         

@@ -4,17 +4,14 @@
   background-color:#333;
   align-items: center;
 }
-.container div{
-  color:#fff;
-  padding: 0 2px;
-  position: relative;
-}
 
 .bayan div:first-child {
    animation: slide1 1s linear infinite; 
+   position: relative;
 }
 .bayan div:last-child {
    animation: slide2 1s linear infinite; 
+   position: relative;
 }
 
 @keyframes slide1 {
