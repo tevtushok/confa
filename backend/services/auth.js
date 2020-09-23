@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { handleResponse, signJWT } = require('../utils/utils');
+const { handleResponse, sleep } = require('../utils/utils');
 const API_CODES = require('../utils/apiCodes');
 const {cookie_options} = require('../configs/config');
 const jsonwebtoken = require('jsonwebtoken');
