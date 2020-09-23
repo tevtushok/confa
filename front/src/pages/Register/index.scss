@@ -1,3 +1,26 @@
 .register {
 	margin: 0 auto;
 }
+.register.registered {
+	text-align: center;
+}
+.register .MuiFormControl-root {
+	display: block;
+	margin-bottom: 1rem;
+}
+
+.register .MuiFormControl-root:last-child {
+
+}
+
+.register__serviceContainer {
+	min-height: 1rem;
+}
+
+.register__serviceContainer p {
+	text-align: center;
+}
+
+.register__serviceContainer .bayan + div {
+	display: none;
+}

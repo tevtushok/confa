@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import Toolbar from '@material-ui/core/Toolbar'
+import Link from "@material-ui/core/Link";
 
 import './index.scss';
 
@@ -7,11 +9,10 @@ class Footer extends React.Component {
 	render() {
 		return (
 			<footer>
-				<div className="footer">
-					<Link to="/login"><div>login</div></Link>
-					<Link to="/register"><div>register</div></Link>
-					<Link to="/Profile"><div>profile</div></Link>
-				</div>
+				<Toolbar className="footer">
+					<Link component={RouterLink} to="/login"><div>Login</div></Link>
+					<Link component={RouterLink} to="/register"><div>register</div></Link>
+				</Toolbar>
 			</footer>
 		);
 	}

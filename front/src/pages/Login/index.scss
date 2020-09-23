@@ -1,7 +1,33 @@
 .login {
 	margin: 0 auto;
 }
+.login .MuiFormControl-root {
+	display: block;
+	margin-bottom: 1rem;
+}
+
+.login .MuiFormControl-root:last-child {
+
+}
 
 .login__serviceContainer {
-	min-height: 1.5em;
+	min-height: 1rem;
+}
+
+.login__serviceContainer p {
+	text-align: center;
+}
+
+.login__serviceContainer .bayan + div {
+	display: none;
+}
+
+.login__invite {
+	text-align: center;
+}
+.login__invite a {
+	text-decoration: underline;
+}
+.login__invite a:hover {
+	text-decoration: none;
 }

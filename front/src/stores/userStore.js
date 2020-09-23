@@ -3,8 +3,8 @@ import { observable, action } from 'mobx';
 class userStore {
 	@observable isLoggedIn = false;
 	@observable user = {};
-	@action setLoggedIn() {
-		this.isLoggedIn = true;
+	@action setLoggedIn(state) {
+		this.isLoggedIn = state;
 	}
 	@action setUser(u) {
 		this.user = u;
@@ -13,6 +13,19 @@ class userStore {
 	@action unsetUser() {
 		this.user = undefined;
 		this.isLoggedIn = false;
+	}
+	
+	get LoggedIn() {
+		return this.isLoggedIn;
+	}
+	set LoggedIn(state) {
+		this.setLoggedIn(state);
+	}
+	get userRole() {
+		if (this.user && this.user.role) {
+			return this.user.role;
+		}
+		return undefined;
 	}
 
 }

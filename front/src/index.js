@@ -9,7 +9,6 @@ import { Router } from 'react-router';
 import userStore from './stores/userStore';
 import commonStore from './stores/commonStore';
 
-
 import './index.scss';
 import './App.scss'
 

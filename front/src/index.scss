@@ -1,4 +1,4 @@
-@import "~bootstrap/scss/bootstrap";
+//@import "~bootstrap/scss/bootstrap";
 
 * {
     box-sizing: border-box;
@@ -6,21 +6,6 @@
     padding: 0;
 }
 
-html {
-    font-size: 15px;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #fff;
-  background-color: #191919;
-  color: #F0F0F0;
-}
-
-.flex {
-	display: flex;
+html, body {
+	height: 100%;
 }

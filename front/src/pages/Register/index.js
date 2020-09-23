@@ -1,20 +1,20 @@
-import React, { useState, useEffects } from 'react'
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react'
+import { useForm, Controller } from 'react-hook-form';
 import Bayan from '../../components/Bayan'
-import Button from 'react-bootstrap/Button'
+import { Button, Container, FormControl, TextField, FormHelperText } from '@material-ui/core'
 import { registerAuthService } from '../../services/auth'
 
 import './index.scss';
 
-export default function Rregister(props) {
-    const { register, handleSubmit, watch, errors, reset, setError } = useForm();
+
+export default function Resister(props) {
+    const { handleSubmit, watch, errors, reset, setError, control } = useForm();
     const [isRegistered, setRegistered] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [serviceMsg, setServiceMsg] = useState('');
     const onSubmit = (data) => {
         setLoading(true);
-        setServiceMsg('');
         registerAuthService(data)
             .then(res => {
                 setLoading(false);
@@ -24,6 +24,7 @@ export default function Rregister(props) {
                             type: 'manual',
                             message: 'Email should be unique'
                         });
+                        setServiceMsg('');
                     }
                     else {
                         let message = (res.response.data.message)
@@ -46,68 +47,92 @@ export default function Rregister(props) {
     }
     if (isRegistered) {
         return (
-            <div className="register">
-                <h3 className="text-center">Register new user</h3>
+            <Container maxWidth="sm">
+            <div className="register component registered">
+                <h2 className="text-center">Register new user</h2>
                 <div className="text-center">{name}, thanks for registration</div>
             </div>
+            </Container>
         )
     }
+    const helperTextName = errors.name ? 'Atleast 3 characaters required' : '';
+    let helperTextEmail = '';
+    if (errors.email) {
+        helperTextEmail = errors.email?.message ? errors.email.message : 'Email is invalid';
+    }
+    const helperTextPassword = errors.password ? 'Atleast 6 characaters is required' : '';
+    const helperTextPasswordConfirmation = errors.password_confirm ? 'Invalid password confirmation' : '';
+
     return (
-        <div className="register">
-            <h3 className="text-center">Register new user</h3>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="form-group row">
-                    <label htmlFor="name" className="col-sm-5 col-form-label">Name:</label>
-                    <div className="col-sm-7">
-                        <input type="text" id="name" name="name"
-                            className={errors.name ? 'is-invalid form-control' : 'form-control'}
-                            ref={register({ required: true, minLength: 3 })} placeholder="name"/>
-                        {errors.name && <div className="text-danger">Atleast 3 characaters required</div>}
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label htmlFor="email" className="col-sm-5 col-form-label">Email:</label>
-                    <div className="col-sm-7">
-                        <input type="text" id="email" name="email"
-                            className={errors.email ? 'is-invalid form-control' : 'form-control'}
-                            ref={register({ message: 'mmmm', required: true, pattern: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i})}
-                            placeholder="email" />
-                        {errors.email && 'manual' != errors.email?.type && <div className="text-danger">Email is invalid</div>}
-                        {errors.email?.message && <div className="text-danger">{errors.email.message}</div>}
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label htmlFor="password" className="col-sm-5 col-form-label">Password:</label>
-                    <div className="col-sm-7">
-                        <input type="password" id="password" name="password"
-                            className={errors.password ? 'is-invalid form-control' : 'form-control'}
-                            ref={register({required: true, minLength: 6})} placeholder="password" />
-                        {errors.password && <div className="text-danger">Atleast 6 characaters required</div>}
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label htmlFor="password_confirm" className="col-sm-5 col-form-label">
-                        Password confirm:
-                    </label>
-                    <div className="col-sm-7">
-                    <input type="password" id="password_confirm" name="password_confirm"
-                        className={errors.password ? 'is-invalid form-control' : 'form-control'}
-                        ref={register({required: true, validate: validatePasswordConfirm})} placeholder="password confirm" />
-                        {errors.password_confirm && <div className="text-danger">Invalid password confirmation</div>}
-                    </div>
-                </div>
-                <div className="form-group">
-                    <div className="login__serviceContainer">
-                        {isLoading && (
-                            <Bayan/>
-                        )}
-                        {serviceMsg.length > 0 && (
-                            <p className="text-danger text-center">{serviceMsg}</p>
-                        )}
-                    </div>
-                </div>
-                <Button variant="primary" type="submit" block disabled={isLoading}>Register</Button>
-            </form>
-        </div>
+        <Container maxWidth="sm">
+            <div className="register component">
+                <h2 className="text-center">Register new user</h2>
+            
+                <form onSubmit={handleSubmit(onSubmit)}>
+                      <Controller
+                        name="name"
+                        as={TextField}
+                        control={control}
+                        defaultValue=""
+                        fullWidth
+                        error={!!errors.name}
+                        helperText={helperTextName}
+                        label="Name:"
+                        variant="outlined"
+                        type="text"
+                        rules={{ required: true, minLength: 3 }}
+                    />
+
+                    <Controller
+                        name="email"
+                        as={TextField}
+                        control={control}
+                        defaultValue=""
+                        fullWidth
+                        error={!!errors.email}
+                        helperText={helperTextEmail}
+                        label="Email:"
+                        variant="outlined"
+                        type="text"
+                        rules={{required: true, pattern: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i}}
+                    />
+
+                    <Controller
+                        name="password"
+                        as={TextField}
+                        control={control}
+                        defaultValue=""
+                        fullWidth
+                        error={!!errors.password}
+                        helperText={helperTextPassword}
+                        label="Password:"
+                        variant="outlined"
+                        type="password"
+                        rules={{required: true, minLength: 6}}
+                    />
+
+                    <Controller
+                        name="password_confirm"
+                        as={TextField}
+                        control={control}
+                        defaultValue=""
+                        fullWidth
+                        error={!!errors.password_confirm}
+                        helperText={helperTextPasswordConfirmation}
+                        label="Password confirm:"
+                        variant="outlined"
+                        type="password"
+                        rules={{required: true, validate: validatePasswordConfirm}}
+                    />
+                    <FormControl error={!!serviceMsg.length} className="register__serviceContainer">
+                        {isLoading && <Bayan/>}
+                        <FormHelperText>{serviceMsg}</FormHelperText>
+                    </FormControl>
+                    <FormControl>
+                        <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={isLoading}>Register</Button>
+                    </FormControl>
+                </form>
+            </div>
+        </Container>
     );
 }

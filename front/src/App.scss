@@ -1,7 +1,24 @@
+#root,
+.app,
+.app
+{
+	height: 100%;
+}
 .app {
 	position: relative;
+	display: flex;
+	flex-direction: column;
 }
 
 .app main {
-	padding: 15px 0;
+	padding: 1rem 0;
+	flex: 1;
+}
+
+.component h1,
+.component h2,
+.component h3,
+.component h4 {
+	margin-bottom: 1em;
+	text-align: center;
 }

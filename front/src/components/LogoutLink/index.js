@@ -1,6 +1,7 @@
 import React from 'react';
 import { logoutAuthService } from '../../services/auth'
 import { inject } from 'mobx-react';
+import Link from '@material-ui/core/Link'
 
 @inject('userStore')
 class LogoutLink extends React.Component {
@@ -10,7 +11,7 @@ class LogoutLink extends React.Component {
 	}
 	render() {
 		return (
-			<a href="#" onClick={this.doLogout.bind(this)}>Logout</a>
+			<Link href="#" onClick={this.doLogout.bind(this)}>Logout</Link>
 		);
 	}
 }

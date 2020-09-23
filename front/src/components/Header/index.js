@@ -1,7 +1,10 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { inject } from 'mobx-react';
 import LogoutLink from '../LogoutLink'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Link from "@material-ui/core/Link";
 
 import './index.scss';
 
@@ -10,26 +13,34 @@ import './index.scss';
 @inject("userStore")
 class Header extends React.Component {
 	render() {
-		const user = JSON.stringify(this.props.userStore.user);
-		const isLoggedIn = this.props.userStore.isLoggedIn;
-		console.log(user);
-		return (
-			<header>
-				<div className="header">
-					<div className="flex">
+		const userStore = this.props.userStore;
+		if (userStore.isLoggedIn) {
+			let admin_links = '';
+			if (userStore.user.role === 2) {
+				admin_links = <Link component={RouterLink} to="/rooms">Rooms</Link>
+			}
+			return (
+				<AppBar position="static" color="primary">
+					<Toolbar>
 						<LogoutLink/>
-						<Link to="/login"><div>login</div></Link>
-						<Link to="/register"><div>register</div></Link>
-						<Link to="/schedule"><div>schedule</div></Link>
-						<Link to="/Profile"><div>profile</div></Link>
-					</div>
-					<div>
-						isLoggedIn: {isLoggedIn}
-					</div>
-					<div> |user: {user}</div>
-				</div>
-			</header>
-		);
+						{admin_links}
+						<Link component={RouterLink} to="/register">Register</Link>
+						<Link component={RouterLink} to="/schedule">Schedule</Link>
+						<Link component={RouterLink} to={`/@${userStore.user.name}`}>Profile</Link>
+					</Toolbar>
+				</AppBar>
+			);
+		}
+		else {
+			return (
+				<AppBar position="static">
+					<Toolbar>
+						<Link component={RouterLink} to="/login">Login</Link>
+						<Link component={RouterLink} to="/register">Register</Link>
+					</Toolbar>
+				</AppBar>
+			);
+		}
 	}
 }
 

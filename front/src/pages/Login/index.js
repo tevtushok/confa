@@ -1,9 +1,9 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button'
-import { Link, Redirect } from 'react-router-dom';
+import { Link as LinkRouter, Redirect } from 'react-router-dom';
 import { loginAuthService } from '../../services/auth'
 import { inject } from 'mobx-react';
 import Bayan from '../../components/Bayan'
+import { Container, FormControl, TextField, Button, Link, FormHelperText } from '@material-ui/core'
 
 import './index.scss';
 
@@ -95,41 +95,49 @@ class Login extends React.Component {
 		const { errors } = this.state;
 		const { serviceMsg } = this.state;
 		return (
-			<div className="login">
-				<h3 className="text-center">Login page</h3>
-				<form onSubmit={this.onSubmit} noValidate>
-					<div className="form-group row">
-						<label htmlFor="email" className="col-sm-3 col-form-label">Email:</label>
-						<div className="col-sm-9">
-							<input type="text" name="email" id="email" onChange={this.handleChange} value={this.state.email}
-							className={'email' in errors ? "form-control is-invalid" : "form-control"}/>
-						</div>
-					</div>
-					<div className="form-group row">
-						<label htmlFor="password" className="col-sm-3 col-form-label">Password:</label>
-						<div className="col-sm-9">
-							<input type="text" name="password" id="password" onChange={this.handleChange} value={this.state.password}
-						className={'password' in errors ? "form-control is-invalid" : "form-control"}/>
-						</div>
-					</div>
-					<div className="form-group">
-						<div className="login__serviceContainer">
+			<Container maxWidth="sm">
+				<div className="login component">
+					<h2 className="text-center">Login page</h2>
+					<form onSubmit={this.onSubmit} noValidate>
+						<FormControl className="login__form-control">
+							<TextField
+								name="email"
+								label="Email:"
+								value={this.state.email}
+								fullWidth={true}
+								variant="outlined"
+								type="text"
+								onChange={this.handleChange}
+								error={!!errors?.email} />
+						</FormControl>
+						<FormControl className="login__form-control">
+							<TextField
+								name="password"
+								label="Password:"
+								value={this.state.password}
+								fullWidth={true} 
+								variant="outlined"
+								type="password"
+								onChange={this.handleChange}
+								error={!!errors?.password} />
+						</FormControl>
+						<FormControl error={!!serviceMsg.length} className="login__serviceContainer">
 							{this.state.isLoading && (
 								<Bayan/>
 							)}
-							{serviceMsg.length > 0 && (
-								<p className="text-danger text-center">{serviceMsg}</p>
-							)}
-						</div>
-					</div>
-					<div className="form-group">
-						<Button variant="primary" type="submit" block disabled={this.state.isLoading}>Login</Button>
-						<Link to="/register" className="btn-block">
-							<Button variant="secondary" block>Register</Button>
-						</Link>
-					</div>
-				</form>
-			</div>
+							<FormHelperText>{serviceMsg}</FormHelperText>
+						</FormControl>
+						<FormControl>
+							<Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>Login</Button>
+						</FormControl>
+						<p className="login__invite">
+							<Link color="primary" component={LinkRouter} to="/register">
+								Don't have account? click register
+							</Link>
+						</p>
+					</form>
+				</div>
+			</Container>
 		);
 	}
 
