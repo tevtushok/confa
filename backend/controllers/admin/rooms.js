@@ -3,6 +3,7 @@ const roomService = require('../../services/admin/rooms');
 const router = express.Router();
 
 
-router.get('/', roomService.list);
+router.get('/', roomService.listRooms);
+router.delete('/', roomService.deleteRoom);
 
 module.exports = router;
