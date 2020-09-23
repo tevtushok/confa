@@ -10,4 +10,29 @@ export const getRooms = async () => {
 				response: error.response
 			};
 	}
-};
+}
+
+export const saveRooms = async (rooms) => {
+	try {
+		return await api.post('/rooms');
+	}
+	catch (error) {
+		return {
+			error: true,
+			response: error.response
+		}
+	}
+}
+
+export const deleteRoom = async (id) => {
+	try {
+		console.log('axios deleteRoom')
+		return await api.delete('/rooms', {id: id});
+	}
+	catch (error) {
+		return {
+			error: true,
+			response: error.response
+		}
+	}
+}
