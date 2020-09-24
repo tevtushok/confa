@@ -68,17 +68,45 @@ class adminRooms extends React.Component {
 		this.setState({roomList: {rooms: updatedRooms}});
 	}
 
-	updateRoomHandler(e, roomId) {
+	async updateRoomHandler(e, roomId) {
 		const fieldName = e.target.name;
 		if (fieldName === 'number' || fieldName === 'title') {
 			const value = e.target.value;
-			let updatedRooms = this.state.roomList.rooms.map(room => {
+			let roomToSave = false;
+			let roomToSaveIndex = false;
+			let updatedRooms = this.state.roomList.rooms.map((room, index) => {
 				if (room._id === roomId) {
 					room[fieldName] = value;
 					room.isChanged = true;
+					roomToSave = room;
+					roomToSaveIndex = index;
 				}
 				return room;
 			});
+			if (roomToSave) {
+				let postRoom = {};
+				postRoom[fieldName] = value;
+				if (!('isNew' in roomToSave)) {
+					postRoom._id = roomToSave._id;
+				}
+				const result = await saveRooms(postRoom);
+				if (result.error) {
+					if (1102 === result.response.data.code) {
+						const fields = Object.keys(result.response.data.data.fields);
+						if (!('errors' in roomToSave)) {
+							roomToSave.errors = {};
+						}
+						fields.forEach(field => roomToSave['errors'][field] = true)
+					}
+				}
+				
+				if ('isNew' in roomToSave) {
+					// lets update room with new id from dabase
+					//console.log(roomToSaveIndex);
+					//delete updatedRooms[roomToSaveIndex];
+					//updatedRooms[roomToSaveIndex]._id = result.data.data._id;
+				}
+			}
 			this.setState({roomList: {rooms: updatedRooms}});
 		}
 	}
@@ -159,6 +187,7 @@ class adminRooms extends React.Component {
 												<TextField
 													name="number"
 													type="text"
+													error={!!room?.errors?.number}
 													fullWidth={true}
 													label="Number:"
 													variant="outlined"
@@ -167,9 +196,10 @@ class adminRooms extends React.Component {
 											</TableCell>
 											<TableCell>
 												<TextField
-													name="number"
+													name="title"
 													type="text"
 													fullWidth={true}
+													error={!!room?.errors?.title}
 													variant="outlined"
 													label="Title:"
 													onChange={(e) => this.updateRoomHandler(e, room._id)}

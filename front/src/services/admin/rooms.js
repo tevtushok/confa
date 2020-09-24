@@ -14,7 +14,7 @@ export const getRooms = async () => {
 
 export const saveRooms = async (rooms) => {
 	try {
-		return await api.post('/rooms');
+		return await api.post('/rooms', {rooms: rooms});
 	}
 	catch (error) {
 		return {
