@@ -11,16 +11,42 @@ const listRooms = async (req, res) => {
 		});
 	}
 	catch (err) {
-		return handleResponse(req, res, 500, API_CODES.ERROR_ADMIN_GET_LIST_FAILURE, err, 'Error while reading rooms list');
+		return handleResponse(req, res, 500, API_CODES.ERROR_ADMIN_GET_ROOMS_FAILURE, err, 'Error while reading rooms list');
 	}
 };
 
 const saveRooms = async (req, res) => {
-    try {
-			return handleResponse(req, res, 200, null, null, 'Success');
+    const reqRoom = req.body.rooms;
+    // single item to save
+    if (reqRoom instanceof Object) {
+        const roomId = reqRoom._id;
+        let room = reqRoom;
+        if (roomId)
+            delete room._id;
+        // update
+        if (roomId) {
+            await Room.findOneAndUpdate({_id: roomId}, room, (err, savedRoom) => {
+                if (err) {
+                    // codeName: 'DuplicateKey',
+                    if (11000 === err.code) {
+                        const ret = {fields: err.keyValue}
+                        return handleResponse(req, res, 400, API_CODES.ERROR_ADMIN_SAVING_ROOMS_DUPLICATE, ret, 'Duplicate field');
+                    }
+                    return handleResponse(req, res, 400, API_CODES.ERROR_ADMIN_SAVING_ROOMS_FAILURE, err, 'Error while updating single room item in database');
+                }
+                return handleResponse(req, res, 200, API_CODES.SUCCESS, savedRoom, 'Saved');
+            })
+        }
+        // create
+        else {
+            await Room.create(room)
+            // return handleResponse(req, res, 200, API_CODES.SUCCESS, savedRoom, 'Saved');
+        }
+            
     }
-    catch (err) {
-        return handleResponse(req, res, 500, API_CODES.ERROR_ADMIN_SAVING_LIST_FAILURE, err, 'Error while saving list to database');
+    // invalid input params
+    else {
+        return handleResponse(req, res, 500, API_CODES.ERROR_ADMIN_SAVING_ROOMS_FAILURE, null, 'Invalid input parameters');
     }
 }
 
@@ -28,12 +54,11 @@ const deleteRoom = async (req, res) => {
     try {
         Room.findOneAndDelete({id: req.id }, function (err, docs) {
             if (err){
-                console.log(err)
                 return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while deleting room');
             }
             else{
                 console.log("Deleted User : ", room);
-                return handleResponse(req, res,200 , API_CODES.SUCCESS, room, 'OK');
+                return handleResponse(req, res,200 , API_CODES.SUCCESS, room, 'DELETED');
             }
         });
     }

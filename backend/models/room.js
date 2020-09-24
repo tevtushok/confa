@@ -10,7 +10,8 @@ const roomSchema = new mongoose.Schema({
     },
     number: {
         type: Number,
-        required: [true, 'Room number is required'],
+        min: 0,
+        message: 'Number is required',
 		unique: true,
     },
     status: {

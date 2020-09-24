@@ -17,6 +17,7 @@ const server = {
                     useNewUrlParser: true ,
                     useUnifiedTopology: true,
                     useCreateIndex: true,
+                    useFindAndModify: false,
                 },
                 console.log('connected to mongo')
             );
