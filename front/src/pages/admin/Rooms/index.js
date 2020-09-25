@@ -4,13 +4,15 @@ import {
 	Button,
 	IconButton,
 	TextField,
-	CircularProgress
+	CircularProgress,
+	FormControl,
 } from '@material-ui/core';
 
 import {
 	Delete as DeleteIcon,
 	LockOutlined as LockIcon,
 	LockOpenOutlined as LockOpenIcon,
+	Save as SaveIcon,
 } from '@material-ui/icons';
 
 import Table from '@material-ui/core/Table';
@@ -21,14 +23,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import { getRooms, saveRooms, deleteRoom } from '../../../services/admin/rooms'
+import {
+	getRooms as getRoomsApi,
+	saveRooms as saveRoomsApi,
+	deleteRoom as deleteRoomApi
+} from '../../../services/admin/rooms'
 
 import './index.scss';
 
 class adminRooms extends React.Component {
 	constructor(props) {
 		super(props);
-		this.saveRoomsHandler = this.saveRoomsHandler.bind(this);
+		this.saveRoomHandler = this.saveRoomHandler.bind(this);
 		this.addRoomHandler = this.addRoomHandler.bind(this);
 		this.removeRoomHandler = this.removeRoomHandler.bind(this);
 		this.toggleStatusHandler = this.toggleStatusHandler.bind(this);
@@ -42,8 +48,21 @@ class adminRooms extends React.Component {
 			errorMessage: '',
 		};
 	}
+
+	getNewRoomSceleton() {
+		const rooms = this.state.roomList.rooms;
+		return {
+			_id: rooms.length,
+			number: '',
+			title: '',
+			status: 0,
+			// isNew nean room not yet stored in database
+			isNew: true
+		}
+	}
+
 	async componentDidMount() {
-		const result = await getRooms();
+		const result = await getRoomsApi();
 		const rooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
 		if (result.error || !(Array.isArray(rooms))) {
 			this.setState({errorMessage: 'Data loading failure'})
@@ -58,69 +77,80 @@ class adminRooms extends React.Component {
 
 	toggleStatusHandler(roomId) {
 		let rooms = this.state.roomList.rooms;
-		let updatedRooms = rooms.map(room => {
-			if (room._id === roomId) {
-				room.status = room.status === 1 ? 0 : 1;
-				room.isChanged = true;
-			}
-			return room;
-		});
-		this.setState({roomList: {rooms: updatedRooms}});
-	}
+		let room = rooms.find(room => room._id === roomId)
 
+		if (room) {
+			const status = room.status === 1 ? 0 : 1;
+			const dbSave = room.isNew ? false : true;
+			this.saveRoom(roomId, {status: status}, dbSave);
+		}
+	}
+	async saveRoom (roomId = false, data = false, dbSave = false) {
+		if (!roomId || !data || Object !== data.constructor) {
+			return;
+		};
+		if ('_id' in data) {
+			delete data._id;
+		}
+		const keys = Object.keys(data);
+		if (keys.length === 0) {
+			return;
+		}
+
+		const rooms = this.state.roomList.rooms;
+		const room = rooms.find((room) => roomId === room._id);
+		const postRoom = {};
+		if (!room) return;
+		keys.forEach(key => {
+			if (key in room) {
+				postRoom[key] = data[key];
+			}
+		});
+		if (Object.keys(postRoom)) {
+			room.errors = {};
+			this.isChanged = true;
+			Object.assign(room, postRoom);
+			if (!room.isNew) {
+				postRoom._id = room._id;
+			}
+			if (dbSave) {
+				const result = await saveRoomsApi(postRoom);
+				if (result.errors) {
+					const errorFields = result.response.data.data?.fields;
+					console.log('fffffffffffffffff')
+						console.info(errorFields)
+					if (errorFields && 'object' === typeof errorFields) {
+						console.log('fffffffffffffffff')
+						console.info(errorFields)
+						const fields = Object.keys(result.response.data.data.fields);
+						fields.forEach(field => room.errors[field] = true)
+					}
+				}
+				else {
+					if (room.isNew) {
+						const newId = result.data.data?.room._id;
+						room._id = newId;
+						delete room.isNew;
+					}
+				}
+			}
+			this.setState({roomList: {rooms: rooms}});
+		}
+		
+	}
 	async updateRoomHandler(e, roomId) {
 		const fieldName = e.target.name;
 		if (fieldName === 'number' || fieldName === 'title') {
 			const value = e.target.value;
-			let roomToSave = false;
-			let roomToSaveIndex = false;
-			let updatedRooms = this.state.roomList.rooms.map((room, index) => {
-				if (room._id === roomId) {
-					room[fieldName] = value;
-					room.isChanged = true;
-					roomToSave = room;
-					roomToSaveIndex = index;
-				}
-				return room;
-			});
-			if (roomToSave) {
-				let postRoom = {};
-				postRoom[fieldName] = value;
-				if (!('isNew' in roomToSave)) {
-					postRoom._id = roomToSave._id;
-				}
-				const result = await saveRooms(postRoom);
-				if (result.error) {
-					if (1102 === result.response.data.code) {
-						const fields = Object.keys(result.response.data.data.fields);
-						if (!('errors' in roomToSave)) {
-							roomToSave.errors = {};
-						}
-						fields.forEach(field => roomToSave['errors'][field] = true)
-					}
-				}
-				
-				if ('isNew' in roomToSave) {
-					// lets update room with new id from dabase
-					//console.log(roomToSaveIndex);
-					//delete updatedRooms[roomToSaveIndex];
-					//updatedRooms[roomToSaveIndex]._id = result.data.data._id;
-				}
-			}
-			this.setState({roomList: {rooms: updatedRooms}});
+			const data = {[fieldName]: value};
+			this.saveRoom(roomId, data, true);
 		}
+
 	}
 
 	async addRoomHandler() {
 		const rooms = this.state.roomList.rooms;
-		rooms.push({
-			_id: rooms.length,
-			number: '',
-			title: '',
-			status: 0,
-			// _isNew only client side key
-			isNew: true
-		});
+		rooms.push(this.getNewRoomSceleton());
 		this.setState({roomList: {rooms: rooms}})
 	}
 
@@ -139,7 +169,7 @@ class adminRooms extends React.Component {
 		if (itemToDelete && !('isNew' in itemToDelete)) {
 			console.log('removeRoomHandlerremoveRoomHandlerremoveRoomHandler')
 			this.setState({isLoading: true})
-			const deleted = await deleteRoom(itemToDelete._id);
+			const deleted = await deleteRoomApi(itemToDelete._id);
 			this.setState({isLoading: false})
 
 			const errorMessage = 'error' in deleted ? 'Server Failure while removing' : '';
@@ -149,17 +179,14 @@ class adminRooms extends React.Component {
 		this.setState({roomList: {rooms: roomsFiltered}});
 	}
 
-	async saveRoomsHandler(e) {
-		console.log(e);
-		e.preventDefault();
-		const editedRooms = this.state.roomList.rooms.filter((room) => room.isNew || room.isChanged);
-		const result = await getRooms();
-		const savedRooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
-		if (result.error) {
-			this.setState({errorMessage: 'Data save failure'})
-		}
-		if (Array.isArray(savedRooms)) {
-			console.log(savedRooms)
+	async saveRoomHandler(roomId) {
+		const rooms = this.state.roomList.rooms;
+		const room = rooms.find(room => room._id === roomId);
+		if (room) {
+			let postRoom = {};
+			postRoom.title = room.title;
+			postRoom.number = room.number;
+			this.saveRoom(roomId, postRoom, true);
 		}
 	}
 
@@ -169,21 +196,20 @@ class adminRooms extends React.Component {
 			{true === this.state.isLoading && <CircularProgress color="secondary" /> }
 				<div className="component rooms">
 					<h2>Rooms Settings</h2>
-					<form onSubmit={this.saveRoomsHandler}>
 						<TableContainer component={Paper} className="rooms__listRoom">
 							<Table aria-label="rooms">
 								<TableHead>
 									<TableRow>
-										<TableCell aria-label="Number">Number</TableCell>
+										<TableCell aria-label="Number" className="rooms__cellNumber">Number</TableCell>
 										<TableCell aria-label="Title">Title</TableCell>
 										<TableCell aria-label="Status">Status</TableCell>
-										<TableCell aria-label=""></TableCell>
+										<TableCell aria-label="" className="rooms__cellActions"></TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 									{this.state.roomList.rooms.map((room, index) => (
 										<TableRow key={room._id}>
-											<TableCell>
+											<TableCell className="rooms__cellNumber">
 												<TextField
 													name="number"
 													type="text"
@@ -205,31 +231,39 @@ class adminRooms extends React.Component {
 													onChange={(e) => this.updateRoomHandler(e, room._id)}
 													defaultValue={room.title}/>
 											</TableCell>
-											<TableCell>
+											<TableCell className="rooms__cellActions">
+											<div className="rooms__actionsContainer">
 												{1 === room.status && (
-													<IconButton onClick={() => this.toggleStatusHandler(room._id)} edge="end" aria-label="lock">
+													<IconButton onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="lock">
 														<LockOpenIcon />
 													</IconButton>
 												)}
 												{1 !== room.status && (
-													<IconButton onClick={() => this.toggleStatusHandler(room._id)} edge="end" aria-label="unlock">
+													<IconButton onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="unlock">
 														<LockIcon />
 													</IconButton>
 												)}
+												{'isNew' in room && (
+														
+													<IconButton onClick={() => this.saveRoomHandler(room._id)} edge="end" aria-label="save">
+														<SaveIcon />
+													</IconButton>
+												)}
+												</div>
 						                  	</TableCell>
-						                  	<TableCell align="right">
-						                  		<IconButton onClick={() => this.removeRoomHandler(room._id)} edge="end" aria-label="delete">
-													<DeleteIcon />
-												</IconButton>
+						                  	<TableCell align="right">													
+													<IconButton onClick={() => this.removeRoomHandler(room._id)} edge="end" aria-label="delete">
+														<DeleteIcon />
+													</IconButton>
 						                  	</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
 							</Table>
 						</TableContainer>
-						<Button onClick={this.addRoomHandler} variant="contained" color="primary">New room</Button>
-						<Button variant="contained" type="submit" color="secondary">Save</Button>
-					</form>
+						<FormControl>
+                        	<Button onClick={this.addRoomHandler} variant="contained" color="secondary" fullWidth type="button" disabled={this.state.isLoading}>New room</Button>
+                    	</FormControl>
 				</div>
 			</Container>
 		);

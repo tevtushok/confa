@@ -1,3 +1,18 @@
 .rooms__listRoom {
-	margin-bottom: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.rooms__cellNumber {
+	width: 100px;
+}
+.rooms__actionsContainer {
+	display: flex;
+	justify-content: flex-end;
+}
+.rooms__cellActions {
+	width: 100px;
+}
+
+.rooms .MuiFormControl-root {
+	display: block;
 }
