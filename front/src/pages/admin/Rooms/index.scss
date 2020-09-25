@@ -16,3 +16,10 @@
 .rooms .MuiFormControl-root {
 	display: block;
 }
+
+.rooms__isLoading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-40px, -40px);
+}

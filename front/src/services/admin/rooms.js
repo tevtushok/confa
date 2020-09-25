@@ -26,8 +26,8 @@ export const saveRooms = async (rooms) => {
 
 export const deleteRoom = async (id) => {
 	try {
-		console.log('axios deleteRoom')
-		return await api.delete('/rooms', {id: id});
+		console.log('axios deleteRoom width id: ' + id)
+		return await api.delete(`/rooms/${id}`);
 	}
 	catch (error) {
 		return {

@@ -45,10 +45,10 @@ class adminRooms extends React.Component {
 				rooms: []
 			},
 			isLoading: false,
+			isLoaded: false,
 			errorMessage: '',
 		};
 	}
-
 	getNewRoomSceleton() {
 		const rooms = this.state.roomList.rooms;
 		return {
@@ -62,7 +62,9 @@ class adminRooms extends React.Component {
 	}
 
 	async componentDidMount() {
+		this.setState({isLoading: true});
 		const result = await getRoomsApi();
+		this.setState({isLoading: false, isLoaded: true});
 		const rooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
 		if (result.error || !(Array.isArray(rooms))) {
 			this.setState({errorMessage: 'Data loading failure'})
@@ -76,17 +78,30 @@ class adminRooms extends React.Component {
 	}
 
 	toggleStatusHandler(roomId) {
-		let rooms = this.state.roomList.rooms;
-		let room = rooms.find(room => room._id === roomId)
-
-		if (room) {
-			const status = room.status === 1 ? 0 : 1;
-			const dbSave = room.isNew ? false : true;
-			this.saveRoom(roomId, {status: status}, dbSave);
+		if (!roomId) {
+			console.error('roomId is required');
+			return;
 		}
+		let rooms = this.state.roomList.rooms;
+		let room = rooms.find(room => room._id === roomId);
+
+		if (!room) {
+			console.error(`Room with id:${roomId} doesn't exist`);
+			return;
+		}
+
+		const status = room.status === 1 ? 0 : 1;
+		const dbSave = room.isNew ? false : true;
+		this.saveRoom(roomId, {status: status}, dbSave);
 	}
-	async saveRoom (roomId = false, data = false, dbSave = false) {
-		if (!roomId || !data || Object !== data.constructor) {
+	async saveRoom (roomId, data, dbSave = false) {
+		if (!roomId) {
+			console.error('roomId is required argument');
+			return;
+		}
+
+		if (Object !== data.constructor) {
+			console.error('The data should be Object instance');
 			return;
 		};
 		if ('_id' in data) {
@@ -94,39 +109,47 @@ class adminRooms extends React.Component {
 		}
 		const keys = Object.keys(data);
 		if (keys.length === 0) {
+			console.error('The data is empty');
 			return;
 		}
 
 		const rooms = this.state.roomList.rooms;
 		const room = rooms.find((room) => roomId === room._id);
 		const postRoom = {};
-		if (!room) return;
+		const postFields = [];
+		if (!room) {
+			console.error(`Room with id:${roomId} doesn't exist`);
+			return;
+		}
 		keys.forEach(key => {
 			if (key in room) {
 				postRoom[key] = data[key];
+				postFields.push(key);
 			}
 		});
 		if (Object.keys(postRoom)) {
-			room.errors = {};
+			if (!room.errors)
+				room.errors = {};
 			this.isChanged = true;
 			Object.assign(room, postRoom);
 			if (!room.isNew) {
 				postRoom._id = room._id;
 			}
 			if (dbSave) {
+				this.setState({isLoading: true});
 				const result = await saveRoomsApi(postRoom);
-				if (result.errors) {
+				this.setState({isLoading: false});
+				if (result.error) {
 					const errorFields = result.response.data.data?.fields;
-					console.log('fffffffffffffffff')
-						console.info(errorFields)
 					if (errorFields && 'object' === typeof errorFields) {
-						console.log('fffffffffffffffff')
-						console.info(errorFields)
-						const fields = Object.keys(result.response.data.data.fields);
+						const fields = Object.keys(errorFields);
+						console.log(fields);
 						fields.forEach(field => room.errors[field] = true)
 					}
 				}
 				else {
+					// all posted field was validate on server. clean this
+					postFields.forEach(field => delete room.errors[field])
 					if (room.isNew) {
 						const newId = result.data.data?.room._id;
 						room._id = newId;
@@ -136,6 +159,9 @@ class adminRooms extends React.Component {
 			}
 			this.setState({roomList: {rooms: rooms}});
 		}
+		else {
+			console.info('nothing to save');
+		}
 		
 	}
 	async updateRoomHandler(e, roomId) {
@@ -144,6 +170,10 @@ class adminRooms extends React.Component {
 			const value = e.target.value;
 			const data = {[fieldName]: value};
 			this.saveRoom(roomId, data, true);
+		}
+		else {
+			console.error('invalid target field')
+			return;
 		}
 
 	}
@@ -164,19 +194,27 @@ class adminRooms extends React.Component {
 			}
 			return !isNeedle;
 		});
-		// deleteRoom
-		console.log('removeRoomHandler', itemToDelete)
-		if (itemToDelete && !('isNew' in itemToDelete)) {
-			console.log('removeRoomHandlerremoveRoomHandlerremoveRoomHandler')
-			this.setState({isLoading: true})
-			const deleted = await deleteRoomApi(itemToDelete._id);
-			this.setState({isLoading: false})
-
-			const errorMessage = 'error' in deleted ? 'Server Failure while removing' : '';
-			this.setState({errorMessage: errorMessage})
+		if (itemToDelete) {
+			if (('isNew' in itemToDelete)) {// deleting from client only
+				this.setState({roomList: {rooms: roomsFiltered}});
+			}
+			else {// deleting from client and server
+				this.setState({isLoading: true});
+				let newState = {errorMessage: ''};
+				const deleted = await deleteRoomApi(itemToDelete._id);
+				this.setState({isLoading: false});
+				if (deleted.error) {
+					// room is removed from db before request
+					if (1104 === deleted.response.data.code) {
+						newState.roomList = {rooms: roomsFiltered};
+					}
+					else {
+						newState.errorMessage = 'Server Failure while removing';
+					}
+				}
+				this.setState(newState);
+			}
 		}
-
-		this.setState({roomList: {rooms: roomsFiltered}});
 	}
 
 	async saveRoomHandler(roomId) {
@@ -188,13 +226,17 @@ class adminRooms extends React.Component {
 			postRoom.number = room.number;
 			this.saveRoom(roomId, postRoom, true);
 		}
+		else {
+			console.error(`Can't find room with ${roomId} for saving`)
+			return;
+		}
 	}
 
 	render() {
 		return (
 			<Container maxWidth="md">
-			{true === this.state.isLoading && <CircularProgress color="secondary" /> }
 				<div className="component rooms">
+				{true === this.state.isLoading && <div className="rooms__isLoading"><CircularProgress className="" color="secondary" /></div> }
 					<h2>Rooms Settings</h2>
 						<TableContainer component={Paper} className="rooms__listRoom">
 							<Table aria-label="rooms">
@@ -261,9 +303,11 @@ class adminRooms extends React.Component {
 								</TableBody>
 							</Table>
 						</TableContainer>
-						<FormControl>
-                        	<Button onClick={this.addRoomHandler} variant="contained" color="secondary" fullWidth type="button" disabled={this.state.isLoading}>New room</Button>
-                    	</FormControl>
+						{this.state.isLoaded && (
+							<FormControl>
+                        		<Button onClick={this.addRoomHandler} variant="contained" color="secondary" fullWidth type="button" disabled={this.state.isLoading}>New room</Button>
+                    		</FormControl>
+						)}
 				</div>
 			</Container>
 		);
