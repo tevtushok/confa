@@ -36,3 +36,30 @@ export const deleteRoom = async (id) => {
 		}
 	}
 }
+
+export const validateInputFields = (fields, data = false) => {
+	console.log(fields)
+    const fieldNames = 'string' === typeof fields ? [fields] : fields;
+    if (Array.isArray(fieldNames)) {
+        const errors = {};
+        fieldNames.forEach(field => {
+            if ('title' === field && !validateRoomTitle(data.title)) {
+                errors.title = 'Atleast 3 characaters required';
+            }
+            if ('number' === field && !validateRoomNumber(data.number)) {
+                errors.number = 'Invalid number';
+            }
+        });
+        
+        return Object.keys(errors).length ? errors : true;
+    }
+}
+
+function validateRoomTitle(title = false) {
+  return 'string' === typeof title && title.length >= 3;
+}
+
+function validateRoomNumber(number = false) {
+  console.log('number', number)
+  return (!isNaN(number) && number !== '');
+}
