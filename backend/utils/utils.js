@@ -66,9 +66,20 @@ function sleep(time, cb = false) {
         cb();
 }
 
+function validateRoomTitle(title = false) {
+  return 'string' === typeof title && title.length >= 3;
+}
+
+function validateRoomNumber(number = false) {
+  console.log('number', number)
+  return (!isNaN(number) && number !== '');
+}
+
 
 module.exports = {
     handleResponse,
     errorHandler,
-    sleep
+    sleep,
+    validateRoomTitle,
+    validateRoomNumber,
 }

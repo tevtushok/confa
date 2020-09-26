@@ -1,5 +1,5 @@
 const Room = require('../../models/room');
-const { handleResponse } = require('../../utils/utils');
+const { handleResponse, validateRoomTitle, validateRoomNumber } = require('../../utils/utils');
 const API_CODES = require('../../utils/apiCodes');
 
 
@@ -33,6 +33,14 @@ const saveRooms = async (req, res) => {
         delete room._id;
     // update
     if (roomId) {
+        // validate only incoming fields
+        const validationRes = validateInputFields(Object.keys(room), room);
+        if (true !== validationRes) {
+            return handleResponse(req, res, 400,
+                API_CODES.ERROR_ADMIN_SAVING_ROOMS_INPUT, 
+                {fields: validationRes}, 'Fields validation error'
+            );
+        }
         await Room.findOneAndUpdate({_id: roomId}, room)
         .then(savedRoom => {
             return handleResponse(req, res, 200, API_CODES.SUCCESS, savedRoom,'Saved');
@@ -54,18 +62,11 @@ const saveRooms = async (req, res) => {
     }
     // create
     else {
-        let fields = {};
-
-        if (!reqRoom.title || reqRoom.title.length < 3) {
-            fields.title = reqRoom.title;
-        }
-        if (!reqRoom.number || isNaN(reqRoom.number)) {
-            fields.number = reqRoom.number;
-        }
-        if (Object.keys(fields).length) {
+        const validationRes = validateInputFields(Object.keys(reqRoom), reqRoom);
+        if (true !== validationRes) {
             return handleResponse(req, res, 400,
                 API_CODES.ERROR_ADMIN_SAVING_ROOMS_INPUT, 
-                {fields: fields}, 'Error while updating single room item in db'
+                {fields: validationRes}, 'Fields validation error'
             );
         }
 
@@ -114,6 +115,23 @@ const deleteRoom = async (req, res) => {
             null, 'Error while deleting room'
         );
     });
+}
+
+function validateInputFields(fields, data = false) {
+    const fieldNames = 'string' === typeof fields ? [fields] : fields;
+    if (Array.isArray(fieldNames)) {
+        const errors = {};
+        fieldNames.forEach(field => {
+            if ('title' === field && !validateRoomTitle(data.title)) {
+                errors.title = 'Atleast 3 characaters required';
+            }
+            if ('number' === field && !validateRoomNumber(data.number)) {
+                errors.number = 'Invalid number';
+            }
+        });
+        
+        return Object.keys(errors).length ? errors : true;
+    }
 }
 
 module.exports = {
