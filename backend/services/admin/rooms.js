@@ -98,7 +98,6 @@ const saveRooms = async (req, res) => {
 }
 
 const deleteRoom = async (req, res) => {
-    console.log(req.params);
     id = req.params.id || false;
     if (!id) {
         return handleResponse(req, res, 400, API_CODES.ERROR_ADMIN_DELETING_ROOMS,
