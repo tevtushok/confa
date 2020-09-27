@@ -105,10 +105,11 @@ class adminRooms extends React.Component {
 		this.setState({isLoading: true});
 		const result = await getRoomsApi();
 		this.setState({isLoading: false, isLoaded: true});
-		const rooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
+		const rooms = result.data?.data?.rooms ? result.data.data.rooms : [];
 		if (result.error || !(Array.isArray(rooms))) {
 			const errorMessage = 'Data loading failure';
 			this.setErrorMessage(errorMessage);
+			return false;
 		}
 		this.setState({
 			errorMessage: '',
@@ -340,7 +341,7 @@ class adminRooms extends React.Component {
 			</div>
 			<div id="rooms__errorMessage">
 				{this.state.errorMessage && (
-					<Alert severity="warning">{this.state.errorMessage}</Alert>
+					<Alert className="rooms__alert" severity="warning">{this.state.errorMessage}</Alert>
 				)}
 			</div>
 			<TableContainer component={Paper} className="rooms__listRoom">
