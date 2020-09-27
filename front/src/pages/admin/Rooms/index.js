@@ -90,6 +90,13 @@ class adminRooms extends React.Component {
     	}
 	}
 
+	setErrorMessage(msg, scroll = true) {
+		this.setState({errorMessage: msg});
+		if (scroll) {
+			this.scrollTop();
+		}
+	}
+
 	async componentDidMount() {
 		await this.loadRooms();
 	}
@@ -99,10 +106,9 @@ class adminRooms extends React.Component {
 		const result = await getRoomsApi();
 		this.setState({isLoading: false, isLoaded: true});
 		const rooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
-		let errorMessage = '';
 		if (result.error || !(Array.isArray(rooms))) {
-			this.setState({errorMessage: 'Data loading failure'})
-			errorMessage = 'Data loading failure';
+			const errorMessage = 'Data loading failure';
+			this.setErrorMessage(errorMessage);
 		}
 		this.setState({
 			errorMessage: '',
@@ -125,23 +131,22 @@ class adminRooms extends React.Component {
 
 		const status = room.status === 1 ? 0 : 1;
 		room['status'] = status;
-		let res = false;
 		if (room.isNew) {
 			try {
-				const createRes = await this.createNewRoom(room, {status: status});
+				await this.createNewRoom(room, {status: status});
 			}
 			catch (err) {
 				console.error('toggleStatusHandler->createNewRoom', err)
-				this.setState({errorMessage: err.message})
+				this.setErrorMessage(err.message)
 			}
 			
 		}
 		else {
 			try{
-				const updateRes = await this.updateRoom(room, {status: status});
+				await this.updateRoom(room, {status: status});
 			}
 			catch (err) {
-				this.setState({errorMessage: err.message})
+				this.setErrorMessage(err.message)
 				console.error('toggleStatusHandler->updateRoom', err)
 			}
 		}
@@ -167,20 +172,20 @@ class adminRooms extends React.Component {
 		this.inputTimeoutx = setTimeout(async () => {
 			if (room.isNew) {
 				try{
-					const createResp = await this.createNewRoom(room);
+					await this.createNewRoom(room);
 				}
 				catch(err) {
-					this.setState({errorMessage: err.message})
+					this.setErrorMessage(err.message)
 					console.log('updateRoomHandler-> createNewRoom', err)
 				}
 			}
 			else {
 				
 				try{
-					const updateResp = await this.updateRoom(room, data);
+					await this.updateRoom(room, data);
 				}
 				catch(err) {
-					this.setState({errorMessage: err.message})
+					this.setErrorMessage(err.message)
 					console.log('updateRoomHandler-> updateRoom', err)
 				}
 			}
@@ -219,7 +224,7 @@ class adminRooms extends React.Component {
 			}
 		}
 		catch (err) {
-			this.setState({errorMessage: err.message});
+			this.setErrorMessage(err.message)
 		}
 	}
 
@@ -310,10 +315,9 @@ class adminRooms extends React.Component {
 			}
 			// ROOM_NOT_EXISTS
 			if (1105 === result.response.data.code) {
-				console.error('this room does not exists on database');
-				this.setState({errorMessage: 'This room does not exists on database'});
+				console.error('This room does not exists on database');
+				this.setErrorMessage('This room does not exists on database')
 				this.setState({isLoading: true});
-				this.scrollTop();
 				setTimeout(() => {
 					this.loadRooms();
 				}, 2000);
@@ -354,6 +358,7 @@ class adminRooms extends React.Component {
 				<TableRow key={room._id}>
 				<TableCell className="rooms__cellNumber">
 				<TextField
+				disabled={this.state.isLoading}
 				name="number"
 				type="text"
 				error={!!room?.errors?.number}
@@ -365,6 +370,7 @@ class adminRooms extends React.Component {
 				</TableCell>
 				<TableCell>
 				<TextField
+				disabled={this.state.isLoading}
 				name="title"
 				type="text"
 				fullWidth={true}
@@ -377,20 +383,24 @@ class adminRooms extends React.Component {
 				<TableCell className="rooms__cellActions">
 				<div className="rooms__actionsContainer">
 				{1 === room.status && (
-					<IconButton onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="lock">
-					<LockOpenIcon />
+					<IconButton
+						onClick={(e) => this.toggleStatusHandler(room._id)}
+						disabled={this.state.isLoading} edge="end" aria-label="lock">
+						<LockOpenIcon />
 					</IconButton>
 					)}
 				{1 !== room.status && (
-					<IconButton onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="unlock">
-					<LockIcon />
+					<IconButton disabled={this.state.isLoading}
+						onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="unlock">
+						<LockIcon />
 					</IconButton>
 					)}
 				</div>
 				</TableCell>
 				<TableCell align="right">													
-				<IconButton onClick={() => this.removeRoomHandler(room._id)} edge="end" aria-label="delete">
-				<DeleteIcon />
+				<IconButton disabled={this.state.isLoading} 
+					onClick={() => this.removeRoomHandler(room._id)} edge="end" aria-label="delete">
+					<DeleteIcon />
 				</IconButton>
 				</TableCell>
 				</TableRow>
