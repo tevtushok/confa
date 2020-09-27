@@ -23,4 +23,17 @@ const roomSchema = new mongoose.Schema({
     }
 })
 
+roomSchema.statics.getAvailable = function (cb) {
+    this.find({status: 1})
+    .exec(function (err, rooms) {
+        if ('function' === typeof cb) {
+            if (err) {
+                return cb(err)
+            }
+            return cb(null, rooms);
+        }
+        else throw new Error('Missed callback function')
+    });
+};
+
 module.exports = mongoose.model('Room', roomSchema)
