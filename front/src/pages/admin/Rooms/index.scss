@@ -2,6 +2,16 @@
 	margin-bottom: 1rem;
 }
 
+.rooms__header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 1em;
+}
+.rooms__header h2 {
+	display: inline-flex;
+	margin-bottom: 0;
+}
 .rooms__cellNumber {
 	width: 100px;
 }

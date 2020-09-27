@@ -8,10 +8,13 @@ import {
 	FormControl,
 } from '@material-ui/core';
 
+import Alert from '@material-ui/lab/Alert';
+
 import {
 	Delete as DeleteIcon,
 	LockOutlined as LockIcon,
 	LockOpenOutlined as LockOpenIcon,
+	Refresh as RefreshIcon
 } from '@material-ui/icons';
 
 import Table from '@material-ui/core/Table';
@@ -37,9 +40,10 @@ class adminRooms extends React.Component {
 		this.addRoomHandler = this.addRoomHandler.bind(this);
 		this.removeRoomHandler = this.removeRoomHandler.bind(this);
 		this.toggleStatusHandler = this.toggleStatusHandler.bind(this);
+		this.loadRooms = this.loadRooms.bind(this);
 
 		this.inputTimeoutx = null;
-		this.inputSavingDelay = 300;
+		this.inputSavingDelay = 500;
 		this.fields = {
 			number: {
 				required: true,
@@ -79,20 +83,31 @@ class adminRooms extends React.Component {
 		return Object.keys(this.fields).filter(field => true === this.fields[field].required);
 	}
 
+	scrollTop() {
+    	const element = document.querySelector('.rooms')
+    	if (element) {
+    		element.scrollIntoView({behavior: "smooth"});
+    	}
+	}
+
 	async componentDidMount() {
+		await this.loadRooms();
+	}
+
+	async loadRooms() {
 		this.setState({isLoading: true});
 		const result = await getRoomsApi();
 		this.setState({isLoading: false, isLoaded: true});
 		const rooms = result.data?.data?.rooms ? result.data.data.rooms : undefined;
+		let errorMessage = '';
 		if (result.error || !(Array.isArray(rooms))) {
 			this.setState({errorMessage: 'Data loading failure'})
+			errorMessage = 'Data loading failure';
 		}
-		else {
-			this.setState({
-				errorMessage: '',
-				roomList:{rooms: rooms}
-			});
-		}
+		this.setState({
+			errorMessage: '',
+			roomList:{rooms: rooms}
+		});
 	}
 
 	async toggleStatusHandler(roomId) {
@@ -117,6 +132,7 @@ class adminRooms extends React.Component {
 			}
 			catch (err) {
 				console.error('toggleStatusHandler->createNewRoom', err)
+				this.setState({errorMessage: err.message})
 			}
 			
 		}
@@ -125,6 +141,7 @@ class adminRooms extends React.Component {
 				const updateRes = await this.updateRoom(room, {status: status});
 			}
 			catch (err) {
+				this.setState({errorMessage: err.message})
 				console.error('toggleStatusHandler->updateRoom', err)
 			}
 		}
@@ -141,11 +158,6 @@ class adminRooms extends React.Component {
 		const data = {[fieldName]: value};
 		const rooms = this.state.roomList.rooms;
 		const room = rooms.find(room => room._id === roomId);
-		const validationRes = validateInputFields(fieldName, data);
-		if (true !== validationRes) {
-			room.errors = validationRes;
-			return false;
-		}
 		room[fieldName] = value;
 		clearTimeout(this.inputTimeoutx);
 		if (!room) {
@@ -158,6 +170,7 @@ class adminRooms extends React.Component {
 					const createResp = await this.createNewRoom(room);
 				}
 				catch(err) {
+					this.setState({errorMessage: err.message})
 					console.log('updateRoomHandler-> createNewRoom', err)
 				}
 			}
@@ -167,9 +180,11 @@ class adminRooms extends React.Component {
 					const updateResp = await this.updateRoom(room, data);
 				}
 				catch(err) {
+					this.setState({errorMessage: err.message})
 					console.log('updateRoomHandler-> updateRoom', err)
 				}
 			}
+			this.setState({roomList: {rooms: rooms}})
 			
 		}, this.inputSavingDelay);
 		
@@ -183,21 +198,29 @@ class adminRooms extends React.Component {
 
 	async removeRoomHandler(roomId) {
 		const rooms = this.state.roomList.rooms;
-		let needleRoomIndex = false;
-		for (let i = 0; i < rooms.length; i++) {
-			if (roomId === rooms[i]['_id']) {
-				needleRoomIndex = i;
-				break;
+		let needleRoom = false;
+		let roomsFiltered = rooms.filter(room => {
+			if (room._id === roomId) {
+				needleRoom = room;
+				return false;
 			}
-		}
-		if (!needleRoomIndex) {
+			return true;
+		});
+
+		if (!needleRoom) {
 			console.error('Nothing to delete');
 			return;
 		}
-		const room = rooms[needleRoomIndex];
 
-		const deletedResp = this.deleteRoom(room);
-		this.setState({roomList: {rooms: rooms}});
+		try {
+			const deletedRes = this.deleteRoom(needleRoom);
+			if (deletedRes) {
+				this.setState({roomList: {rooms: roomsFiltered}});
+			}
+		}
+		catch (err) {
+			this.setState({errorMessage: err.message});
+		}
 	}
 
 	async deleteRoom(room) {
@@ -221,10 +244,11 @@ class adminRooms extends React.Component {
 
 	async createNewRoom(room) {
 		if (!room.isNew) {
-			throw new Error('this room in database')
+			throw new Error('This room in database')
 		}
 		const requiredFields = this.getRequiredFields();
-		const validationRes = validateInputFields(requiredFields);
+		room.errors = {}
+		const validationRes = validateInputFields(requiredFields, room);
 		if (true !== validationRes) {
 			room.errors = validationRes;
 			return room;
@@ -284,6 +308,16 @@ class adminRooms extends React.Component {
 				if (!room.errors) room.errors = {};
 				respErrorFieldNames.forEach(field => room.errors[field] = respErrorFields[field])
 			}
+			// ROOM_NOT_EXISTS
+			if (1105 === result.response.data.code) {
+				console.error('this room does not exists on database');
+				this.setState({errorMessage: 'This room does not exists on database'});
+				this.setState({isLoading: true});
+				this.scrollTop();
+				setTimeout(() => {
+					this.loadRooms();
+				}, 2000);
+			}
 		}
 		return room;
 	}
@@ -291,9 +325,20 @@ class adminRooms extends React.Component {
 	render() {
 		return (
 			<Container maxWidth="md">
+
 			<div className="component rooms">
 			{true === this.state.isLoading && <div className="rooms__isLoading"><CircularProgress className="" color="secondary" /></div> }
-			<h2>Rooms Settings</h2>
+			<div className="rooms__header">
+				<h2>Rooms Settings</h2>
+				<IconButton onClick={this.loadRooms} edge="end" aria-label="unlock">
+					<RefreshIcon />
+				</IconButton>
+			</div>
+			<div id="rooms__errorMessage">
+				{this.state.errorMessage && (
+					<Alert severity="warning">{this.state.errorMessage}</Alert>
+				)}
+			</div>
 			<TableContainer component={Paper} className="rooms__listRoom">
 			<Table aria-label="rooms">
 			<TableHead>

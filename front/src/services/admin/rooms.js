@@ -38,7 +38,6 @@ export const deleteRoom = async (id) => {
 }
 
 export const validateInputFields = (fields, data = false) => {
-	console.log(fields)
     const fieldNames = 'string' === typeof fields ? [fields] : fields;
     if (Array.isArray(fieldNames)) {
         const errors = {};

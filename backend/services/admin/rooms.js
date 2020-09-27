@@ -43,7 +43,12 @@ const saveRooms = async (req, res) => {
         }
         await Room.findOneAndUpdate({_id: roomId}, room)
         .then(savedRoom => {
-            return handleResponse(req, res, 200, API_CODES.SUCCESS, savedRoom,'Saved');
+            if (savedRoom) {
+                return handleResponse(req, res, 200, API_CODES.SUCCESS, savedRoom,'Saved');
+            }
+            else {
+                return handleResponse(req, res, 400, API_CODES.ERROR_ADMIN_ROOM_NOT_EXISTS, null,'Room does not exists');
+            }
         })
         .catch(err => {
             // mongoose codeName: 'DuplicateKey'
