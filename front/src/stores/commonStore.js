@@ -5,6 +5,14 @@ class CommonStore {
 	@action setAppLoaded() {
 		this.appLoaded = true;
 	}
+	
+	@observable defServerError = false;
+	@action setServerError(message) {
+		this.serverError = message;
+	}
+	getServerError() {
+		return this.defServerError;
+	}
 
 }
 

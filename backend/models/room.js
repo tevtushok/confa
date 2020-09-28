@@ -16,15 +16,14 @@ const roomSchema = new mongoose.Schema({
 		unique: true,
     },
     status: {
-        type: Number,
-        // 1 available
-        // 0 not available
-        default: 1
+        type: String,
+        enum: ['ACTIVE','CLOSED'],
+        default: 'CLOSED'
     }
 })
 
 roomSchema.statics.getAvailable = function (cb) {
-    this.find({status: 1})
+    this.find({status: 'ACTIVE'})
     .exec(function (err, rooms) {
         if ('function' === typeof cb) {
             if (err) {

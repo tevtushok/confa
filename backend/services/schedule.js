@@ -17,6 +17,7 @@ const listRooms = async (req, res) => {
 					events: []
 				}
 				Event.getRoomEventsByInterval(roomId, today, today, events => {
+					console.log(typeof events, events)
 					roomData.events = events;
 				});
 				ret.push(roomData);

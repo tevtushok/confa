@@ -74,7 +74,7 @@ class adminRooms extends React.Component {
 			_id: rooms.length,
 			number: '',
 			title: '',
-			status: 0,
+			status: 'CLOSED',
 			// isNew nean room not yet stored in database
 			isNew: true
 		}
@@ -130,7 +130,7 @@ class adminRooms extends React.Component {
 			return;
 		}
 
-		const status = room.status === 1 ? 0 : 1;
+		const status = room.status === 'CLOSED' ? 'ACTIVE' : 'CLOSED';
 		room['status'] = status;
 		if (room.isNew) {
 			try {
@@ -383,14 +383,14 @@ class adminRooms extends React.Component {
 				</TableCell>
 				<TableCell className="rooms__cellActions">
 				<div className="rooms__actionsContainer">
-				{1 === room.status && (
+				{'ACTIVE' === room.status && (
 					<IconButton
 						onClick={(e) => this.toggleStatusHandler(room._id)}
 						disabled={this.state.isLoading} edge="end" aria-label="lock">
 						<LockOpenIcon />
 					</IconButton>
 					)}
-				{1 !== room.status && (
+				{'ACTIVE' !== room.status && (
 					<IconButton disabled={this.state.isLoading}
 						onClick={(e) => this.toggleStatusHandler(room._id)} edge="end" aria-label="unlock">
 						<LockIcon />

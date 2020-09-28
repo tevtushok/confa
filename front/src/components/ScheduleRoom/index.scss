@@ -1,0 +1,77 @@
+.scheduleRoom__wrapper {
+    color: #c3c3c3;
+    background-color: #282828;
+    min-height: 14.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.scheduleRoom__info-wrapper {
+    display: flex;
+    flex:1;
+    padding: 1em 1em 1em .6em;
+}
+
+.scheduleRoom__status-bar {
+    width: 20px;
+    margin-right: 1rem;
+}
+.available .room_status-bar{
+    background-color: #5C7829;
+}
+.occupied .room_status-bar{
+    background-color: #CC3333;
+}
+.pending .room_status-bar {
+    background-color: #B7B327;
+}
+
+.scheduleRoom__timeblock {
+    border:0;
+    border-radius: 0;
+    color: #fff;
+    background-color: #333;
+    min-width: 12.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: 3px solid #333;
+    font-size: .8em;
+    padding: .5em;
+    cursor: pointer;
+    transition: color .3s linear;
+}
+.scheduleRoom__timeblocks .available{
+    border-bottom-color: #5C7829;
+}
+.scheduleRoom__timeblocks .unavailable{
+    border-bottom-color:  rgb(192, 56, 56)
+}
+.scheduleRoom__timeblock.from{
+    color: #000;
+    background-color: #fff;
+}
+
+.scheduleRoom__timeblocks .prev img,
+.scheduleRoom__timeblocks .next img {
+    height: 1em;
+}
+
+.scheduleRoom__timeblock:last-child {
+    border-right-color: #000;
+}
+
+.scheduleRoom__info-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+.scheduleRoom__buttons-wrapper {
+    flex:1;
+    justify-content: left;
+    display: flex;
+    align-items: flex-end;
+}

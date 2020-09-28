@@ -12,6 +12,7 @@ import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Schedule from './pages/Schedule'
 import Page404 from './pages/Page404'
+import ServerError from './pages/ServerError'
 
 import adminRooms from './pages/admin/Rooms'
 
@@ -36,7 +37,9 @@ class App extends React.Component {
             this.props.userStore.setUser(auth.data.data.user);
         }
         else {
-            this.props.userStore.unsetUser();
+            if ((500 === auth.response.status)) {
+                this.props.commonStore.setServerError('Internal Server Error')
+            }
         }
         this.props.commonStore.setAppLoaded();
     }
@@ -46,6 +49,23 @@ class App extends React.Component {
         const userRole = this.props.userStore.userRole;
         if (!this.props.commonStore.appLoaded) {
             return (<Loader/>);
+        }
+
+        if (this.props.commonStore.getServerError()) {
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline/>
+                    <div className="app">
+                        <Header/>
+                        <main>
+                            <Container maxWidth="lg">
+                                <ServerError message={this.props.commonStore.getServerError}/>
+                            </Container>
+                        </main>
+                        <Footer/>
+                    </div>  
+                </ThemeProvider>
+            );
         }
 
         return (
