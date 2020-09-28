@@ -10,7 +10,7 @@ export default class ServerError extends React.Component {
 	}
 	render() {
 		return (
-			<div className="serverError component">
+			<div className="serverError page">
 				<center>
 					<h2>Hmm. We’re having trouble loading that application</h2>
 					<div>

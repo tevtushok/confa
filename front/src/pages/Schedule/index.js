@@ -50,8 +50,8 @@ class Shedule extends BaseComponent {
   render() {
     const rooms = this.state.rooms;
     return (
-      <div className="schedule component">
-        <h3>Shedule</h3>
+      <div className="schedule page">
+        <h2>Shedule</h2>
         <div id="SheduleMessages">
           {this.state.errorMessage && (
             <Alert className="rooms__alert" severity="error">{this.state.errorMessage}</Alert>
@@ -60,7 +60,7 @@ class Shedule extends BaseComponent {
         <Grid container spacing={3} className="schedule__rooms">
         {this.state.rooms.map((room, index) => (
           <Grid key={room.room._id} item lg={3} md={4} sm={6} xs={12}>
-            <ScheduleRoom room={room}/>
+            <ScheduleRoom data={room}/>
           </Grid>
         ))}
         </Grid>

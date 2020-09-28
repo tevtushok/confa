@@ -96,7 +96,7 @@ class Login extends React.Component {
 		const { serviceMsg } = this.state;
 		return (
 			<Container maxWidth="sm">
-				<div className="login component">
+				<div className="login page">
 					<h2 className="text-center">Login page</h2>
 					<form onSubmit={this.onSubmit} noValidate>
 						<FormControl className="login__form-control">

@@ -65,7 +65,7 @@ export default function Resister(props) {
 
     return (
         <Container maxWidth="sm">
-            <div className="register component">
+            <div className="register page">
                 <h2 className="text-center">Register new user</h2>
             
                 <form onSubmit={handleSubmit(onSubmit)}>
