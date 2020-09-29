@@ -1,7 +1,10 @@
 import React from 'react'
+import { useTheme } from '@material-ui/core/styles';
 
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import {
+    ArrowLeft as ArrowLeftIcon,
+    ArrowRight as ArrowRightIcon,
+} from "@material-ui/icons";
 
 import {
     Container,
@@ -9,6 +12,14 @@ import {
     IconButton,
     ButtonGroup,
 } from '@material-ui/core';
+
+import './index.scss'
+
+function StatusBar(props) {
+    const theme = useTheme();
+    console.log(theme)
+    return <div className={`scheduleRoom__status-bar ${props.status}`}></div>
+}
 
 export default class ScheduleRoom extends React.Component {
 	constructor(props) {
@@ -21,7 +32,9 @@ export default class ScheduleRoom extends React.Component {
         }
         this.initStatus();
 	}
-
+    isReservedByMe() {
+        return !!Math.round(Math.random(0,1));
+    }
     initStatus() {
         let statusNames = Object.keys(this.statuses);
         this.status = statusNames[Math.floor(Math.random()*statusNames.length)];
@@ -37,42 +50,50 @@ export default class ScheduleRoom extends React.Component {
     }
 	render() {
 		return (
-            <Container maxWidth="md" className="scheduleRoom available">
+            <div className={`scheduleRoom ${this.status}`}>
                 <div className="scheduleRoom__wrapper">
                     <div className="scheduleRoom__info-wrapper">
-                        <div className="scheduleRoom__status-bar"></div>
+                        <StatusBar status={this.status}/>
                         <div className="scheduleRoom__info-details-wrapper">
                             <div className="scheduleRoom__info-details">
                                 <strong className="scheduleRoom__title">{this.data.room.title}</strong>
                                 <div className="scheduleRoom__status-txt">{this.statusText}</div>
-                            </div>
-                            {/*
-                                btn btn-dark
-                            */
-                            }
-                            {'available' === this.status && (
+                                {'available' !== this.status && (
+                                    <div>
+                                        <div class="room_reserved_title">Hello freak bithes</div>
+                                        <div class="room_reserved_by">Somebody</div>
+                                        <div class="room_reserved_by">10:00am - 10:00am</div>
+                                    </div>
+                                )}
+                                </div>
                                 <div className="scheduleRoom__buttons-wrapper">
+                                {'available' === this.status && (
                                     <Button
                                         type="button" variant="contained"
                                         size="small" color="primary"
                                         className="scheduleRoom__reserve">Reserve</Button>
+                                )}
                                 </div>
-                            )}
-                            
+
                         </div>
                     </div>
-                    <ButtonGroup color="primary" className="scheduleRoom__timeblocks">
-                        <Button size="small" type="button" className="scheduleRoom__timeblock available" disabled>10:30</Button>
-                        <Button size="small" type="button" className="scheduleRoom__timeblock available">11AM</Button>
-                        <Button size="small" type="button" className="scheduleRoom__timeblock available">11:30</Button>
-                        <Button size="small" type="button" className="scheduleRoom__timeblock available">12PM</Button>
-                        <Button size="small" type="button" className="scheduleRoom__timeblock available">12:30</Button>
-                        <IconButton className="scheduleRoom__timeblock next">
-                            <ArrowForwardIosIcon/>
+                    <ButtonGroup fullWidth size="small" class="scheduleRoom__timeblocks">
+                        <IconButton>
+                            <ArrowLeftIcon/>
+                        </IconButton>
+                        <Button className="scheduleRoom__timebtn unavailable" disabled>10:30</Button>
+                        <Button className="scheduleRoom__timebtn unavailable">11AM</Button>
+                        <Button className="scheduleRoom__timebtn available">11:30</Button>
+                        <Button className="scheduleRoom__timebtn available">12PM</Button>
+                        <Button className="scheduleRoom__timebtn available">12:30</Button>
+                        <Button className="scheduleRoom__timebtn available">13PM</Button>
+                        <Button className="scheduleRoom__timebtn available">13:30</Button>
+                        <IconButton>
+                            <ArrowRightIcon/>
                         </IconButton>
                     </ButtonGroup>
                 </div>
-            </Container>
+            </div>
 		);
 	}
 }

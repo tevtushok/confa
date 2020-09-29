@@ -59,7 +59,7 @@ class Shedule extends BaseComponent {
         </div>
         <Grid container spacing={3} className="schedule__rooms">
         {this.state.rooms.map((room, index) => (
-          <Grid key={room.room._id} item lg={3} md={4} sm={6} xs={12}>
+          <Grid key={room.room._id} item md={6} sm={12}>
             <ScheduleRoom data={room}/>
           </Grid>
         ))}
