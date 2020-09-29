@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import {
     ArrowLeft as ArrowLeftIcon,
@@ -17,8 +18,46 @@ import './index.scss'
 
 function StatusBar(props) {
     const theme = useTheme();
+
+    const statusPaletteMap = {
+        available: 'success',
+        pending: 'warning',
+        reserved: 'error'
+    }
+
+    const styleName = (props.status && props.status in statusPaletteMap) ? statusPaletteMap[props.status] : false;
+    const bgColor = styleName ? theme.palette[styleName].main : 'red';
+    const useStyles = makeStyles({
+        root: {
+            background: bgColor,
+        },
+    });
+    const classes = useStyles();
     console.log(theme)
-    return <div className={`scheduleRoom__status-bar ${props.status}`}></div>
+    return <div className={`scheduleRoom__status-bar ${classes.root}`}></div>;
+    
+}
+
+function TimeButton(props) {
+    const theme = useTheme();
+    const statusPaletteMap = {
+        available: 'success',
+        unavailable: 'error',
+    }
+
+    const styleName = (props.status && props.status in statusPaletteMap) ? statusPaletteMap[props.status] : false;
+    const borderColor = styleName ? theme.palette[styleName].main : 'red';
+    const useStyles = makeStyles({
+        root: {
+            'border-bottom-color': borderColor,
+        },
+    });
+    const classes = useStyles();
+    return (
+        <Button className={`scheduleRoom__timebtn ${classes.root}`}>{props.time}</Button>
+    );
+
+
 }
 
 export default class ScheduleRoom extends React.Component {
@@ -74,14 +113,13 @@ export default class ScheduleRoom extends React.Component {
                                         className="scheduleRoom__reserve">Reserve</Button>
                                 )}
                                 </div>
-
                         </div>
                     </div>
                     <ButtonGroup fullWidth size="small" class="scheduleRoom__timeblocks">
                         <IconButton>
                             <ArrowLeftIcon/>
                         </IconButton>
-                        <Button className="scheduleRoom__timebtn unavailable" disabled>10:30</Button>
+                        <TimeButton time="10:30" status="unavailable"/>
                         <Button className="scheduleRoom__timebtn unavailable">11AM</Button>
                         <Button className="scheduleRoom__timebtn available">11:30</Button>
                         <Button className="scheduleRoom__timebtn available">12PM</Button>
