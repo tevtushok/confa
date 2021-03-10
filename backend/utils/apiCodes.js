@@ -23,6 +23,9 @@ const API_CODES = {
     // SCHEDULE api
     ERROR_SCHEDULE_GET_LIST_ROOM: 1200,
 
+    // Room api
+    ERROR_ROOM_FAILURE: 13000,
+
 }
 
 module.exports = API_CODES;

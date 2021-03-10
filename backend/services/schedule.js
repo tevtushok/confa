@@ -6,7 +6,7 @@ const dayjs = require('dayjs');
 
 const today = dayjs().format('MM-DD-YYYY');
 
-const listRooms = async (req, res) => {
+const listRoomsForTotay = async (req, res) => {
 	try {
 		await Room.getAvailable((err, rooms) => {
 			const ret = [];
@@ -17,7 +17,6 @@ const listRooms = async (req, res) => {
 					events: []
 				}
 				Event.getRoomEventsByInterval(roomId, today, today, events => {
-					console.log(typeof events, events)
 					roomData.events = events;
 				});
 				ret.push(roomData);
@@ -26,8 +25,6 @@ const listRooms = async (req, res) => {
 		});
 	}
 	catch (err) {
-		console.log('error in services/schedule:listRooms')
-		console.error(err);
 		return handleResponse(req, res, 500,
             API_CODES.ERROR_SCHEDULE_GET_LIST_ROOM,
             null, 'Error while reading events list'
@@ -36,5 +33,5 @@ const listRooms = async (req, res) => {
 };
 
 module.exports = {
-	listRooms: listRooms,
+	listRoomsForTotay: listRoomsForTotay,
 }

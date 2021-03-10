@@ -38,6 +38,9 @@ describe('auth api tests', function() {
                 done();
             });
     });
+
+
+    
     // Called after all of the tests in this block complete.
     after(function() {
         console.log("Our applicationa tests done!");
