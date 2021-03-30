@@ -1,33 +1,36 @@
 
 const User = require('../models/user');
 const { handleResponse, sleep } = require('../utils/utils');
-const API_CODES = require('../utils/apiCodes');
-const {cookie_options} = require('../configs/config');
+const { SUCCESS, FAILURE, ERRORS } = require('../utils/apiCodes');
+const { cookie_options } = require('../configs/config');
 const jsonwebtoken = require('jsonwebtoken');
 
 const register = async (req, res, next) => {
-	const user = new User({
+	const newUser = new User({
 		name: req.body.name,
 		email: req.body.email,
 		password: req.body.password
 	});
 
-	User.findOne({ email: user.email})
-	.then(user => {
-		if (user) {
-			return handleResponse(req, res, 400, API_CODES.ERROR_EMAIL_EXISTS, null, 'Email should be unique');
-		}
-		user.save()
-		.then(user => {
-			return handleResponse(req, res, 201, API_CODES.SUCCESS, {user: user}, 'User added');
-		})
-		.catch(err => {
-			return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while saving user');
-		})
-	})
-	.catch(err => {
-		return handleResponse(req, res, 500, API_CODES.FAILURE, err, 'Error while getting user from db');
-	});
+    err = newUser.validateSync();
+    if (err) {
+        return handleResponse(req, res, 400, ERRORS.REGISTER_VALIDATION, err, 'Validation error');
+    }
+
+    User.findOne({ email: newUser.email}, (err, user) => {
+        if (err) {
+            return handleResponse(req, res, 500, ERRORS.REGISTER, err, 'Error while saving user');
+        }
+        if (user) {
+            return handleResponse(req, res, 400, ERRORS.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
+        }
+        newUser.save((err, qwe) => {
+            if (err) {
+                return handleResponse(req, res, 500, ERRORS.REGISTER, err, 'Database error');
+            }
+            return handleResponse(req, res, 201, SUCCESS, {user: user}, 'User added');
+        });
+    });
 }
 
 const login = async (req, res, next) => {

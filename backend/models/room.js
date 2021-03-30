@@ -6,12 +6,12 @@ const roomSchema = new mongoose.Schema({
         type: String,
         min:3,
         max: 255,
-        required: [true, 'Room title is required'],
+        required: [true, '{PATH} is required'],
 		unique: true
     },
     number: {
         type: Number,
-        min: 0,
+        min: 1,
         message: 'Number is required',
 		unique: true,
     },

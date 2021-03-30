@@ -5,39 +5,37 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required : [ true, 'name is required'],
-		min: 3,
-		max: 255,
-		required: true,
+        required: [true, '{PATH} is required'],
+        match: [/^[A-Za-z]\w{4,30}$/, '{PATH} is invalid'],
 	},
 	email: {
 		type: String,
-		required: true,
-		min: 6,
-		max: 500,
+        required: [true, '{PATH} is required'],
 		unique: true,
 		dropDups: true,
 		trim: true,
         lowercase: true,
-        validate: validator.isEmail,
-        message: '{VALUE} is not a valid email',
+        validate: {
+            validator: validator.isEmail,
+            message: '{VALUE} is not valid email',
+        },
 	},
 	password: {
 		type: String,
-		required: true,
-		min: 6,
-		max: 1024,
-		required: true,
+        required: [true, '{PATH} is required'],
+        validate: {
+            validator: function (v) {
+                const re = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
+                return re.test(v);
+            },
+            message: `{PATH} must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?`,
+        },
 		bcrypt: true,
 	},
-    // role = 1 regular
-    // role = 2 admin
-    role: {
-        type: Number,
-        required: true,
-        default: 1,
-
-    }
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
 },{
 	timestamps: true,
 })

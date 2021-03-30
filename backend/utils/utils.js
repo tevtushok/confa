@@ -1,4 +1,4 @@
-const API_CODES = require('./apiCodes');
+const { SUCCESS, FAILURE, ERRORS } = require('./apiCodes');
 
 function handleResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
   let isSuccess = true;
@@ -9,14 +9,14 @@ function handleResponse(req, res, statusCode, apiCode = null, data = null, messa
     case 401:
     case 403:
       isSuccess = false;
-      apiCode = apiCode || API_CODES.FAILURE;
+      apiCode = apiCode || FAILURE;
       break;
     default:
       break;
   }
 
   let response = {};
-  response.code = apiCode || API_CODES.SUCCESS;
+  response.code = apiCode || SUCCESS;
   if (message) {
     response.message = message;
   }
@@ -43,7 +43,7 @@ function errorHandler(err, req, res, next) {
             break;
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            return handleResponse(req, res, 401, API_CODES.EROR_JWT_UNAUTHORIZED, null, 'Unauthorized');
+            return handleResponse(req, res, 401, ERRORS.JWT_UNAUTHORIZED, null, 'Unauthorized');
             break;
         default:
             //handleResponse(req, res, 401, API_CODES.FAILURE, null, err.message);

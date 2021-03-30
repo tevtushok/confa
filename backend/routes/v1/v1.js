@@ -5,12 +5,12 @@ const router = express.Router();
 // client controllers/////////////////
 const authController = require('../../controllers/auth');
 const usersController = require('../../controllers/users')
-const scheduleController = require('../../controllers/schedule')
+const eventsController = require('../../controllers/events')
 const roomsController = require('../../controllers/rooms')
 
 router.use('/auth', authController);
 router.use('/users', usersController);
-router.use('/schedule', scheduleController);
+router.use('/events', eventsController);
 router.use('/rooms', roomsController);
 
 

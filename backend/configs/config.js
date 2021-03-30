@@ -1,9 +1,9 @@
-const dev = process.env.NODE_ENV !== 'production';
+const prod = process.env.NODE_ENV === 'production';
 
 const cookie_options = {
 	    // domain: "localhost",
 	    httpOnly: true,
-	    secure: !dev,
+	    secure: prod,
 	    signed: true
 }
 
