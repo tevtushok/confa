@@ -1,17 +1,34 @@
 const assert = require('assert');
 const Room = require('../../models/room.js');
+const dbHandler = require('../db-handler');
+
+before(async () => await dbHandler.connect());
+after(async () => await dbHandler.closeDatabase());
 
 describe('models/room', () => {
 
-    it('all empty', (done) => {
-        const room = new Room({});
-        const err = room.validateSync();
-        console.log(err.errors);
-        assert.equal(err.errors.title.message, 'title is require');
-        // assert.equal(err.errors.email.message, 'email is required');
-        // assert.equal(err.errors.password.message, 'password is required');
+    it('test invalid room title', (done) => {
+        let room = new Room({});
+        let err = room.validateSync();
+        assert.equal(err.errors.title.message, 'title is required');
+
+        room = new Room({ title: 't' });
+        err = room.validateSync();
+        assert.equal(err.errors.title.message, 'title less than 3 characters');
         return done();
     });
+
+    it('test invalid room number', (done) => {
+        let room = new Room({});
+        let err = room.validateSync();
+        assert.equal(err.errors.number.message, 'number is required');
+
+        room = new Room({ number: 0 });
+        err = room.validateSync();
+        assert.equal(err.errors.number.message, 'number less than minimum alowed value 1');
+        return done();
+    });
+
 
     // it('check invalid username', (done) => {
     //     const data = {

@@ -1,7 +1,7 @@
 const assert = require('assert');
 const app = require('../../core/app.js'),
-    chai = require('chai'),
-    request = require('supertest');
+const chai = require('chai');
+const request = require('supertest');
 const expect = chai.expect;
 const {
     generateAlnum,
@@ -14,6 +14,7 @@ const User = require('../../models/user');
 
 
 after(async () => await User.deleteMany({}));
+
 describe('controllers/auth', () => {
     // router.post('/register', authService.register);
     // router.post('/login', authService.login);
