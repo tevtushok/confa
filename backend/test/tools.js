@@ -20,7 +20,7 @@ const generateInValidEmail = () => {
 }
 
 const generateValidPassword = () => {
-    return generateAlnum(8) + '#Q';
+    return generateAlnum(8) + '#Q1';
 }
 
 module.exports = {
