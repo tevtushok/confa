@@ -12,11 +12,8 @@ const {
 }  = require('../tools.js');
 const User = require('../../models/user'); 
 
-after(async () => {
-    assert.ok('clean users collection');
-    await User.deleteMany({});
-});
 
+after(async () => await User.deleteMany({}));
 describe('controllers/auth', () => {
     // router.post('/register', authService.register);
     // router.post('/login', authService.login);
