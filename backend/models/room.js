@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 
 const roomSchema = new mongoose.Schema({
@@ -17,22 +17,12 @@ const roomSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['ACTIVE','CLOSED'],
-        default: 'CLOSED'
+        enum: {
+            values: ['ACTIVE','CLOSED'],
+            message: '{PATH} is not valid enum value',
+        },
+        default: 'CLOSED',
     }
-})
-
-roomSchema.statics.getAvailable = function (cb) {
-    this.find({status: 'ACTIVE'})
-    .exec(function (err, rooms) {
-        if ('function' === typeof cb) {
-            if (err) {
-                return cb(err)
-            }
-            return cb(null, rooms);
-        }
-        else throw new Error('Missed callback function')
-    });
-};
+});
 
 module.exports = mongoose.model('Room', roomSchema)

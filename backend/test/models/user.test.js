@@ -1,22 +1,18 @@
 const assert = require('assert');
 const User = require('../../models/user.js');
-const mongoose = require('mongoose');
-require('dotenv').config({ path: '../../.env.test' })
-mongoose.connect(process.env.DB_CONNECT, function(err) {
-    if (err) throw err;
-    console.log('Successfully connected to MongoDB');
-});
+const userGenerator = require('../userGenerator');
+const bcrypt = require('bcryptjs');
 
-const validUsername = 'validusername';
-const invalidUsername = '1invalid';
+describe('models/user', async () => {
 
-const validEmail  = 'email@email.com';
-const invalidEmail = 'email@invalid';
+    const validUsername = userGenerator.generateValidName();
+    const invalidUsername = userGenerator.generateInvalidName();
 
-const validPassword = 'valiDQ#1';
-const invalidPassword = 'invaLid1';
+    const validEmail = userGenerator.generateValidEmail();
+    const invalidEmail = userGenerator.generateInvalidEmail();
 
-describe('models/user', () => {
+    const validPassword = userGenerator.generateValidPassword();
+    const invalidPassword = userGenerator.generateInvalidPassword();
 
     it('all empty', (done) => {
         const user = new User({});
@@ -69,6 +65,26 @@ describe('models/user', () => {
         return done();
     });
 
+    it('check duplicate email', (done) => {
+        const data = {
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
+        };
+        const user = new User(data);
+        user.save((err, res) => {
+            if (err) return done(err);
+            assert.ok(!err);
+            const dupUser = new User(data);
+            dupUser.save((err, res) => {
+                assert.ok(err);
+                assert.equal(err.code, 11000); // MongoError: E11000 duplicate key error dup key
+                assert.equal(err.name, 'MongoError');
+                return done();
+            });
+        });
+    });
+
     it('check invalid password', (done) => {
         const data = {
             name: validUsername,
@@ -86,7 +102,7 @@ describe('models/user', () => {
         return done();
     });
 
-    it('check all valid', (done) => {
+    it('check authenticate failed', (done) => {
         const data = {
             name: validUsername,
             email: validEmail,
@@ -94,8 +110,59 @@ describe('models/user', () => {
         };
         const user = new User(data);
         const err = user.validateSync();
-        user.save();
-        assert.ok(!err);
-        return done();
+        const newEmail = userGenerator.generateValidEmail();
+        user.save((err, res) => {
+            if (err) return done(err);
+            assert.ok(!err);
+            User.authenticate(newEmail, data.password, (authErr, authRes) => {
+                assert.ok(authErr);
+                assert.equal(authErr.code, 401);
+                assert.equal(authErr.message, 'Email not found');
+            });
+
+            User.authenticate(data.email, userGenerator.generateValidPassword, (authErr, authRes) => {
+                assert.ok(authErr);
+                assert.equal(authErr.code, 401);
+                assert.equal(authErr.message, 'Authentication failed');
+
+                return done();
+            });
+        });
+    });
+
+    it('check authenticate succes', (done) => {
+        const data = {
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
+        };
+        const user = new User(data);
+        const err = user.validateSync();
+        user.save((err, res) => {
+            if (err) return done(err);
+            assert.ok(!err);
+            User.authenticate(data.email, data.password, (authErr, authRes) => {
+                assert.ok(!err);
+                return done();
+            });
+        });
+    });
+
+    it('check password is crypted', (done) => {
+        const data = {
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword() 
+        };
+        const user = new User(data);
+        const err = user.validateSync();
+        user.save((err, res) => {
+            if (err) return done(err);
+            assert.ok(!err);
+            bcrypt.compare(data.password, user.password, function (bcryptErr, bcryptRes) {
+                assert.ok(bcryptRes);
+            });
+            return done();
+        });
     });
 });

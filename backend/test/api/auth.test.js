@@ -1,15 +1,9 @@
 const assert = require('assert');
-const app = require('../../core/app.js'),
+const app = require('../../core/app.js');
 const chai = require('chai');
 const request = require('supertest');
 const expect = chai.expect;
-const {
-    generateAlnum,
-    generateValidEmail,
-    generateInValidEmail,
-    generateValidUserName,
-    generateValidPassword,
-}  = require('../tools.js');
+const userGenerator  = require('../userGenerator');
 const User = require('../../models/user'); 
 
 
@@ -73,9 +67,9 @@ describe('controllers/auth', () => {
 
     it('register invalid email', (done) => {
         const user = {
-            name: generateValidUserName(),
-            email: generateInValidEmail(),
-            password: generateValidPassword(),
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateInValidEmail(),
+            password: userGenerator.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/register')
@@ -95,8 +89,8 @@ describe('controllers/auth', () => {
 
     it('register weak password', (done) => {
         const user = {
-            name: generateValidUserName(),
-            email: generateValidEmail(),
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
             password: 'weekpass',
         };
         request(app)
@@ -119,9 +113,9 @@ describe('controllers/auth', () => {
 
     it('register email exists', (done) => {
         const user = {
-            name: generateValidUserName(),
-            email: generateValidEmail(),
-            password: generateValidPassword(),
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
         };
         const response = request(app)
             .post('/api/v1/auth/register')
@@ -147,9 +141,9 @@ describe('controllers/auth', () => {
 
     it('register ok', (done) => {
         const user = {
-            name: generateValidUserName(),
-            email: generateValidEmail(),
-            password: generateValidPassword(),
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/register')
