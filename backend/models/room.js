@@ -18,11 +18,11 @@ const roomSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: {
-            values: ['ACTIVE','CLOSED'],
+            values: ['active','closed'],
             message: '{PATH} is not valid enum value',
         },
-        default: 'CLOSED',
-    }
+        default: 'closed',
+    },
 });
 
 module.exports = mongoose.model('Room', roomSchema)

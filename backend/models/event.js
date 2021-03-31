@@ -3,33 +3,44 @@ const mongoose = require('mongoose')
 const eventSchema = new mongoose.Schema({
     roomId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Room'
+        ref: 'Room',
+        required: [true, '{PATH} is required'],
+        message: 'iiha',
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: [true, '{PATH} is required'],
     },
     title: {
         type: String,
-        min:3,
-        max: 255,
-        required: [true, 'Event title is required'],
+        minlength: [3, '{PATH} less than 3 characters'],
+        required: [true, '{PATH} is required'],
     },
-    beginningAt: Date,
-    endingAt: Date,
     status: {
         type: String,
-        enum: ['ACTIVE', 'CLOSED'],
-        default: 'CLOSED'
-    }
+        enum: {
+            values: ['active','closed'],
+            message: '{PATH} is not valid enum value',
+        },
+        default: 'closed',
+    },
+    date_start: {
+        type: Date,
+        required: [true, '{PATH} is required'],
+    },
+    date_end: {
+        type: Date,
+        required: [true, '{PATH} is required'],
+    },
 })
 
-eventSchema.statics.getRoomEventsByInterval = function (roomId, beginningAt, endingAt, callback) {
-    this.findOne({
+eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, date_end, callback) {
+    this.find({
         roomId: roomId,
-        status: 'ACTIVE',
-        beginningAt: {'$gte': beginningAt},
-        endingAt: {'$lte': endingAt},
+        status: 'active',
+        date_start: {'$gte': date_start},
+        date_end: {'$lte': date_end},
     })
     .exec(function (err, events) {
         if (err) {
