@@ -25,7 +25,7 @@ const eventList = async (req, res) => {
                         room: room,
                         events: []
                     }
-                    Event.getRoomEventsByInterval(roomId, today, today, events => {
+                    Event.getRoomEventsBeetwenDates(roomId, today, today, events => {
                         roomData.events = events;
                     });
                     ret.push(roomData);
