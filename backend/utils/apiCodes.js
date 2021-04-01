@@ -1,9 +1,19 @@
-const ERRORS = {
-    //controllers/auth
+const ERRORS = {};
+ERRORS.AUTH = {
     REGISTER: 100,
     REGISTER_VALIDATION: 101,
     REGISTER_EMAIL_EXISTS: 102,
-    EMPTY_CREDENTIALS: 1002,
+    LOGIN: 200,
+    LOGIN_EMPTY_CREDENTIALS: 201,
+    LOGIN_INVALID_CREDENTIALS: 202,
+    LOGOUT: 300,
+    VERIFY: 400,
+    VERIFY_INSIGNED_TOKEN: 401,
+};
+    // auth/register
+
+ERRORS.LOGIN = {
+    EMPTY_CREDENTIALS: 111111,
     INVALID_CREDENTIALS: 1003,
     JWT_UNAUTHORIZED: 1004,
     UNSIGNED_TOKEN: 1005,
@@ -24,9 +34,6 @@ const ERRORS = {
     // Room api
     ROOM_FAILURE: 13000,
 }
-
-module.exports = {
-    ERRORS: ERRORS,
-    SUCCESS: 0,
-    FAILURE: 1,
-};
+module.exports.ERRORS = ERRORS;
+module.exports.SUCCESS = 0;
+module.exports.FAILURE = 1;

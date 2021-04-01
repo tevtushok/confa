@@ -14,34 +14,34 @@ const register = async (req, res, next) => {
 
     err = newUser.validateSync();
     if (err) {
-        return handleResponse(req, res, 400, ERRORS.REGISTER_VALIDATION, err, 'Validation error');
+        return handleResponse(req, res, 400, ERRORS.AUTH.REGISTER_VALIDATION, err, 'Validation error');
     }
 
     User.findOne({ email: newUser.email}, (err, user) => {
         if (err) {
-            return handleResponse(req, res, 500, ERRORS.REGISTER, err, 'Error while saving user');
+            return handleResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Error while saving user');
         }
         if (user) {
-            return handleResponse(req, res, 400, ERRORS.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
+            return handleResponse(req, res, 400, ERRORS.AUTH.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
         }
         newUser.save((err, qwe) => {
             if (err) {
-                return handleResponse(req, res, 500, ERRORS.REGISTER, err, 'Database error');
+                return handleResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Database error');
             }
             return handleResponse(req, res, 201, SUCCESS, {user: user}, 'User added');
         });
     });
 }
 
-const login = async (req, res, next) => {
+const login = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 	if (!email || !password) {
-		return handleResponse(req, res, 400, API_CODES.ERROR_EMPTY_CREDENTIALS, null, "Email and password is required")
+		return handleResponse(req, res, 400, ERRORS.AUTH.LOGIN_EMPTY_CREDENTIALS, null, "Email and password is required")
 	}
-	await User.authenticate(email, password,  function (err, user) {
+	User.authenticate(email, password,  function (err, user) {
 		if (err || !user) {
-			return handleResponse(req, res, 401, API_CODES.ERROR_INVALID_CREDENTIALS, null, "Invalid credentials");
+			return handleResponse(req, res, 401, ERRORS.AUTH.LOGIN_INVALID_CREDENTIALS, null, "Invalid credentials");
 		}
 
 		const jwtData = {
@@ -63,18 +63,18 @@ const login = async (req, res, next) => {
 			}
 		};
 
-		return handleResponse(req, res, 200, API_CODES.SUCCESS, ret, 'Logged in');
+		return handleResponse(req, res, 201, SUCCESS, ret, 'Logged in');
 	});
 }
 
 const logout = async (req, res, next) => {
 		res.clearCookie('token', cookie_options);
-		return handleResponse(req, res, 200, API_CODES.SUCCESS, null, 'Logged out');
+		return handleResponse(req, res, 201, SUCCESS, null, 'Logged out');
 }
 
 const verify = async (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return handleResponse(req, res, 401, API_CODES.EROR_UNSIGNED_TOKEN, null, 'Unsigned token');
+		return handleResponse(req, res, 401, ERRORS.AUTH.UNSIGNED_TOKEN, null, 'Unsigned token');
 	}
 
 	await User.findOne({email: req.user.email})

@@ -1,32 +1,32 @@
 const { SUCCESS, FAILURE, ERRORS } = require('./apiCodes');
 
 function handleResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
-  let isSuccess = true;
-  switch (statusCode) {
-    case 204:
-    case 400:
-    case 500:
-    case 401:
-    case 403:
-      isSuccess = false;
-      apiCode = apiCode || FAILURE;
-      break;
-    default:
-      break;
-  }
+    let isSuccess = true;
+    switch (statusCode) {
+        case 204:
+        case 400:
+        case 500:
+        case 401:
+        case 403:
+            isSuccess = false;
+            apiCode = apiCode || FAILURE;
+            break;
+        default:
+            break;
+    }
 
-  let response = {};
-  response.code = apiCode || SUCCESS;
-  if (message) {
-    response.message = message;
-  }
-  response.success = isSuccess;
+    let response = {};
+    response.code = apiCode || SUCCESS;
+    if (message) {
+        response.message = message;
+    }
+    response.success = isSuccess;
 
-  if (data) {
-    response.data = data;
-  }
+    if (data) {
+        response.data = data;
+    }
 
-  return res.status(statusCode).json(response);
+    return res.status(statusCode).json(response);
 }
 
 function errorHandler(err, req, res, next) {
@@ -52,8 +52,8 @@ function errorHandler(err, req, res, next) {
 }
 
 function signJWT(data) {
-  const token = jsonwebtoken.sign(data, process.env.JWT_SECRET);
-  return token;
+    const token = jsonwebtoken.sign(data, process.env.JWT_SECRET);
+    return token;
 }
 
 // time in ms 
@@ -67,12 +67,12 @@ function sleep(time, cb = false) {
 }
 
 function validateRoomTitle(title = false) {
-  return 'string' === typeof title && title.length >= 3;
+    return 'string' === typeof title && title.length >= 3;
 }
 
 function validateRoomNumber(number = false) {
-  console.log('number', number)
-  return (!isNaN(number) && number !== '');
+    console.log('number', number)
+    return (!isNaN(number) && number !== '');
 }
 
 
