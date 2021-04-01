@@ -10,8 +10,9 @@ class Footer extends React.Component {
 		return (
 			<footer>
 				<Toolbar className="footer">
-					<Link component={RouterLink} to="/login"><div>Login</div></Link>
-					<Link component={RouterLink} to="/register"><div>register</div></Link>
+					<div>
+                        Based on <Link href="https://reactjs.org">React</Link>{React.version}
+                    </div>
 				</Toolbar>
 			</footer>
 		);

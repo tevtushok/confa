@@ -33,7 +33,7 @@ function StatusBar(props) {
         },
     });
     const classes = useStyles();
-    console.log(theme)
+    //console.log(theme)
     return <div className={`scheduleRoom__status-bar ${classes.root}`}></div>;
     
 }
@@ -81,7 +81,7 @@ export default class ScheduleRoom extends React.Component {
     }
     initStatusText(status) {
         if ('pending' === status) {
-            this.statusText = 'Event pending in 10 min';
+            this.statusText = 'Event starded in 10 min';
         }
         else {
             this.statusText = this.statuses[status]
@@ -89,19 +89,20 @@ export default class ScheduleRoom extends React.Component {
     }
 	render() {
 		return (
-            <div className={`scheduleRoom ${this.status}`}>
+            <div className={`scheduleRoom mdc-theme--primary-bg ${this.status}`}>
                 <div className="scheduleRoom__wrapper">
                     <div className="scheduleRoom__info-wrapper">
                         <StatusBar status={this.status}/>
                         <div className="scheduleRoom__info-details-wrapper">
                             <div className="scheduleRoom__info-details">
-                                <strong className="scheduleRoom__title">{this.data.room.title}</strong>
-                                <div className="scheduleRoom__status-txt">{this.statusText}</div>
+                                <div className="scheduleRoom__number">Number: <strong>{this.data.room.number}</strong></div>
+                                <div className="scheduleRoom__title">Title: <strong>{this.data.room.title}</strong></div>
+                                <div className="scheduleRoom__status-txt">Status: {this.statusText}</div>
                                 {'available' !== this.status && (
                                     <div>
-                                        <div class="room_reserved_title">Hello freak bithes</div>
-                                        <div class="room_reserved_by">Somebody</div>
-                                        <div class="room_reserved_by">10:00am - 10:00am</div>
+                                        <div className="room_reserved_title">Event title: Hello freak bithes</div>
+                                        <div className="room_reserved_by">Reserved by: Somebody</div>
+                                        <div className="room_reserved_by">Time: 10:00am - 10:00am</div>
                                     </div>
                                 )}
                                 </div>
@@ -115,10 +116,10 @@ export default class ScheduleRoom extends React.Component {
                                 </div>
                         </div>
                     </div>
-                    <ButtonGroup fullWidth size="small" class="scheduleRoom__timeblocks">
-                        <IconButton>
+                    <ButtonGroup size="small" className="scheduleRoom__timeblocks">
+                        <Button>
                             <ArrowLeftIcon/>
-                        </IconButton>
+                        </Button>
                         <TimeButton time="10:30" status="unavailable"/>
                         <Button className="scheduleRoom__timebtn unavailable">11AM</Button>
                         <Button className="scheduleRoom__timebtn available">11:30</Button>
@@ -126,9 +127,9 @@ export default class ScheduleRoom extends React.Component {
                         <Button className="scheduleRoom__timebtn available">12:30</Button>
                         <Button className="scheduleRoom__timebtn available">13PM</Button>
                         <Button className="scheduleRoom__timebtn available">13:30</Button>
-                        <IconButton>
+                        <Button>
                             <ArrowRightIcon/>
-                        </IconButton>
+                        </Button>
                     </ButtonGroup>
                 </div>
             </div>

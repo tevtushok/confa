@@ -363,7 +363,7 @@ class adminRooms extends React.Component {
 				name="number"
 				type="text"
 				error={!!room?.errors?.number}
-				fullWidth={true}
+				fullwidth={true}
 				label="Number:"
 				variant="outlined"
 				onChange={(e) => this.updateRoomHandler(e, room._id)}
@@ -374,7 +374,7 @@ class adminRooms extends React.Component {
 				disabled={this.state.isLoading}
 				name="title"
 				type="text"
-				fullWidth={true}
+				fullwidth={true}
 				error={!!room?.errors?.title}
 				variant="outlined"
 				label="Title:"
@@ -411,7 +411,7 @@ class adminRooms extends React.Component {
 			</TableContainer>
 			{this.state.isLoaded && (
 				<FormControl>
-				<Button onClick={this.addRoomHandler} variant="contained" color="secondary" fullWidth type="button" disabled={this.state.isLoading}>New room</Button>
+				<Button onClick={this.addRoomHandler} variant="contained" color="secondary" fullwidth type="button" disabled={this.state.isLoading}>New room</Button>
 				</FormControl>
 				)}
 			</div>

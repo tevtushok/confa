@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register'
 import Profile from './pages/Profile'
 import Schedule from './pages/Schedule'
+import NewEvent from './pages/NewEvent'
 import Page404 from './pages/Page404'
 import ServerError from './pages/ServerError'
 
@@ -80,6 +81,7 @@ class App extends React.Component {
                             <Route path="/register" component={Register} exact/>
 
                             <PrivateRoute path="/schedule" component={Schedule} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/newEvent" component={NewEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/" exact component={Schedule} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/@:username" component={Profile} isLoggedIn={this.props.userStore.isLoggedIn}/>
 

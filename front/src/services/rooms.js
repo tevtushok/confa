@@ -1,8 +1,8 @@
 import api from './api.js';
 
-export const getListRoom = async () => {
+export const roomList = async () => {
 	try {
-		return await api.get('/schedule/');
+		return await api.get('/rooms');
 	}
 	catch (error) {
 		return {

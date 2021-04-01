@@ -74,7 +74,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullWidth
+                        fullwidth
                         error={!!errors.name}
                         helperText={helperTextName}
                         label="Name:"
@@ -88,7 +88,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullWidth
+                        fullwidth
                         error={!!errors.email}
                         helperText={helperTextEmail}
                         label="Email:"
@@ -102,7 +102,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullWidth
+                        fullwidth
                         error={!!errors.password}
                         helperText={helperTextPassword}
                         label="Password:"
@@ -116,7 +116,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullWidth
+                        fullwidth
                         error={!!errors.password_confirm}
                         helperText={helperTextPasswordConfirmation}
                         label="Password confirm:"
@@ -129,7 +129,7 @@ export default function Resister(props) {
                         <FormHelperText>{serviceMsg}</FormHelperText>
                     </FormControl>
                     <FormControl>
-                        <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={isLoading}>Register</Button>
+                        <Button variant="contained" color="secondary" size="large" fullwidth type="submit" disabled={isLoading}>Register</Button>
                     </FormControl>
                 </form>
             </div>

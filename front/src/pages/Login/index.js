@@ -104,7 +104,7 @@ class Login extends React.Component {
 								name="email"
 								label="Email:"
 								value={this.state.email}
-								fullWidth={true}
+								fullwidth={true}
 								variant="outlined"
 								type="text"
 								onChange={this.handleChange}
@@ -115,7 +115,7 @@ class Login extends React.Component {
 								name="password"
 								label="Password:"
 								value={this.state.password}
-								fullWidth={true} 
+								fullwidth={true} 
 								variant="outlined"
 								type="password"
 								onChange={this.handleChange}
@@ -128,7 +128,7 @@ class Login extends React.Component {
 							<FormHelperText>{serviceMsg}</FormHelperText>
 						</FormControl>
 						<FormControl>
-							<Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>Login</Button>
+							<Button variant="contained" color="secondary" size="large" fullwidth type="submit" disabled={this.state.isLoading}>Login</Button>
 						</FormControl>
 						<p className="login__invite">
 							<Link color="primary" component={LinkRouter} to="/register">
