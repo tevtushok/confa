@@ -22,7 +22,7 @@ const info = [
 ];
 require('child_process').exec('npm -v mongoose', function(err, stdout, stderr) {
     info.push('Mongoose version:', stdout.trim());
-    console.log(info.join(' '));
+    console.log(info.join('; '));
 });
 
 //mongoose.Promise = global.Promise;
