@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
         required: [true, '{PATH} is required'],
-        match: [/^[A-Za-z]\w{4,30}$/, '{PATH} is invalid'],
+        match: [/^[a-z]\w{2,30}$/i, '{PATH} should starts with letter, and contain minimum 3 character'],
 	},
 	email: {
 		type: String,
