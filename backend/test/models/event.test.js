@@ -3,7 +3,7 @@ const Room = require('../../models/room.js');
 const Event = require('../../models/event.js');
 const mongoose = require('mongoose');
 const assert = require('chai').assert;
-const { minutes, hours} = require('../times');
+const { minutes, hours} = require('../utils').times;
 const userGenerator = require('../userGenerator');
 
 describe('models/event', () => {

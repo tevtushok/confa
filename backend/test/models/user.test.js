@@ -1,4 +1,4 @@
-const assert = require('assert');
+const assert = require('chai').assert;
 const User = require('../../models/user.js');
 const userGenerator = require('../userGenerator');
 const bcrypt = require('bcryptjs');
@@ -14,54 +14,53 @@ describe('models/user', async () => {
     const validPassword = userGenerator.generateValidPassword();
     const invalidPassword = userGenerator.generateInvalidPassword();
 
-    it('all empty', (done) => {
-        const user = new User({});
-        const err = user.validateSync();
-        assert.equal(err.errors.name.message, 'name is required');
-        assert.equal(err.errors.email.message, 'email is required');
-        assert.equal(err.errors.password.message, 'password is required');
+    it('check status', (done) => {
+        let err = new User({status: 'quo'}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.status.message', 'status is not valid enum value');
+
+        err = new User({status: 'enabled'}).validateSync();
+        assert.notNestedProperty(err, 'errors.status');
+
+        err = new User({status: 'disabled'}).validateSync();
+        assert.notNestedProperty(err, 'errors.status');
+
         return done();
     });
 
-    it('check invalid username', (done) => {
-        const data = {
-            name: invalidUsername,
-            email: validEmail,
-            password: validPassword,
-        };
-        const user = new User(data);
-        user.validate().catch(err => {
-            assert.ok(err);
-            assert.equal(err.errors.name.message, 'name is invalid');
-            return done();
-        });
-    });
+    it('check username', (done) => {
+        let err = null;
 
-    it('check invalid username first digit', (done) => {
-        const data = {
-            name: '1qsf',
-            email: validEmail,
-            password: validPassword,
-        };
-        const user = new User(data);
-        const err = user.validateSync();
-        assert.ok(err);
-        assert.equal(err.errors.name.message, 'name is invalid');
+        err = new User().validateSync();
+        assert.nestedPropertyVal(err, 'errors.name.message', 'name is required');
+
+        err = new User({name: 'nq'}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.name.message', 'name should starts with letter, and contain minimum 3 character');
+
+        err = new User({name: '1nameuser'}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.name.message', 'name should starts with letter, and contain minimum 3 character');
+
+        err = new User({name: 'qu2ser'}).validateSync();
+        assert.notNestedProperty(err, 'errors.name');
+
         return done();
     });
 
-    it('check invalid email', (done) => {
-        const data = {
-            name: validUsername,
-            email: invalidEmail,
-            password: validPassword,
-        };
-        const user = new User(data);
-        const err = user.validateSync();
-        assert.ok(err);
-        assert.ok(!err.errors['name']);
-        assert.ok(!err.errors['password']);
-        assert.equal(err.errors.email.message, user.email + ' is not valid email');
+    it('check email', (done) => {
+        let err, invalidEmail = userGenerator.generateInvalidEmail();
+
+        err = new User().validateSync();
+        assert.nestedPropertyVal(err, 'errors.email.message', 'email is required');
+
+        err = new User({email: invalidEmail}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.email.message', `${invalidEmail} is not valid email`);
+
+        invalidEmail = 'email@invalid';
+        err = new User({email: invalidEmail}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.email.message', `${invalidEmail} is not valid email`);
+
+        err = new User({email: userGenerator.generateValidEmail()}).validateSync();
+        assert.notNestedProperty(err, 'errors.email.message');
+
         return done();
     });
 
@@ -74,7 +73,6 @@ describe('models/user', async () => {
         const user = new User(data);
         user.save((err, res) => {
             if (err) return done(err);
-            assert.ok(!err);
             const dupUser = new User(data);
             dupUser.save((err, res) => {
                 assert.ok(err);
@@ -85,21 +83,44 @@ describe('models/user', async () => {
         });
     });
 
-    it('check invalid password', (done) => {
+    it('check password', (done) => {
+        let err = null;
+
+        err = new User({}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.password.message', 'password is required');
+
+        err = new User({password: 'weak password'}).validateSync(); 
+        assert.nestedPropertyVal(err,
+            'errors.password.message',
+            'password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?');
+
+        err = new User({password: 'weakPass#'}).validateSync(); 
+        assert.nestedPropertyVal(err,
+            'errors.password.message',
+            'password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?');
+
+        err = new User({password: 'weakPass#1'}).validateSync(); 
+        assert.notNestedProperty(err, 'errors.password');
+
+        return done();
+    });
+
+    it('check password is crypted', (done) => {
         const data = {
-            name: validUsername,
-            email: validEmail,
-            password: invalidPassword
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword() 
         };
         const user = new User(data);
         const err = user.validateSync();
-        assert.ok(err);
-        assert.ok(!err.errors['name']);
-        assert.ok(!err.errors['email']);
-        assert.equal(
-            err.errors.password.message,
-            'password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?');
-        return done();
+        user.save((err, res) => {
+            if (err) return done(err);
+            assert.ok(!err);
+            bcrypt.compare(data.password, user.password, function (bcryptErr, bcryptRes) {
+                assert.ok(bcryptRes);
+            });
+            return done();
+        });
     });
 
     it('check authenticate failed', (done) => {
@@ -110,10 +131,10 @@ describe('models/user', async () => {
         };
         const user = new User(data);
         const err = user.validateSync();
+        assert.ok(!err);
         const newEmail = userGenerator.generateValidEmail();
         user.save((err, res) => {
             if (err) return done(err);
-            assert.ok(!err);
             User.authenticate(newEmail, data.password, (authErr, authRes) => {
                 assert.ok(authErr);
                 assert.equal(authErr.code, 401);
@@ -138,31 +159,14 @@ describe('models/user', async () => {
         };
         const user = new User(data);
         const err = user.validateSync();
+        assert.ok(!err);
         user.save((err, res) => {
             if (err) return done(err);
-            assert.ok(!err);
             User.authenticate(data.email, data.password, (authErr, authRes) => {
-                assert.ok(!err);
+                assert.ok(!authErr);
                 return done();
             });
         });
     });
 
-    it('check password is crypted', (done) => {
-        const data = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword() 
-        };
-        const user = new User(data);
-        const err = user.validateSync();
-        user.save((err, res) => {
-            if (err) return done(err);
-            assert.ok(!err);
-            bcrypt.compare(data.password, user.password, function (bcryptErr, bcryptRes) {
-                assert.ok(bcryptRes);
-            });
-            return done();
-        });
-    });
 });
