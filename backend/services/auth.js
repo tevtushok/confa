@@ -1,11 +1,11 @@
 
 const User = require('../models/user');
-const { handleResponse, sleep } = require('../utils/utils');
+const { handleResponse } = require('../utils/utils');
 const { SUCCESS, FAILURE, ERRORS } = require('../utils/apiCodes');
 const { cookie_options } = require('../configs/config');
 const jsonwebtoken = require('jsonwebtoken');
 
-const register = async (req, res, next) => {
+module.exports.register = async (req, res, next) => {
 	const newUser = new User({
 		name: req.body.name,
 		email: req.body.email,
@@ -24,16 +24,16 @@ const register = async (req, res, next) => {
         if (user) {
             return handleResponse(req, res, 400, ERRORS.AUTH.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
         }
-        newUser.save((err, qwe) => {
+        newUser.save((err, user) => {
             if (err) {
                 return handleResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Database error');
             }
-            return handleResponse(req, res, 201, SUCCESS, {user: user}, 'User added');
+            return handleResponse(req, res, 201, SUCCESS, null, 'User added');
         });
     });
 }
 
-const login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 	if (!email || !password) {
@@ -67,17 +67,17 @@ const login = (req, res, next) => {
 	});
 }
 
-const logout = async (req, res, next) => {
+module.exports.logout = (req, res, next) => {
 		res.clearCookie('token', cookie_options);
 		return handleResponse(req, res, 201, SUCCESS, null, 'Logged out');
 }
 
-const verify = async (req, res) => {
+module.exports.verify = (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return handleResponse(req, res, 401, ERRORS.AUTH.UNSIGNED_TOKEN, null, 'Unsigned token');
+		return handleResponse(req, res, 401, ERRORS.AUTH.VERIFY_UNSIGNED_TOKEN, null, 'Unsigned token');
 	}
 
-	await User.findOne({email: req.user.email})
+	User.findOne({email: req.user.email, status: 'enabled'})
 	.then(user => {
 		const ret = {
 			user: {
@@ -87,16 +87,9 @@ const verify = async (req, res) => {
 			}
 		};
 
-		return handleResponse(req, res, 200, API_CODES.SUCCESS, ret, 'Token verified');
+		return handleResponse(req, res, 200, SUCCESS, ret, 'Token verified');
 	})
 	.catch(err => {
-		return handleResponse(req, res, 401, API_CODES.EROR_INVALID_TOKEN, null, 'Invalid token');
+		return handleResponse(req, res, 401, ERRORS.AUTH.VERIFY_INVALID_USER, null, 'Invalid user');
 	});
-}
-
-module.exports = {
-	register: register,
-	login: login,
-	logout: logout,
-	verify: verify,
 }

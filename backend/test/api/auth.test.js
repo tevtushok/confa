@@ -6,13 +6,8 @@ const expect = chai.expect;
 const userGenerator  = require('../userGenerator');
 const User = require('../../models/user'); 
 
-
-
 describe('controllers/auth', () => {
     before(async () => await User.deleteMany({}));
-    // router.post('/login', authService.login);
-    // router.post('/logout', authService.logout);
-    // router.get('/verify', authService.verify); 
 
     it('register name,email,password data empty', (done) => {
         request(app)
@@ -148,6 +143,9 @@ describe('controllers/auth', () => {
             .post('/api/v1/auth/register')
             .set('Accept', 'application/json')
             .send(user)
+            .expect((res) => {
+                assert.equal(0, res.body.code);
+            })
             .expect(201, done);
     });
 
@@ -205,42 +203,87 @@ describe('controllers/auth', () => {
                     .expect(201, done);
             });
     });
-    it('logout', (done) => {
-        const user = {
+    
+    it('logout success', async () => {
+        const agent = request.agent(app);
+        const userData = {
             name: userGenerator.generateValidName(),
             email: userGenerator.generateValidEmail(),
             password: userGenerator.generateValidPassword(),
         };
-        request(app)
-            .post('/api/v1/auth/register')
+
+        const registerUser = await agent.post('/api/v1/auth/register')
+            .send(userData)
             .set('Accept', 'application/json')
-            .send(user)
-            .end((err, res) => {
-                if (err) return done(err);
-                assert.equal(201, res.status);
-                request(app)
-                    .post('/api/v1/auth/login')
-                    .send({email: user.email, password: user.password})
-                    .set('Accept', 'application/json')
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        assert.equal(201, res.status);
-                        assert.nestedProperty(res, 'body.data.token');
-                        assert.ok(res.body.data.token.length);
-                        const token = res.body.data.token;
-                        request(app)
-                            .post('/api/v1/auth/logout')
-                            .send({token: token})
-                            .set('Cookie', ['token=' + token])
-                            .set('token', token)
-                            .set('Accept', 'application/json')
-                            .end((err, res) => {
-                                if (err) return done(err);
-                                console.log(res.body);
-                                assert.equal(201, res.status);
-                                return done();
-                            });
-                    });
-            });
+            .expect('Content-Type', /json/);
+
+        const loginUser = await agent.post('/api/v1/auth/login')
+            .send(userData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+
+        const logoutUser = await agent.post('/api/v1/auth/logout')
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+
+        assert.equal(201, logoutUser.status);
+        assert.equal(0, logoutUser.body.code);
+    });
+
+    it('verify disabled user', async () => {
+        const agent = request.agent(app);
+        const userData = {
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
+        };
+        const registerUser = await agent.post('/api/v1/auth/register')
+            .send(userData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        const loginUser = await agent.post('/api/v1/auth/login')
+            .send(userData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(201);
+        await User.findOneAndUpdate({email: userData.email}, {$set: {status: 'disabled'}});
+
+        const verifyUser = await agent.get('/api/v1/auth/verify')
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+
+        assert.equal(401, verifyUser.status);
+        assert.equal(402, verifyUser.body.code);
+    });
+
+    it('verify success', async () => {
+        const agent = request.agent(app);
+        const userData = {
+            name: userGenerator.generateValidName(),
+            email: userGenerator.generateValidEmail(),
+            password: userGenerator.generateValidPassword(),
+        };
+        const registerUser = await agent.post('/api/v1/auth/register')
+            .send(userData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        const loginUser = await agent.post('/api/v1/auth/login')
+            .send(userData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        const verifyUser = await agent.get('/api/v1/auth/verify')
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+
+        assert.equal(200, verifyUser.status);
     });
 });
