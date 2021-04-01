@@ -1,4 +1,4 @@
-const dbHandler = require('../dbHandler');
+const dbHandler = require('./dbHandler');
 
 before(async () => await dbHandler.connect());
 after(async () => await dbHandler.closeDatabase());

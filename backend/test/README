@@ -1,0 +1,3 @@
+./models tests only for mongoose models it used mongo-memory-server
+
+./api and ./models uses different configs and run options
