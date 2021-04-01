@@ -4,6 +4,14 @@ const bcrypt = require('bcryptjs');
 const { UserError } = require('../includes/errors/models/errors');
 
 const userSchema = new mongoose.Schema({
+    status: {
+        type: String,
+        enum: {
+            values: ['enabled','disabled'],
+            message: '{PATH} is not valid enum value',
+        },
+        default: 'enabled',
+    },
 	name: {
 		type: String,
         required: [true, '{PATH} is required'],
