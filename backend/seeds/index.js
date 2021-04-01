@@ -45,8 +45,8 @@ async function startFake() {
 
     }
 }
-function handleResponse(message, data) {
-    console.log('handleResponse');
+function jsonResponse(message, data) {
+    console.log('jsonResponse');
     console.log(message, data);
 }
 function handleError(err) {
@@ -64,15 +64,15 @@ async function dup() {
     const error = {};
     Room.findOneAndUpdate({_id: roomId}, room)
         .then(room => {
-            handleResponse('ok', room);
+            jsonResponse('ok', room);
         }, (err) => {
             if (11000 === err.code) {
-                return handleResponse('duplicate key', {code: err.code, message: err.message});
+                return jsonResponse('duplicate key', {code: err.code, message: err.message});
             }
             return handleError(err);
         });
 
-    return handleResponse('unknow error', {});
+    return jsonResponse('unknow error', {});
 }
 
 function del() {

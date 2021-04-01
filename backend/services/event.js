@@ -1,6 +1,6 @@
 const Event = require('../models/event');
 const Room = require('../models/room');
-const { handleResponse } = require('../utils/utils');
+const { jsonResponse } = require('../utils/utils');
 const API_CODES = require('../utils/apiCodes');
 const dayjs = require('dayjs');
 
@@ -14,7 +14,7 @@ const eventList = async (req, res) => {
 
         if (Array.isArray(roomsReq) && roomsReq > 0 ) {
             let rooms = Room.find({status: 'ACTIVE'})
-            return handleResponse(req, res, 200, null, roomsReq, 'Success')
+            return jsonResponse(req, res, 200, null, roomsReq, 'Success')
         }
         else {
             await Room.getAvailable((err, rooms) => {
@@ -30,12 +30,12 @@ const eventList = async (req, res) => {
                     });
                     ret.push(roomData);
                 });
-                return handleResponse(req, res, 200, null, ret, 'Success');
+                return jsonResponse(req, res, 200, null, ret, 'Success');
             });
         }
     }
     catch (err) {
-        return handleResponse(req, res, 500,
+        return jsonResponse(req, res, 500,
             API_CODES.ERROR_SCHEDULE_GET_LIST_ROOM,
             null, 'Error while reading events list'
         );

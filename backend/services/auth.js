@@ -1,6 +1,6 @@
 
 const User = require('../models/user');
-const { handleResponse } = require('../utils/utils');
+const { jsonResponse } = require('../utils/utils');
 const { SUCCESS, FAILURE, ERRORS } = require('../utils/apiCodes');
 const { cookie_options } = require('../configs/config');
 const jsonwebtoken = require('jsonwebtoken');
@@ -14,21 +14,21 @@ module.exports.register = async (req, res, next) => {
 
     err = newUser.validateSync();
     if (err) {
-        return handleResponse(req, res, 400, ERRORS.AUTH.REGISTER_VALIDATION, err, 'Validation error');
+        return jsonResponse(req, res, 400, ERRORS.AUTH.REGISTER_VALIDATION, err, 'Validation error');
     }
 
     User.findOne({ email: newUser.email}, (err, user) => {
         if (err) {
-            return handleResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Error while saving user');
+            return jsonResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Error while saving user');
         }
         if (user) {
-            return handleResponse(req, res, 400, ERRORS.AUTH.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
+            return jsonResponse(req, res, 400, ERRORS.AUTH.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
         }
         newUser.save((err, user) => {
             if (err) {
-                return handleResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Database error');
+                return jsonResponse(req, res, 500, ERRORS.AUTH.REGISTER, err, 'Database error');
             }
-            return handleResponse(req, res, 201, SUCCESS, null, 'User added');
+            return jsonResponse(req, res, 201, SUCCESS, null, 'User added');
         });
     });
 }
@@ -37,11 +37,11 @@ module.exports.login = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 	if (!email || !password) {
-		return handleResponse(req, res, 400, ERRORS.AUTH.LOGIN_EMPTY_CREDENTIALS, null, "Email and password is required")
+		return jsonResponse(req, res, 400, ERRORS.AUTH.LOGIN_EMPTY_CREDENTIALS, null, "Email and password is required")
 	}
 	User.authenticate(email, password,  function (err, user) {
 		if (err || !user) {
-			return handleResponse(req, res, 401, ERRORS.AUTH.LOGIN_INVALID_CREDENTIALS, null, "Invalid credentials");
+			return jsonResponse(req, res, 401, ERRORS.AUTH.LOGIN_INVALID_CREDENTIALS, null, "Invalid credentials");
 		}
 
 		const jwtData = {
@@ -63,18 +63,18 @@ module.exports.login = (req, res, next) => {
 			}
 		};
 
-		return handleResponse(req, res, 201, SUCCESS, ret, 'Logged in');
+		return jsonResponse(req, res, 201, SUCCESS, ret, 'Logged in');
 	});
 }
 
 module.exports.logout = (req, res, next) => {
 		res.clearCookie('token', cookie_options);
-		return handleResponse(req, res, 201, SUCCESS, null, 'Logged out');
+		return jsonResponse(req, res, 201, SUCCESS, null, 'Logged out');
 }
 
 module.exports.verify = (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return handleResponse(req, res, 401, ERRORS.AUTH.VERIFY_UNSIGNED_TOKEN, null, 'Unsigned token');
+		return jsonResponse(req, res, 401, ERRORS.AUTH.VERIFY_UNSIGNED_TOKEN, null, 'Unsigned token');
 	}
 
 	User.findOne({email: req.user.email, status: 'enabled'})
@@ -87,9 +87,9 @@ module.exports.verify = (req, res) => {
 			}
 		};
 
-		return handleResponse(req, res, 200, SUCCESS, ret, 'Token verified');
+		return jsonResponse(req, res, 200, SUCCESS, ret, 'Token verified');
 	})
 	.catch(err => {
-		return handleResponse(req, res, 401, ERRORS.AUTH.VERIFY_INVALID_USER, null, 'Invalid user');
+		return jsonResponse(req, res, 401, ERRORS.AUTH.VERIFY_INVALID_USER, null, 'Invalid user');
 	});
 }

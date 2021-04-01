@@ -1,6 +1,6 @@
 const { SUCCESS, FAILURE, ERRORS } = require('./apiCodes');
 
-function handleResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
+function jsonResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
     let isSuccess = true;
     switch (statusCode) {
         case 204:
@@ -35,18 +35,18 @@ function errorHandler(err, req, res, next) {
             // custom application error
             const is404 = err.toLowerCase().endsWith('not found');
             const statusCode = is404 ? 404 : 400;
-            return handleResponse(req, res, statusCode, null, null, err);
+            return jsonResponse(req, res, statusCode, null, null, err);
             break;
         case err.name === 'ValidationError':
             // mongoose validation error
-            return handleResponse(req, res, 400, null, null, err.message);
+            return jsonResponse(req, res, 400, null, null, err.message);
             break;
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            return handleResponse(req, res, 401, ERRORS.JWT_UNAUTHORIZED, null, 'Unauthorized');
+            return jsonResponse(req, res, 401, ERRORS.JWT_UNAUTHORIZED, null, 'Unauthorized');
             break;
         default:
-            //handleResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
+            //jsonResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
             next();
     }
 }
@@ -77,7 +77,7 @@ function validateRoomNumber(number = false) {
 
 
 module.exports = {
-    handleResponse,
+    jsonResponse,
     errorHandler,
     sleep,
     validateRoomTitle,
