@@ -1,8 +1,8 @@
+const mongoose = require('mongoose');
+const assert = require('chai').assert;
 const User = require('../../models/user.js');
 const Room = require('../../models/room.js');
 const Event = require('../../models/event.js');
-const mongoose = require('mongoose');
-const assert = require('chai').assert;
 const { minutes, hours} = require('../utils').times;
 const userUtils = require('../userUtils');
 
@@ -195,6 +195,52 @@ describe('models/event', () => {
                     if (err) return done(err);
                     return done();
                 });
+            }).catch(err => {
+                return done(err);
+            });
+        }).catch(err => {
+            return done(err);
+        });
+    });
+
+    it('check date_end more than date_start', (done) => {
+        createUser().then(user => {
+            createRoom().then(room => {
+                let err = null;
+                const date_start = new Date();
+                const date_end = new Date();
+                err = new Event({
+                    roomId: room.id, 
+                    userId: user.id,
+                    title: 'event title',
+                    status: 'active',
+                    date_start: date_start,
+                    date_end: date_end,
+                }).validateSync();
+                assert.nestedProperty(err, 'errors.date_end');
+
+                date_end.setMinutes(date_end.getMinutes() - 1);
+                err = new Event({
+                    roomId: room.id, 
+                    userId: user.id,
+                    title: 'event title',
+                    status: 'active',
+                    date_start: date_start,
+                    date_end: date_end,
+                }).validateSync();
+                assert.nestedProperty(err, 'errors.date_end');
+
+                date_end.setMinutes(date_end.getMinutes() + 2);
+                err = new Event({
+                    roomId: room.id, 
+                    userId: user.id,
+                    title: 'event title',
+                    status: 'active',
+                    date_start: date_start,
+                    date_end: date_end,
+                }).validateSync();
+                if (err) assert.notNestedProperty(err, 'errors.date_end');
+                return done();
             }).catch(err => {
                 return done(err);
             });
