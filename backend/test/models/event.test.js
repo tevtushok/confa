@@ -4,7 +4,7 @@ const Event = require('../../models/event.js');
 const mongoose = require('mongoose');
 const assert = require('chai').assert;
 const { minutes, hours} = require('../utils').times;
-const userGenerator = require('../userGenerator');
+const userUtils = require('../userUtils');
 
 describe('models/event', () => {
     const createRoom = () => {
@@ -17,9 +17,9 @@ describe('models/event', () => {
     };
     const createUser = () => {
         const user = new User({
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         });
         return user.save();
     };

@@ -1,18 +1,18 @@
 const assert = require('chai').assert;
 const User = require('../../models/user.js');
-const userGenerator = require('../userGenerator');
+const userUtils = require('../userUtils');
 const bcrypt = require('bcryptjs');
 
 describe('models/user', async () => {
 
-    const validUsername = userGenerator.generateValidName();
-    const invalidUsername = userGenerator.generateInvalidName();
+    const validUsername = userUtils.generateValidName();
+    const invalidUsername = userUtils.generateInvalidName();
 
-    const validEmail = userGenerator.generateValidEmail();
-    const invalidEmail = userGenerator.generateInvalidEmail();
+    const validEmail = userUtils.generateValidEmail();
+    const invalidEmail = userUtils.generateInvalidEmail();
 
-    const validPassword = userGenerator.generateValidPassword();
-    const invalidPassword = userGenerator.generateInvalidPassword();
+    const validPassword = userUtils.generateValidPassword();
+    const invalidPassword = userUtils.generateInvalidPassword();
 
     it('check status', (done) => {
         let err = new User({status: 'quo'}).validateSync();
@@ -46,7 +46,7 @@ describe('models/user', async () => {
     });
 
     it('check email', (done) => {
-        let err, invalidEmail = userGenerator.generateInvalidEmail();
+        let err, invalidEmail = userUtils.generateInvalidEmail();
 
         err = new User().validateSync();
         assert.nestedPropertyVal(err, 'errors.email.message', 'email is required');
@@ -58,7 +58,7 @@ describe('models/user', async () => {
         err = new User({email: invalidEmail}).validateSync();
         assert.nestedPropertyVal(err, 'errors.email.message', `${invalidEmail} is not valid email`);
 
-        err = new User({email: userGenerator.generateValidEmail()}).validateSync();
+        err = new User({email: userUtils.generateValidEmail()}).validateSync();
         assert.notNestedProperty(err, 'errors.email.message');
 
         return done();
@@ -66,9 +66,9 @@ describe('models/user', async () => {
 
     it('check duplicate email', (done) => {
         const data = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         const user = new User(data);
         user.save((err, res) => {
@@ -107,9 +107,9 @@ describe('models/user', async () => {
 
     it('check password is crypted', (done) => {
         const data = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword() 
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword() 
         };
         const user = new User(data);
         const err = user.validateSync();
@@ -132,7 +132,7 @@ describe('models/user', async () => {
         const user = new User(data);
         const err = user.validateSync();
         assert.ok(!err);
-        const newEmail = userGenerator.generateValidEmail();
+        const newEmail = userUtils.generateValidEmail();
         user.save((err, res) => {
             if (err) return done(err);
             User.authenticate(newEmail, data.password, (authErr, authRes) => {
@@ -141,7 +141,7 @@ describe('models/user', async () => {
                 assert.equal(authErr.message, 'Email not found');
             });
 
-            User.authenticate(data.email, userGenerator.generateValidPassword, (authErr, authRes) => {
+            User.authenticate(data.email, userUtils.generateValidPassword, (authErr, authRes) => {
                 assert.ok(authErr);
                 assert.equal(authErr.code, 401);
                 assert.equal(authErr.message, 'Authentication failed');
@@ -153,9 +153,9 @@ describe('models/user', async () => {
 
     it('check authenticate succes', (done) => {
         const data = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         const user = new User(data);
         const err = user.validateSync();

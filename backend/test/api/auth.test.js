@@ -3,7 +3,7 @@ const chai = require('chai');
 const assert = require('chai').assert;
 const request = require('supertest');
 const expect = chai.expect;
-const userGenerator  = require('../userGenerator');
+const userUtils  = require('../userUtils');
 const User = require('../../models/user'); 
 
 describe('controllers/auth', () => {
@@ -17,9 +17,9 @@ describe('controllers/auth', () => {
             .expect(400)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.data.errors).to.have.property('name');
-                expect(res.body.data.errors).to.have.property('email');
-                expect(res.body.data.errors).to.have.property('password');
+                assert.nestedProperty(res, 'body.data.errors.name');
+                assert.nestedProperty(res, 'body.data.errors.email');
+                assert.nestedProperty(res, 'body.data.errors.password');
                 return done();
             });
     });
@@ -33,9 +33,9 @@ describe('controllers/auth', () => {
             .expect(400)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.data.errors).to.not.have.property('name');
-                expect(res.body.data.errors).to.have.property('email');
-                expect(res.body.data.errors).to.have.property('password');
+                assert.notNestedProperty(res, 'body.data.errors.name');
+                assert.nestedProperty(res, 'body.data.errors.email');
+                assert.nestedProperty(res, 'body.data.errors.password');
                 return done();
             });
     });
@@ -52,18 +52,18 @@ describe('controllers/auth', () => {
             .expect(400)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.data.errors).to.not.have.property('name');
-                expect(res.body.data.errors).to.not.have.property('email');
-                expect(res.body.data.errors).to.have.property('password');
+                assert.notNestedProperty(res, 'body.data.errors.name');
+                assert.notNestedProperty(res, 'body.data.errors.email');
+                assert.nestedProperty(res, 'body.data.errors.password');
                 return done();
             });
     });
 
     it('register invalid email', (done) => {
         const user = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateInvalidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateInvalidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/register')
@@ -73,18 +73,18 @@ describe('controllers/auth', () => {
             .expect(400)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.code).to.be.equal(101);
-                expect(res.body.data.errors).to.not.property('name');
-                expect(res.body.data.errors).to.not.property('password');
-                expect(res.body.data.errors).to.have.property('email');
+                assert.nestedPropertyVal(res, 'body.code', 1101);
+                assert.nestedProperty(res, 'body.data.errors.email');
+                assert.notNestedProperty(res, 'body.data.errors.name');
+                assert.notNestedProperty(res, 'body.data.errors.password');
                 return done();
             });
     });
 
     it('register weak password', (done) => {
         const user = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
             password: 'weekpass',
         };
         request(app)
@@ -97,19 +97,19 @@ describe('controllers/auth', () => {
                 if (err){ 
                     return done(err);
                 }
-                expect(res.body.code).to.be.equal(101);
-                expect(res.body.data.errors).to.have.property('password');
-                expect(res.body.data.errors).to.not.have.property('name');
-                expect(res.body.data.errors).to.not.have.property('email');
+                assert.nestedPropertyVal(res, 'body.code', 1101);
+                assert.notNestedProperty(res, 'body.data.errors.name');
+                assert.notNestedProperty(res, 'body.data.errors.email');
+                assert.nestedProperty(res, 'body.data.errors.password');
                 return done();
             });
     });
 
     it('register email exists', (done) => {
         const user = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         const response = request(app)
             .post('/api/v1/auth/register')
@@ -127,7 +127,7 @@ describe('controllers/auth', () => {
                         if (suberr) {
                             return done(suberr);
                         }
-                        expect(subres.body.code).to.be.equal(102);
+                        assert.nestedPropertyVal(subres, 'body.code', 1102);
                         return done();
                     });
             });
@@ -135,16 +135,16 @@ describe('controllers/auth', () => {
 
     it('register ok', (done) => {
         const user = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/register')
             .set('Accept', 'application/json')
             .send(user)
             .expect((res) => {
-                assert.equal(0, res.body.code);
+                assert.nestedPropertyVal(res, 'body.code', 0);
             })
             .expect(201, done);
     });
@@ -158,16 +158,16 @@ describe('controllers/auth', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 assert.equal(400, res.status);
-                assert.equal('Email and password is required', res.body.message);
-                assert.equal(201, res.body.code);
+                assert.nestedPropertyVal(res, 'body.code', 1201);
+                assert.nestedPropertyVal(res, 'body.message', 'Email and password is required');
                 return done();
             });
     });
 
     it ('login invalid credentials', (done) => {
         const data = {
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/login')
@@ -177,17 +177,17 @@ describe('controllers/auth', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 assert.equal(401, res.status);
-                assert.equal('Invalid credentials', res.body.message);
-                assert.equal('202', res.body.code);
+                assert.nestedPropertyVal(res, 'body.code', 1202);
+                assert.nestedPropertyVal(res, 'body.message', 'Invalid credentials');
                 return done();
             });
     });
 
     it('login ok', (done) => {
         const user = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         request(app)
             .post('/api/v1/auth/register')
@@ -207,9 +207,9 @@ describe('controllers/auth', () => {
     it('logout success', async () => {
         const agent = request.agent(app);
         const userData = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
 
         const registerUser = await agent.post('/api/v1/auth/register')
@@ -228,15 +228,15 @@ describe('controllers/auth', () => {
             .expect('Content-Type', /json/);
 
         assert.equal(201, logoutUser.status);
-        assert.equal(0, logoutUser.body.code);
+        assert.nestedPropertyVal(logoutUser, 'body.code', 0);
     });
 
     it('verify disabled user', async () => {
         const agent = request.agent(app);
         const userData = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         const registerUser = await agent.post('/api/v1/auth/register')
             .send(userData)
@@ -257,15 +257,15 @@ describe('controllers/auth', () => {
             .expect('Content-Type', /json/);
 
         assert.equal(401, verifyUser.status);
-        assert.equal(402, verifyUser.body.code);
+        assert.nestedPropertyVal(verifyUser, 'body.code', 1402);
     });
 
     it('verify success', async () => {
         const agent = request.agent(app);
         const userData = {
-            name: userGenerator.generateValidName(),
-            email: userGenerator.generateValidEmail(),
-            password: userGenerator.generateValidPassword(),
+            name: userUtils.generateValidName(),
+            email: userUtils.generateValidEmail(),
+            password: userUtils.generateValidPassword(),
         };
         const registerUser = await agent.post('/api/v1/auth/register')
             .send(userData)
