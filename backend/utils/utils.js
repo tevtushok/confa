@@ -75,11 +75,21 @@ function validateRoomNumber(number = false) {
     return (!isNaN(number) && number !== '');
 }
 
+function filterRequest(req, filter = []) {
+    let filtered = Object.keys(req).reduce((acc, key) => {
+        if (filter.includes(key)) {
+            acc[key] = req[key];
+        }
+        return acc;
+    }, {});
+    return filtered;
+}
+
 
 module.exports = {
     jsonResponse,
     errorHandler,
-    sleep,
+    filterRequest,
     validateRoomTitle,
     validateRoomNumber,
 }
