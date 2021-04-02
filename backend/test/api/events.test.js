@@ -7,7 +7,6 @@ const Room = require('../../models/room');
 const { createAndLoginUser } = require('../userUtils');
 const { createRoom } = require('../roomUtils');
 const { generateValidEventData } = require('../eventUtils');
-const { times } = require('../utils');
 
 describe('controllers/events', async () => {
     const agent = request.agent(app);
@@ -16,8 +15,8 @@ describe('controllers/events', async () => {
     let globalRoomInActive = null; 
 
     before(async () => {
-        // await Event.deleteMany({});
-        // await Room.deleteMany({});
+        await Event.deleteMany({});
+        await Room.deleteMany({});
         globalUser = await createAndLoginUser(agent);
         globalRoomActive = await createRoom(); 
         globalRoomInActive = await createRoom('closed'); 
@@ -25,74 +24,102 @@ describe('controllers/events', async () => {
         // console.log(globalUser);
     });
 
-    // it('add() -> roomId is invalid', (done) => {
-    //     agent.post('/api/v1/events/add')
-    //         .send({roomId: 'id1'})
-    //         .set('Accept', 'application/json')
-    //         .expect('Content-Type', /json/)
-    //         .end((err, res) => {
-    //             if(err) return done(err);
-    //             assert.equal(401, res.status);
-    //             assert.nestedProperty(res, 'body.data.errors.roomId');
-    //             assert.nestedPropertyVal(res, 'body.code', 1501);
-    //             assert.nestedPropertyVal(res, 'body.message', 'Validation error');
-    //             return done();
-    //         });
-    // });
+    it('add() -> title is required', (done) => {
+        agent.post('/api/v1/events/add')
+            .send({})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedProperty(res, 'body.data.errors.title');
+                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.message', 'Validation error');
+                return done();
+            });
+    });
 
-    // it('add() -> roomId not found', (done) => {
-    //     const eventData = generateValidEventData();
-    //     eventData.roomId = mongoose.Types.ObjectId();
-    //     agent.post('/api/v1/events/add')
-    //         .send(eventData)
-    //         .set('Accept', 'application/json')
-    //         .expect('Content-Type', /json/)
-    //         .end((err, res) => {
-    //             if(err) return done(err);
-    //             assert.equal(401, res.status);
-    //             assert.nestedPropertyVal(res, 'body.code', 1502);
-    //             assert.nestedPropertyVal(res, 'body.message', 'Room does not exists');
-    //             return done();
-    //         });
-    // });
+    it('add() -> title len < 3', (done) => {
+        agent.post('/api/v1/events/add')
+            .send({title: 'tq'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedProperty(res, 'body.data.errors.title');
+                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.message', 'Validation error');
+                return done();
+            });
+    });
 
-    // it('add() -> room is not active', (done) => {
-    //     const eventData = generateValidEventData();
-    //     eventData.roomId = globalRoomInActive.id; 
-    //     agent.post('/api/v1/events/add')
-    //         .send(eventData)
-    //         .set('Accept', 'application/json')
-    //         .expect('Content-Type', /json/)
-    //         .end((err, res) => {
-    //             console.log(res.body);
-    //             if(err) return done(err);
-    //             assert.equal(401, res.status);
-    //             assert.nestedPropertyVal(res, 'body.code', 1503);
-    //             assert.nestedPropertyVal(res, 'body.message', 'Room is not active');
-    //             return done();
-    //         });
-    // });
+    it('add() -> roomId is invalid', (done) => {
+        agent.post('/api/v1/events/add')
+            .send({roomId: 'id1'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedProperty(res, 'body.data.errors.roomId');
+                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.message', 'Validation error');
+                return done();
+            });
+    });
 
-    // it('add() -> invalid date_start, date_end', (done) => {
-    //     const eventData = generateValidEventData();
-    //     eventData.roomId = globalRoomActive.id; 
-    //     eventData['date_start'] = 'y2020-10-10';
-    //     eventData['date_end'] = '02 2021 12:25';
-    //     agent.post('/api/v1/events/add')
-    //         .send(eventData)
-    //         .set('Accept', 'application/json')
-    //         .expect('Content-Type', /json/)
-    //         .end((err, res) => {
-    //             console.log(res.body);
-    //             if(err) return done(err);
-    //             assert.equal(401, res.status);
-    //             assert.nestedProperty(res, 'body.data.errors.date_start');
-    //             assert.nestedProperty(res, 'body.data.errors.date_end');
-    //             assert.nestedPropertyVal(res, 'body.code', 1501);
-    //             assert.nestedPropertyVal(res, 'body.message', 'Validation error');
-    //             return done();
-    //         });
-    // });
+    it('add() -> roomId not found', (done) => {
+        const eventData = generateValidEventData();
+        eventData.roomId = mongoose.Types.ObjectId();
+        agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedPropertyVal(res, 'body.code', 1502);
+                assert.nestedPropertyVal(res, 'body.message', 'Room does not exists');
+                return done();
+            });
+    });
+
+    it('add() -> room is not active', (done) => {
+        const eventData = generateValidEventData();
+        eventData.roomId = globalRoomInActive.id; 
+        agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedPropertyVal(res, 'body.code', 1503);
+                assert.nestedPropertyVal(res, 'body.message', 'Room is not active');
+                return done();
+            });
+    });
+
+    it('add() -> invalid date_start, date_end', (done) => {
+        const eventData = generateValidEventData();
+        eventData.roomId = globalRoomActive.id; 
+        eventData['date_start'] = 'y2020-10-10';
+        eventData['date_end'] = '02 2021 12:25';
+        agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end((err, res) => {
+                if(err) return done(err);
+                assert.equal(401, res.status);
+                assert.nestedProperty(res, 'body.data.errors.date_start');
+                assert.nestedProperty(res, 'body.data.errors.date_end');
+                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.message', 'Validation error');
+                return done();
+            });
+    });
 
     it('add() -> date_start == date_end', (done) => {
         const eventData = generateValidEventData();

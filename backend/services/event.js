@@ -9,7 +9,7 @@ const today = dayjs().format('MM-DD-YYYY');
 
 module.exports.add = async (req, res) => {
     try {
-        const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title']);
+        const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title', 'description']);
         eventData.userId = req.user.id; // userId from user session
         const newEvent = new Event(eventData);
         const validationErr = newEvent.validateSync();

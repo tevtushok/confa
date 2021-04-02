@@ -17,6 +17,10 @@ const eventSchema = new mongoose.Schema({
         minlength: [3, '{PATH} less than 3 characters'],
         required: [true, '{PATH} is required'],
     },
+    description: {
+        type: String,
+        required: [true, '{PATH} is required'],
+    },
     status: {
         type: String,
         enum: {
@@ -51,7 +55,7 @@ eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, da
         date_end: {'$lte': date_end},
     };
     if (exclude_id.length) {
-        filterArgs.id = {'$nin': exclude_id};
+        filterArgs.id = {id: {'$nin': exclude_id}};
     }
     this.find(filterArgs)
     .exec(function (err, events) {

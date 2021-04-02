@@ -7,6 +7,7 @@ module.exports.generateValidEventData = (roomId, status = 'active') => {
         roomId: roomId,
         status: status,
         title: 'test_event' + generateAlnum(6),
+        description: 'description_event_' + generateAlnum(6),
         date_start: start.toISOString(),
         date_end: end.toISOString(),
     };
