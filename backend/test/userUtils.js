@@ -16,8 +16,7 @@ module.exports.generateInvalidEmail = () => {
     return 'invalid_email' + generateAlnum(8) + 'example';
 }
 
-module.exports.generateValidPassword = () => {
-    return generateAlnum(8) + '#Q1';
+module.exports.generateValidPassword = () => { return generateAlnum(8) + '#Q1';
 }
 
 module.exports.generateInvalidPassword = () => {
@@ -41,5 +40,5 @@ module.exports.createAndLoginUser = async(agent) => {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201);
-    return loginUser;
+    return userData;
 };

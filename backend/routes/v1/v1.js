@@ -9,8 +9,9 @@ const eventsController = require('../../controllers/events')
 const roomsController = require('../../controllers/rooms')
 
 router.use('/auth', authController);
-router.use('/users', usersController);
 router.use('/events', eventsController);
+
+router.use('/users', usersController);
 router.use('/rooms', roomsController);
 
 

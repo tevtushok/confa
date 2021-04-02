@@ -2,6 +2,6 @@ const express = require('express');
 const eventService = require('../services/event');
 let router = express.Router();
 
-router.get('/eventList', eventService.eventList);
+router.post('/add', eventService.add);
 
 module.exports = router;

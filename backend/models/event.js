@@ -1,12 +1,11 @@
 const mongoose = require('mongoose')
-const dayjs = require('dayjs');
+const { EventError } = require('../includes/errors/models');
 
 const eventSchema = new mongoose.Schema({
     roomId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room',
         required: [true, '{PATH} is required'],
-        message: 'iiha',
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -35,29 +34,26 @@ const eventSchema = new mongoose.Schema({
         required: [true, '{PATH} is required'],
         validate: {
             validator: function(v) {
-                if (this.date_start) {
-                    return this.date_start < v;
-                }
-                return true;
+                return this.date_start ? this.date_start < v : true;
             },
             message: props => `${props.value} should be more than date_start`
         },
     },
 });
 
-eventSchema.pre('save', (next) => {
-    // check date_start is less than date_end
-    // check date crossing with other event by roomId
-    next();
-});
 
-eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, date_end, callback) {
-    this.find({
+eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, date_end, exclude_id = [], callback) {
+    exclude_id = [].concat(exclude_id || []);
+    const filterArgs = {
         roomId: roomId,
         status: 'active',
         date_start: {'$gte': date_start},
         date_end: {'$lte': date_end},
-    })
+    };
+    if (exclude_id.length) {
+        filterArgs.id = {'$nin': exclude_id};
+    }
+    this.find(filterArgs)
     .exec(function (err, events) {
         if (err) {
             return callback(err)
@@ -65,6 +61,16 @@ eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, da
         return callback(null, events);
     });
 };
+
+// check for dates crossing with other event by roomId
+eventSchema.pre('save', function (next) {
+    mongoose.models.Event.getRoomEventsBeetwenDates(this.roomId, this.date_start, this.date_end, this.id, (err, events) => {
+        if (err) next(err);
+        if (events.length)
+            next(new EventError(2000, 'Date is crossed with other event'));
+        next();
+    });
+});
 
 eventSchema.statics.getActiveByYmd = function (roomId, ymd, callback) {
     this.find({

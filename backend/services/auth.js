@@ -43,11 +43,11 @@ module.exports.login = (req, res, next) => {
 		if (err || !user) {
 			return jsonResponse(req, res, 401, ERRORS.AUTH.LOGIN_INVALID_CREDENTIALS, null, "Invalid credentials");
 		}
-
 		const jwtData = {
+            id: user.id,
 			email: user.email,
 			password: user.password,
-			role: user.role
+            isAdmin: user.isAdmin
 		};
 		const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
 
@@ -59,7 +59,7 @@ module.exports.login = (req, res, next) => {
 			user: {
 				name: user.name,
 				email: user.email,
-				role: user.role
+				isAdmin: user.isAdmin
 			}
 		};
 

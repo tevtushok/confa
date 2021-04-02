@@ -29,7 +29,7 @@ async function startFake() {
         const room = {
             title: title,
             number: firstNumber + i,
-            status: 'ACTIVE',
+            status: 'active',
         };
         console.log('trying to save in db')
 
