@@ -57,9 +57,6 @@ describe('models/event', () => {
         let date_end = null, date_start = null;
         // 10:40-10:50
         const event = await createEvent(eventDateStart, eventDateEnd);
-        console.log('evvvvvvvvvvent');
-        console.log(event);
-        console.log('evvvvvvvvvvent');
         assert.ok(event);
 
         // 10:40-10:50 - 10:40-10:50

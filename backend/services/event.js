@@ -3,6 +3,7 @@ const Event = require('../models/event');
 const Room = require('../models/room');
 const { jsonResponse, filterRequest } = require('../utils/utils');
 const { SUCCESS, FAILURE, ERRORS } = require('../utils/apiCodes');
+const { MODELS: MODELS_ERRORS } = require('../includes/errors/codes');
 const { EventError } = require('../includes/errors/models');
 
 const today = dayjs().format('MM-DD-YYYY');
@@ -30,8 +31,8 @@ module.exports.add = async (req, res) => {
         newEvent.status = 'active';
         newEvent.save((err, event) => {
             if (err) {
-                if (err instanceof EventError) {
-                    return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_CROSS_DATES, null, err.message);
+                if (err instanceof EventError && err.code === MODELS_ERRORS.EVENT.CROSS_DATES) {
+                    return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_CROSS_DATES, {events: err.data}, err.message);
                 }
                 return jsonResponse(req, res, 500, ERRORS.EVENTS.ADD, err, 'Database error');
             }
