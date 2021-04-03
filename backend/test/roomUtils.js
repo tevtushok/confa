@@ -1,4 +1,4 @@
-const Room = require('../models/room'); 
+const Room = require('../models/room');
 const { generateRandomInt, generateAlnum } = require('./utils');
 
 module.exports.createRoom = async (status = 'active') => {
@@ -8,4 +8,12 @@ module.exports.createRoom = async (status = 'active') => {
         number: generateRandomInt(),
     }).save();
     return room;
+};
+
+module.exports.generateRoomTitle = () => {
+    return 'room_title' + generateAlnum(6);
+};
+
+module.exports.generateRoomNumber = () => {
+    return generateRandomInt();
 };
