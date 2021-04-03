@@ -57,7 +57,17 @@ describe('models/event', () => {
         let date_end = null, date_start = null;
         // 10:40-10:50
         const event = await createEvent(eventDateStart, eventDateEnd);
+        console.log('evvvvvvvvvvent');
+        console.log(event);
+        console.log('evvvvvvvvvvent');
         assert.ok(event);
+
+        // 10:40-10:50 - 10:40-10:50
+        date_start = new Date('2021 10:40');
+        date_end = new Date('2021 10:50');
+        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+            assert.isNotEmpty(res);
+        });
 
         // 10:40-10:50 - 10:30-10:40
         date_start = new Date('2021 10:30');

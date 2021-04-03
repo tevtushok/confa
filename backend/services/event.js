@@ -65,7 +65,7 @@ module.exports.add = async (req, res) => {
 //                         room: room,
 //                         events: []
 //                     }
-//                     Event.getRoomEventsBeetwenDates(roomId, today, today, events => {
+//                     Event.getEventsBetweenDates(roomId, today, today, events => {
 //                         roomData.events = events;
 //                     });
 //                     ret.push(roomData);

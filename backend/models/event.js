@@ -46,9 +46,14 @@ const eventSchema = new mongoose.Schema({
 });
 
 
-eventSchema.statics.getEventsBeetwenDates = function (roomId, date_start, date_end, exclude_id = [], findOne = false, callback) {
-    const findMethod = findOne === true ? this.findOne : this.find;
-    exclude_id = [].concat(exclude_id || []);
+eventSchema.statics.getEventsBetweenDates = function (roomId, dateStart, dateEnd, exclude_id = false,  callback) {
+    dateStart = new Date(dateStart).toISOString();
+    dateEnd = new Date(dateEnd).toISOString();
+    console.log();
+    console.log();
+    console.log(`roomId: ${roomId} date_start: ${dateStart} date_end: ${dateEnd} exclude_id: ${exclude_id}`);
+    console.log();
+    console.log();
     const filterArgs = {
         roomId: roomId,
         status: 'active',
@@ -56,22 +61,22 @@ eventSchema.statics.getEventsBeetwenDates = function (roomId, date_start, date_e
         [
             {
                 '$and': [
-                    { date_start: {'$gte': start} },
-                    { date_start: {'$lt': end} },
+                    { date_start: {'$gte': dateStart} },
+                    { date_start: {'$lt': dateEnd} },
                 ]
             },
             {
                 '$and': [
-                    { date_start: {'$lt': start} },
-                    { date_end: {'$gt': start} },
+                    { date_start: {'$lt': dateStart} },
+                    { date_end: {'$gt': dateStart} },
                 ]
             },
         ]
     };
-    if (exclude_id.length) {
-        filterArgs.id = {id: {'$nin': exclude_id}};
+    if (exclude_id) {
+        filterArgs.id = {id: {'$ne': exclude_id}};
     }
-    findMethod(filterArgs)
+    this.find(filterArgs)
         .exec(function (err, events) {
             if (err) {
                 return callback(err)
@@ -82,8 +87,11 @@ eventSchema.statics.getEventsBeetwenDates = function (roomId, date_start, date_e
 
 // check for dates crossing with other event by roomId
 eventSchema.pre('save', function (next) {
-    mongoose.models.Event.getEventsBeetwenDates(this.roomId, this.date_start, this.date_end, this.id, true, (err, events) => {
+    mongoose.models.Event.getEventsBetweenDates(this.roomId, this.date_start, this.date_end, this.id, (err, events) => {
         if (err) next(err);
+        console.log('eventsssssssssssssssssssssssssssssss');
+        console.log(events);
+        console.log('eventsssssssssssssssssssssssssssssss');
         if (events.length)
             next(new EventError(2000, 'Date is crossed with other event'));
         next();
