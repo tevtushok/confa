@@ -46,29 +46,43 @@ const eventSchema = new mongoose.Schema({
 });
 
 
-eventSchema.statics.getRoomEventsBeetwenDates = function (roomId, date_start, date_end, exclude_id = [], callback) {
+eventSchema.statics.getEventsBeetwenDates = function (roomId, date_start, date_end, exclude_id = [], findOne = false, callback) {
+    const findMethod = findOne === true ? this.findOne : this.find;
     exclude_id = [].concat(exclude_id || []);
     const filterArgs = {
         roomId: roomId,
         status: 'active',
-        date_start: {'$gte': date_start},
-        date_end: {'$lte': date_end},
+        '$or':
+        [
+            {
+                '$and': [
+                    { date_start: {'$gte': start} },
+                    { date_start: {'$lt': end} },
+                ]
+            },
+            {
+                '$and': [
+                    { date_start: {'$lt': start} },
+                    { date_end: {'$gt': start} },
+                ]
+            },
+        ]
     };
     if (exclude_id.length) {
         filterArgs.id = {id: {'$nin': exclude_id}};
     }
-    this.find(filterArgs)
-    .exec(function (err, events) {
-        if (err) {
-            return callback(err)
-        }
-        return callback(null, events);
-    });
+    findMethod(filterArgs)
+        .exec(function (err, events) {
+            if (err) {
+                return callback(err)
+            }
+            return callback(null, events);
+        });
 };
 
 // check for dates crossing with other event by roomId
 eventSchema.pre('save', function (next) {
-    mongoose.models.Event.getRoomEventsBeetwenDates(this.roomId, this.date_start, this.date_end, this.id, (err, events) => {
+    mongoose.models.Event.getEventsBeetwenDates(this.roomId, this.date_start, this.date_end, this.id, true, (err, events) => {
         if (err) next(err);
         if (events.length)
             next(new EventError(2000, 'Date is crossed with other event'));
@@ -82,12 +96,12 @@ eventSchema.statics.getActiveByYmd = function (roomId, ymd, callback) {
         date_start: {'$gte': new Date(ymd)},
         date_end: {'$lte': new Date(ymd)},
     })
-    .exec(function (err, events) {
-        if (err) {
-            return callback(err)
-        }
-        return callback(null, events);
-    });
+        .exec(function (err, events) {
+            if (err) {
+                return callback(err)
+            }
+            return callback(null, events);
+        });
 };
 
 module.exports = mongoose.model('Event', eventSchema)
