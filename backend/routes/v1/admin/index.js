@@ -1,7 +1,7 @@
 const express = require('express');
 const v1Api = require('./v1.js');
 const router = express.Router();
-const { jsonResponse } = require('../../../utils/utils');
+const { jsonResponse } = require('../../../includes/utils');
 
 router.get('/v1', (req, res, next) => {
     res.sendFile(__dirname + '/index.html');

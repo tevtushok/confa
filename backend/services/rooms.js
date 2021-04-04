@@ -1,5 +1,5 @@
 const Room = require('../models/room');
-const { jsonResponse } = require('../utils/utils');
+const { jsonResponse } = require('../includes/utils');
 const { SUCCESS, FAILURE, API } = require('../includes/codes');
 
 const listRooms = async (req, res) => {

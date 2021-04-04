@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { jsonResponse } = require('../utils/utils');
+const { jsonResponse } = require('../includes/utils');
 
 const me = async (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {

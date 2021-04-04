@@ -1,6 +1,6 @@
 
 const User = require('../models/user');
-const { jsonResponse } = require('../utils/utils');
+const { jsonResponse } = require('../includes/utils');
 const { SUCCESS, FAILURE, API } = require('../includes/codes');
 const { cookie_options } = require('../configs/config');
 const jsonwebtoken = require('jsonwebtoken');

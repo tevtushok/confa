@@ -1,6 +1,6 @@
 const Room = require('../../models/room');
-const { jsonResponse, validateRoomTitle, validateRoomNumber } = require('../../utils/utils');
-const API_CODES = require('../../utils/apiCodes');
+const { jsonResponse, validateRoomTitle, validateRoomNumber } = require('../../includes/utils');
+const { SUCCESS, FAILURE, ADMIN } = require('../../includes/codes');
 
 
 const listRooms = async (req, res) => {
@@ -12,7 +12,7 @@ const listRooms = async (req, res) => {
 	}
 	catch (err) {
 		return jsonResponse(req, res, 500,
-            API_CODES.ERROR_ADMIN_GET_ROOMS_FAILURE,
+            ADMIN.ROOMS.GET_LIST__FAILURE,
             err, 'Error while reading rooms list'
         );
 	}
@@ -23,7 +23,7 @@ const saveRooms = async (req, res) => {
     // single item to save
     if (Object !== reqRoom.constructor || !Object.keys(reqRoom).length) {
         return jsonResponse(req, res, 500,
-            API_CODES.ERROR_ADMIN_SAVING_ROOMS_INPUT,
+            ADMIN.ROOMS.INVALID_INPUT,
             null, 'Invalid input parameters'
         );
     }
@@ -37,17 +37,17 @@ const saveRooms = async (req, res) => {
         const validationRes = validateInputFields(Object.keys(room), room);
         if (true !== validationRes) {
             return jsonResponse(req, res, 400,
-                API_CODES.ERROR_ADMIN_SAVING_ROOMS_INPUT, 
+                ADMIN.ROOMS.INVALID_INPUT,
                 {fields: validationRes}, 'Fields validation error'
             );
         }
         await Room.findOneAndUpdate({_id: roomId}, room)
         .then(savedRoom => {
             if (savedRoom) {
-                return jsonResponse(req, res, 200, API_CODES.SUCCESS, savedRoom,'Saved');
+                return jsonResponse(req, res, 200, SUCCESS, savedRoom,'Saved');
             }
             else {
-                return jsonResponse(req, res, 400, API_CODES.ERROR_ADMIN_ROOM_NOT_EXISTS, null,'Room does not exists');
+                return jsonResponse(req, res, 400, ADMIN.ROOMS.ROOM_NOT_EXISTS, null,'Room does not exists');
             }
         })
         .catch(err => {
@@ -55,12 +55,12 @@ const saveRooms = async (req, res) => {
             if (11000 === err.code) {
                 const ret = {fields: err.keyValue}
                 return jsonResponse(req, res, 400,
-                    API_CODES.ERROR_ADMIN_SAVING_ROOMS_DUPLICATE,
+                    ADMIN.ROOMS.DUPLICATE,
                     {fields: err.keyValue}, 'Duplicate field'
                 );
             }
             return jsonResponse(req, res, 400,
-                API_CODES.ERROR_ADMIN_SAVING_ROOMS_FAILURE,
+                ADMIN.ROOMS.SAVING_FAILURE,
                 err, 'Error while updating single room item in database'
             );
         });
@@ -70,7 +70,7 @@ const saveRooms = async (req, res) => {
         const validationRes = validateInputFields(Object.keys(reqRoom), reqRoom);
         if (true !== validationRes) {
             return jsonResponse(req, res, 400,
-                API_CODES.ERROR_ADMIN_SAVING_ROOMS_INPUT, 
+                ADMIN.ROOMS.INVALID_INPUT,
                 {fields: validationRes}, 'Fields validation error'
             );
         }
@@ -78,19 +78,19 @@ const saveRooms = async (req, res) => {
         await Room.create(room)
             .then(savedRoom => {
                 return jsonResponse(req, res, 200,
-                    API_CODES.SUCCESS, {room: savedRoom}, 'Saved'
+                    SUCCESS, {room: savedRoom}, 'Saved'
                 );
             })
             .catch(err => {
                 // mongoose codeName: 'DuplicateKey'
                 if (11000 === err.code) {
                     return jsonResponse(req, res, 400,
-                        API_CODES.ERROR_ADMIN_SAVING_ROOMS_DUPLICATE,
+                        ADMIN.ROOMS.DUPLICATE,
                         {fields: err.keyValue}, 'Duplicate field'
                     );
                 }
                 return jsonResponse(req, res, 400,
-                    API_CODES.ERROR_ADMIN_SAVING_ROOMS_FAILURE, null,
+                    ADMIN.ROOMS.SAVING_FAILURE, null,
                     'Error while saving single room item in database'
                 );
             });
@@ -100,22 +100,22 @@ const saveRooms = async (req, res) => {
 const deleteRoom = async (req, res) => {
     id = req.params.id || false;
     if (!id) {
-        return jsonResponse(req, res, 400, API_CODES.ERROR_ADMIN_DELETING_ROOMS,
+        return jsonResponse(req, res, 400, ADMIN.ROOMS.DELETING_ROOMS,
             null, 'Room id is required argument'
         );
     }
     await Room.findOneAndDelete({_id: id })
     .then(room => {
         if (room) {
-           return jsonResponse(req, res, 200, API_CODES.SUCCESS, room, 'DELETED'); 
+           return jsonResponse(req, res, 200, SUCCESS, room, 'DELETED');
         }
-        return jsonResponse(req, res, 400, API_CODES.ERROR_ADMIN_DELETING_ROOMS,
+        return jsonResponse(req, res, 400, ADMIN.ROOMS.DELETING_ROOMS,
             null, 'Room doens exists'
         );
     })
     .catch(err => {
         console.log(err.code, err.message);
-        return jsonResponse(req, res, 500, API_CODES.ERROR_ADMIN_DELETING_ROOMS,
+        return jsonResponse(req, res, 500, ADMIN.ROOMS.DELETING_ROOMS,
             null, 'Error while deleting room'
         );
     });
@@ -133,7 +133,7 @@ function validateInputFields(fields, data = false) {
                 errors.number = 'Invalid number';
             }
         });
-        
+
         return Object.keys(errors).length ? errors : true;
     }
 }

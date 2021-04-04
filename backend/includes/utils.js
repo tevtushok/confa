@@ -1,4 +1,4 @@
-const { SUCCESS, FAILURE, ERRORS } = require('./apiCodes');
+const { SUCCESS, FAILURE, MIDDLEWARE } = require('./codes');
 
 function jsonResponse(req, res, statusCode, apiCode = null, data = null, message = null) {
     let isSuccess = true;
@@ -43,7 +43,7 @@ function errorHandler(err, req, res, next) {
             break;
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            return jsonResponse(req, res, 401, ERRORS.JWT_UNAUTHORIZED, null, 'Unauthorized');
+            return jsonResponse(req, res, 401, MIDDLEWARE.JWT.UNAUTHORIZED, null, 'Unauthorized');
             break;
         default:
             //jsonResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
@@ -56,7 +56,7 @@ function signJWT(data) {
     return token;
 }
 
-// time in ms 
+// time in ms
 function sleep(time, cb = false) {
     const stop = new Date().getTime();
     while(new Date().getTime() < stop + time) {

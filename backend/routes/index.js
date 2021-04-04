@@ -2,7 +2,7 @@ const apiRoute = require('./v1');
 const adminApiRoute = require('./v1/admin')
 const jwt = require('express-jwt');
 const {public_routes, jwt_algorithms} = require('../configs/config');
-const {errorHandler} = require('../utils/utils');
+const {errorHandler} = require('../includes/utils');
 
 const init = (app) => {
 

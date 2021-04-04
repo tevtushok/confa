@@ -1,13 +1,4 @@
-module.exports.MODELS = {
-    EVENT: {
-        CROSS_DATES: 2000
-    },
-    USER: {
-        EMAIL_NOT_FOUND: 2100,
-        INVALID_PWD: 2101,
-    },
-};
-
+// API CODES
 module.exports.API = {
     AUTH: {
         REGISTER: 1000,
@@ -36,6 +27,35 @@ module.exports.API = {
         INVALID_TOKEN: 1006,
         EMAIL_EXISTS: 1005,
     },
+}
+
+// MONGOOSE MODELS CODES
+module.exports.MODELS = {
+    EVENT: {
+        CROSS_DATES: 2000
+    },
+    USER: {
+        EMAIL_NOT_FOUND: 2100,
+        INVALID_PWD: 2101,
+    },
+};
+
+// APP MIDDLEWARE CODES
+module.exports.MIDDLEWARE = {
+    JWT: {
+        UNAUTHORIZED: 3000,
+    },
+}
+
+module.exports.ADMIN = {
+    ROOMS: {
+        GET_FAILURE: 10000,
+        SAVING_FAILURE: 10001,
+        DUPLICATE: 10002,
+        INVALID_INPUT: 10003,
+        DELETING_ROOMS: 10004,
+        ROOM_NOT_EXISTS: 10005,
+    }
 }
 
 module.exports.SUCCESS = 0;

@@ -1,6 +1,6 @@
 const Event = require('../models/event');
 const Room = require('../models/room');
-const { jsonResponse, filterRequest } = require('../utils/utils');
+const { jsonResponse, filterRequest } = require('../includes/utils');
 const { MODELS, API, SUCCESS, FAILURE }= require('../includes/codes');
 const { EventError } = require('../includes/errors/models');
 
