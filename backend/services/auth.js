@@ -14,7 +14,7 @@ module.exports.register = async (req, res, next) => {
 
     err = newUser.validateSync();
     if (err) {
-        return jsonResponse(req, res, 400, API.AUTH.REGISTER_VALIDATION, err, 'Validation error');
+        return jsonResponse(req, res, 400, API.AUTH.VALIDATION, err, 'Validation error');
     }
 
     User.findOne({ email: newUser.email}, (err, user) => {
@@ -22,7 +22,7 @@ module.exports.register = async (req, res, next) => {
             return jsonResponse(req, res, 500, API.AUTH.REGISTER, err, 'Error while saving user');
         }
         if (user) {
-            return jsonResponse(req, res, 400, API.AUTH.REGISTER_EMAIL_EXISTS, null, 'Email should be unique');
+            return jsonResponse(req, res, 400, API.AUTH.EMAIL_EXISTS, null, 'Email should be unique');
         }
         newUser.save((err, user) => {
             if (err) {
@@ -37,11 +37,11 @@ module.exports.login = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 	if (!email || !password) {
-		return jsonResponse(req, res, 400, API.AUTH.LOGIN_EMPTY_CREDENTIALS, null, "Email and password is required")
+		return jsonResponse(req, res, 400, API.AUTH.EMPTY_CREDENTIALS, null, "Email and password is required")
 	}
 	User.authenticate(email, password,  function (err, user) {
 		if (err || !user) {
-			return jsonResponse(req, res, 401, API.AUTH.LOGIN_INVALID_CREDENTIALS, null, "Invalid credentials");
+			return jsonResponse(req, res, 401, API.AUTH.INVALID_CREDENTIALS, null, "Invalid credentials");
 		}
 		const jwtData = {
             id: user.id,
@@ -74,7 +74,7 @@ module.exports.logout = (req, res, next) => {
 
 module.exports.verify = (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return jsonResponse(req, res, 401, API.AUTH.VERIFY_UNSIGNED_TOKEN, null, 'Unsigned token');
+		return jsonResponse(req, res, 401, API.AUTH.UNSIGNED_TOKEN, null, 'Unsigned token');
 	}
 
 	User.findOne({email: req.user.email, status: 'enabled'})
@@ -90,6 +90,6 @@ module.exports.verify = (req, res) => {
 		return jsonResponse(req, res, 200, SUCCESS, ret, 'Token verified');
 	})
 	.catch(err => {
-		return jsonResponse(req, res, 401, API.AUTH.VERIFY_INVALID_USER, null, 'Invalid user');
+		return jsonResponse(req, res, 401, API.AUTH.INVALID_USER, null, 'Invalid user');
 	});
 }

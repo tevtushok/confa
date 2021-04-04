@@ -33,7 +33,7 @@ describe('controllers/events', async () => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.title');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -48,7 +48,7 @@ describe('controllers/events', async () => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.title');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -63,7 +63,7 @@ describe('controllers/events', async () => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.roomId');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -79,7 +79,7 @@ describe('controllers/events', async () => {
             .end((err, res) => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
-                assert.nestedPropertyVal(res, 'body.code', 1502);
+                assert.nestedPropertyVal(res, 'body.code', 1102);
                 assert.nestedPropertyVal(res, 'body.message', 'Room does not exists');
                 return done();
             });
@@ -95,7 +95,7 @@ describe('controllers/events', async () => {
             .end((err, res) => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
-                assert.nestedPropertyVal(res, 'body.code', 1503);
+                assert.nestedPropertyVal(res, 'body.code', 1103);
                 assert.nestedPropertyVal(res, 'body.message', 'Room is not active');
                 return done();
             });
@@ -115,7 +115,7 @@ describe('controllers/events', async () => {
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_start');
                 assert.nestedProperty(res, 'body.data.errors.date_end');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -133,7 +133,7 @@ describe('controllers/events', async () => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_end');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -153,7 +153,7 @@ describe('controllers/events', async () => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_end');
-                assert.nestedPropertyVal(res, 'body.code', 1501);
+                assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
@@ -204,7 +204,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.nestedPropertyVal(event5, 'body.code', 1504);
+        assert.nestedPropertyVal(event5, 'body.code', 1104);
         assert.nestedPropertyVal(event5, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event5, 'body.data.events');
         assert.isArray(event5.body.data.events);
@@ -217,7 +217,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.nestedPropertyVal(event6, 'body.code', 1504);
+        assert.nestedPropertyVal(event6, 'body.code', 1104);
         assert.nestedPropertyVal(event6, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event6, 'body.data.events');
         assert.isArray(event6.body.data.events);

@@ -4,7 +4,7 @@ const assert = require('chai').assert;
 const request = require('supertest');
 const expect = chai.expect;
 const userUtils  = require('../userUtils');
-const User = require('../../models/user'); 
+const User = require('../../models/user');
 
 describe('controllers/auth', () => {
     before(async () => await User.deleteMany({}));
@@ -73,7 +73,7 @@ describe('controllers/auth', () => {
             .expect(400)
             .end((err, res) => {
                 if (err) return done(err);
-                assert.nestedPropertyVal(res, 'body.code', 1101);
+                assert.nestedPropertyVal(res, 'body.code', 1001);
                 assert.nestedProperty(res, 'body.data.errors.email');
                 assert.notNestedProperty(res, 'body.data.errors.name');
                 assert.notNestedProperty(res, 'body.data.errors.password');
@@ -94,10 +94,10 @@ describe('controllers/auth', () => {
             .expect('Content-Type', /json/)
             .expect(400)
             .end((err, res) => {
-                if (err){ 
+                if (err){
                     return done(err);
                 }
-                assert.nestedPropertyVal(res, 'body.code', 1101);
+                assert.nestedPropertyVal(res, 'body.code', 1001);
                 assert.notNestedProperty(res, 'body.data.errors.name');
                 assert.notNestedProperty(res, 'body.data.errors.email');
                 assert.nestedProperty(res, 'body.data.errors.password');
@@ -127,7 +127,7 @@ describe('controllers/auth', () => {
                         if (suberr) {
                             return done(suberr);
                         }
-                        assert.nestedPropertyVal(subres, 'body.code', 1102);
+                        assert.nestedPropertyVal(subres, 'body.code', 1002);
                         return done();
                     });
             });
@@ -158,7 +158,7 @@ describe('controllers/auth', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 assert.equal(400, res.status);
-                assert.nestedPropertyVal(res, 'body.code', 1201);
+                assert.nestedPropertyVal(res, 'body.code', 1004);
                 assert.nestedPropertyVal(res, 'body.message', 'Email and password is required');
                 return done();
             });
@@ -177,7 +177,7 @@ describe('controllers/auth', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 assert.equal(401, res.status);
-                assert.nestedPropertyVal(res, 'body.code', 1202);
+                assert.nestedPropertyVal(res, 'body.code', 1005);
                 assert.nestedPropertyVal(res, 'body.message', 'Invalid credentials');
                 return done();
             });
@@ -203,7 +203,7 @@ describe('controllers/auth', () => {
                     .expect(201, done);
             });
     });
-    
+
     it('logout success', async () => {
         const agent = request.agent(app);
         const userData = {
@@ -257,7 +257,7 @@ describe('controllers/auth', () => {
             .expect('Content-Type', /json/);
 
         assert.equal(401, verifyUser.status);
-        assert.nestedPropertyVal(verifyUser, 'body.code', 1402);
+        assert.nestedPropertyVal(verifyUser, 'body.code', 1008);
     });
 
     it('verify success', async () => {
