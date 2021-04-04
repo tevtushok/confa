@@ -4,18 +4,11 @@ const { jsonResponse, filterRequest } = require('../includes/utils');
 const { MODELS, API, SUCCESS, FAILURE }= require('../includes/codes');
 const { EventError } = require('../includes/errors/models');
 
-module.exports.add = (req, res) => {
-    save(req, res, true);
-};
-
-module.exports.change = (req, res) => {
-    save(req, res, false);
-};
-
-const save = async (req, res, isNew = false) => {
+module.exports.add = async (req, res) => {
     try {
         const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title', 'description']);
         eventData.userId = req.user.id; // userId from user session
+        eventData.status = 'active';
         const newEvent = new Event(eventData);
         const validationErr = newEvent.validateSync();
         if (validationErr) {
@@ -25,28 +18,14 @@ const save = async (req, res, isNew = false) => {
             }
             return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
         }
-        const room = await Room.findOne({_id: eventData.roomId});
+        const room = await Room.findById(newEvent.roomId);
         if (!room) {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, validationErr, 'Room does not exists');
+            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
         }
         if (room && room['status'] !== 'active') {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, validationErr, 'Room is not active');
+            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
         }
-        if (isNew) {
-            newEvent.status = 'active';
-        }
-        else {
-            const eventId = req.body['_id'];
-            const event = Event.findById(eventId).exec();
-            if (!event) {
-                return jsonResponse(req, res, 401,
-                    API.EVENTS.NOT_EXISTS, validationErr, 'This event does not exists');
-            }
-            else if (event['userId'] !== req.user.id) {
-                return jsonResponse(req, res, 401,
-                    API.EVENTS.NOT_BELONG_TO_YOU, validationErr, 'This event does not belong to you');
-            }
-        }
+
         newEvent.save((err, event) => {
             if (err) {
                 if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
@@ -58,7 +37,58 @@ const save = async (req, res, isNew = false) => {
         });
     }
     catch (err) {
-        return jsonResponse(req, res, 500, API.EVENTS.SAVE, null, 'Error while saving event');
+        return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Error while add event');
+    }
+};
+
+module.exports.change = async (req, res) => {
+    try {
+        const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title', 'description']);
+        eventData.userId = req.user.id; // userId from user session
+        const eventId = req.body['_id'];
+        if (!eventId) {
+            return jsonResponse(req, res, 401,
+                API.EVENTS.ID_REQUIRED, null, 'Event id is required');
+        }
+        const dbEvent = await Event.findById(eventId).exec();
+        if (!dbEvent) {
+            return jsonResponse(req, res, 401,
+                API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
+        }
+        else if (false === dbEvent['userId'].equals(req.user.id)) {
+            return jsonResponse(req, res, 401,
+                API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
+        }
+        const roomId = 'roomId' in eventData ? eventData.roomId : dbEvent.roomId;
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
+        }
+        if (room && room['status'] !== 'active') {
+            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
+        }
+        // change mongo doc and start validate
+        dbEvent.set(eventData);
+        const validationErr = dbEvent.validateSync(null, true);
+        if (validationErr) {
+            // userId is not user form field. so, if userId is invalid its server error
+            if ('userId' in validationErr.errors) {
+                return jsonResponse(req, res, 500, API.EVENTS.SAVE, null, 'Invalid user id');
+            }
+            return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
+        }
+        dbEvent.save((err, event) => {
+            if (err) {
+                if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
+                    return jsonResponse(req, res, 401, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
+                }
+                return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error on Event update');
+            }
+            return jsonResponse(req, res, 201, SUCCESS, dbEvent, 'Event updated');
+        });
+    }
+    catch (err) {
+        return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Error while update event');
     }
 }
 

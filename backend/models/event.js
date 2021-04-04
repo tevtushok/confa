@@ -83,7 +83,7 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
 
 // check for dates crossing with other event by roomId
 eventSchema.pre('save', function (next) {
-    mongoose.models.Event.getEventsBetweenDates(this.roomId, this.date_start, this.date_end, this.id, (err, events) => {
+    mongoose.models.Event.getEventsBetweenDates(this.roomId, this.date_start, this.date_end, this['_id'], (err, events) => {
         if (err) next(err);
         if (events.length) {
             next(new EventError(CODES.EVENT.CROSS_DATES, 'Date is crossed with other event', events));

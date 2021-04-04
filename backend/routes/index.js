@@ -30,7 +30,7 @@ const init = (app) => {
 
     // global error handler
     app.use(errorHandler);
-    
+
     app.use('/api', apiRoute);
     app.use('/api', adminApiRoute);
 

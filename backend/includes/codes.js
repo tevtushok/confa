@@ -20,6 +20,7 @@ module.exports.API = {
         CROSS_DATES: 1104,
         NOT_EXISTS: 1105,
         NOT_BELONG_TO_YOU: 1106,
+        ID_REQUIRED: 1107,
     },
     LOGIN: {
         EMPTY_CREDENTIALS: 1200,
