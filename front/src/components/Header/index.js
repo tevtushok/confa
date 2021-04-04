@@ -25,7 +25,7 @@ class Header extends React.Component {
 						<LogoutLink/>
 						{admin_links}
 						<Link component={RouterLink} to="/register">Register</Link>
-						<Link component={RouterLink} to="/schedule">Schedule</Link>
+						<Link component={RouterLink} to="/events">Events</Link>
 						<Link component={RouterLink} to={`/@${userStore.user.name}`}>Profile</Link>
 					</Toolbar>
 				</AppBar>

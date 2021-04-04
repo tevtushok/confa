@@ -34,7 +34,7 @@ function StatusBar(props) {
     });
     const classes = useStyles();
     //console.log(theme)
-    return <div className={`scheduleRoom__status-bar ${classes.root}`}></div>;
+    return <div className={`eventsRoom__status-bar ${classes.root}`}></div>;
     
 }
 
@@ -54,13 +54,13 @@ function TimeButton(props) {
     });
     const classes = useStyles();
     return (
-        <Button className={`scheduleRoom__timebtn ${classes.root}`}>{props.time}</Button>
+        <Button className={`eventsRoom__timebtn ${classes.root}`}>{props.time}</Button>
     );
 
 
 }
 
-export default class ScheduleRoom extends React.Component {
+export default class EventsRoom extends React.Component {
 	constructor(props) {
 		super(props)
 		this.data = this.props.data;
@@ -89,15 +89,15 @@ export default class ScheduleRoom extends React.Component {
     }
 	render() {
 		return (
-            <div className={`scheduleRoom mdc-theme--primary-bg ${this.status}`}>
-                <div className="scheduleRoom__wrapper">
-                    <div className="scheduleRoom__info-wrapper">
+            <div className={`eventsRoom mdc-theme--primary-bg ${this.status}`}>
+                <div className="eventsRoom__wrapper">
+                    <div className="eventsRoom__info-wrapper">
                         <StatusBar status={this.status}/>
-                        <div className="scheduleRoom__info-details-wrapper">
-                            <div className="scheduleRoom__info-details">
-                                <div className="scheduleRoom__number">Number: <strong>{this.data.room.number}</strong></div>
-                                <div className="scheduleRoom__title">Title: <strong>{this.data.room.title}</strong></div>
-                                <div className="scheduleRoom__status-txt">Status: {this.statusText}</div>
+                        <div className="eventsRoom__info-details-wrapper">
+                            <div className="eventsRoom__info-details">
+                                <div className="eventsRoom__number">Number: <strong>{this.data.room.number}</strong></div>
+                                <div className="eventsRoom__title">Title: <strong>{this.data.room.title}</strong></div>
+                                <div className="eventsRoom__status-txt">Status: {this.statusText}</div>
                                 {'available' !== this.status && (
                                     <div>
                                         <div className="room_reserved_title">Event title: Hello freak bithes</div>
@@ -106,27 +106,27 @@ export default class ScheduleRoom extends React.Component {
                                     </div>
                                 )}
                                 </div>
-                                <div className="scheduleRoom__buttons-wrapper">
+                                <div className="eventsRoom__buttons-wrapper">
                                 {'available' === this.status && (
                                     <Button
                                         type="button" variant="contained"
                                         size="small" color="primary"
-                                        className="scheduleRoom__reserve">Reserve</Button>
+                                        className="eventsRoom__reserve">Reserve</Button>
                                 )}
                                 </div>
                         </div>
                     </div>
-                    <ButtonGroup size="small" className="scheduleRoom__timeblocks">
+                    <ButtonGroup size="small" className="eventsRoom__timeblocks">
                         <Button>
                             <ArrowLeftIcon/>
                         </Button>
                         <TimeButton time="10:30" status="unavailable"/>
-                        <Button className="scheduleRoom__timebtn unavailable">11AM</Button>
-                        <Button className="scheduleRoom__timebtn available">11:30</Button>
-                        <Button className="scheduleRoom__timebtn available">12PM</Button>
-                        <Button className="scheduleRoom__timebtn available">12:30</Button>
-                        <Button className="scheduleRoom__timebtn available">13PM</Button>
-                        <Button className="scheduleRoom__timebtn available">13:30</Button>
+                        <Button className="eventsRoom__timebtn unavailable">11AM</Button>
+                        <Button className="eventsRoom__timebtn available">11:30</Button>
+                        <Button className="eventsRoom__timebtn available">12PM</Button>
+                        <Button className="eventsRoom__timebtn available">12:30</Button>
+                        <Button className="eventsRoom__timebtn available">13PM</Button>
+                        <Button className="eventsRoom__timebtn available">13:30</Button>
                         <Button>
                             <ArrowRightIcon/>
                         </Button>

@@ -14,36 +14,44 @@ export default function Resister(props) {
     const [name, setName] = useState('');
     const [serviceMsg, setServiceMsg] = useState('');
     const onSubmit = (data) => {
+        setServiceMsg('');
         setLoading(true);
         registerAuthService(data)
             .then(res => {
                 setLoading(false);
                 if (res.error) {
-                    if (1005 === res.response.data.code) {
+                    if (1002 === res.response.data.code) {
                         setError('email', {
                             type: 'manual',
                             message: 'Email should be unique'
                         });
-                        setServiceMsg('');
                     }
-                    else {
-                        let message = (res.response.data.message)
-                        ? res.response.data.message : res.response.statusText;
+                    // validation errors on server
+                    else if (1001 === res.response.data.code) {
+                        let message = 'Server validation error';
+                        console.log(res.response.data.data.errors);
+                        Object.keys(res.response.data.data.errors).forEach(name => {
+                            message += "<br/>" + name + ": " + res.response.data.data.errors[name].message;
+                        });
                         setServiceMsg(message);
+                    }
+                    // server error
+                    else {
+                        setServiceMsg('Server error' + res.response.data.message);
                     }
                 }
                 else {
-                   setRegistered(true); 
+                   setRegistered(true);
                    setName(data.name);
                    setServiceMsg('');
                    reset();
                 }
-                
+
             })
     }
     const validatePasswordConfirm = (value) => {
         const password = watch('password');
-        return password === value; 
+        return password === value;
     }
     if (isRegistered) {
         return (
@@ -55,32 +63,32 @@ export default function Resister(props) {
             </Container>
         )
     }
-    const helperTextName = errors.name ? 'Atleast 3 characaters required' : '';
+    const helperTextName = errors.name ? 'Name should starts with letter, and contain minimum 3 character' : '';
     let helperTextEmail = '';
     if (errors.email) {
         helperTextEmail = errors.email?.message ? errors.email.message : 'Email is invalid';
     }
-    const helperTextPassword = errors.password ? 'Atleast 6 characaters is required' : '';
+    const helperTextPassword = errors.password ? 'Password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?' : '';
     const helperTextPasswordConfirmation = errors.password_confirm ? 'Invalid password confirmation' : '';
 
     return (
         <Container maxWidth="sm">
             <div className="register page">
                 <h2 className="text-center">Register new user</h2>
-            
+
                 <form onSubmit={handleSubmit(onSubmit)}>
                       <Controller
                         name="name"
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullwidth
+                        fullWidth
                         error={!!errors.name}
                         helperText={helperTextName}
                         label="Name:"
                         variant="outlined"
                         type="text"
-                        rules={{ required: true, minLength: 3 }}
+                        rules={{required: true, pattern: /^[a-z]\w{2,30}$/i}}
                     />
 
                     <Controller
@@ -88,7 +96,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullwidth
+                        fullWidth
                         error={!!errors.email}
                         helperText={helperTextEmail}
                         label="Email:"
@@ -102,13 +110,13 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullwidth
+                        fullWidth
                         error={!!errors.password}
                         helperText={helperTextPassword}
                         label="Password:"
                         variant="outlined"
                         type="password"
-                        rules={{required: true, minLength: 6}}
+                        rules={{required: true, pattern: /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/}}
                     />
 
                     <Controller
@@ -116,7 +124,7 @@ export default function Resister(props) {
                         as={TextField}
                         control={control}
                         defaultValue=""
-                        fullwidth
+                        fullWidth
                         error={!!errors.password_confirm}
                         helperText={helperTextPasswordConfirmation}
                         label="Password confirm:"
@@ -129,7 +137,7 @@ export default function Resister(props) {
                         <FormHelperText>{serviceMsg}</FormHelperText>
                     </FormControl>
                     <FormControl>
-                        <Button variant="contained" color="secondary" size="large" fullwidth type="submit" disabled={isLoading}>Register</Button>
+                        <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={isLoading}>Register</Button>
                     </FormControl>
                 </form>
             </div>

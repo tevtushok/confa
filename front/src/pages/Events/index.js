@@ -1,6 +1,6 @@
 import React from 'react';
 import BaseComponent from '../../components/BaseComponent'
-import ScheduleRoom from '../../components/ScheduleRoom'
+import EventsRoom from '../../components/EventsRoom'
 import {
     Button,
     Grid,
@@ -106,7 +106,7 @@ class Shedule extends BaseComponent {
             <Grid container spacing={3} className="events">
             {this.state.events.map((event, index) => (
                 <Grid key={event.room._id} item md={6} sm={12}>
-                <ScheduleRoom data={event}/>
+                <EventsRoom data={event}/>
                 </Grid>
             ))}
             </Grid>

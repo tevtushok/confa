@@ -1,5 +1,5 @@
 
-.scheduleRoom__wrapper {
+.eventsRoom__wrapper {
     color: #c3c3c3;
     background-color: #282828;
     min-height: 14.5rem;
@@ -9,43 +9,43 @@
 
 }
 
-.scheduleRoom__info-wrapper {
+.eventsRoom__info-wrapper {
     display: flex;
     flex:1;
     padding: 1rem 1rem 1rem .6rem;
 }
 
-.scheduleRoom__status-bar {
+.eventsRoom__status-bar {
     width: 20px;
     margin-right: 1rem;
 }
-.available .scheduleRoom__status-bar{
+.available .eventsRoom__status-bar{
     //background-color: #5C7829;
 }
-.reserved .scheduleRoom__status-bar{
+.reserved .eventsRoom__status-bar{
     //background-color: #CC3333;
 }
-.pending .scheduleRoom__status-bar {
+.pending .eventsRoom__status-bar {
     //background-color: #B7B327;
 }
 
-.scheduleRoom__timeblocks {
+.eventsRoom__timeblocks {
     display: flex;
     flex-wrap: nowrap;
 }
-.scheduleRoom__timeblocks .available{
+.eventsRoom__timeblocks .available{
     border-bottom-color: #4caf50;
 }
-.scheduleRoom__timeblocks .unavailable{
+.eventsRoom__timeblocks .unavailable{
     border-bottom-color:  #f44336;
 }
 
-.scheduleRoom__timeblocks .prev img,
-.scheduleRoom__timeblocks .next img {
+.eventsRoom__timeblocks .prev img,
+.eventsRoom__timeblocks .next img {
     height: 1rem;
 }
 
-.scheduleRoom__timebtn {
+.eventsRoom__timebtn {
     border:0;
     border-radius: 0;
     color: #fff;
@@ -62,21 +62,21 @@
     transition: color .3s linear;
 }
 
-.scheduleRoom__timebtn.from{
+.eventsRoom__timebtn.from{
     color: #000;
     background-color: #fff;
 }
 
-.scheduleRoom__timebtn:last-child {
+.eventsRoom__timebtn:last-child {
     
 }
 
-.scheduleRoom__info-details-wrapper {
+.eventsRoom__info-details-wrapper {
     display: flex;
     flex-direction: column;
     flex:1;
 }
-.scheduleRoom__buttons-wrapper {
+.eventsRoom__buttons-wrapper {
     flex:1;
     justify-content: left;
     display: flex;
