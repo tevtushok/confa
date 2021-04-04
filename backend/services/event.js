@@ -92,6 +92,29 @@ module.exports.change = async (req, res) => {
     }
 }
 
+module.exports.delete = async (req, res) => {
+    try {
+        const eventId = req.body['_id'];
+        const dbEvent = await Event.findById(eventId).exec();
+        if (!dbEvent) {
+            return jsonResponse(req, res, 401,
+                API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
+        }
+        else if (false === dbEvent['userId'].equals(req.user.id)) {
+            return jsonResponse(req, res, 401,
+                API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
+        }
+        else {
+            dbEvent.status = 'deleted';
+            await dbEvent.save();
+            return jsonResponse(req, res, 201, SUCCESS, null, 'Event deleted');
+        }
+    }
+    catch(err) {
+        return jsonResponse(req, res, 500, API.EVENTS.DELETE, err, 'Error while delete event');
+    }
+};
+
 // router.get('/listToday', eventService.listToday);
 // router.get('/listTomorow', eventService.listTomorow);
 

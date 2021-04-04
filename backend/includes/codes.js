@@ -21,6 +21,7 @@ module.exports.API = {
         NOT_EXISTS: 1105,
         NOT_BELONG_TO_YOU: 1106,
         ID_REQUIRED: 1107,
+        DELETE: 1110,
     },
     LOGIN: {
         EMPTY_CREDENTIALS: 1200,

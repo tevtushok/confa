@@ -25,7 +25,7 @@ const eventSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: {
-            values: ['active','closed'],
+            values: ['active','closed', 'deleted'],
             message: '{PATH} is not valid enum value',
         },
         default: 'closed',
