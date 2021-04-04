@@ -42,8 +42,7 @@ describe('controllers/events', async () => {
     });
 
     it('add, title len < 3', (done) => {
-        agent.post('/api/v1/events/add')
-            .send({title: 'tq'})
+        agent.post('/api/v1/events/add') .send({title: 'tq'})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -189,8 +188,8 @@ describe('controllers/events', async () => {
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
 
         // 11:00-12:00 event2
         eventData['title'] = 'event2';
@@ -199,15 +198,16 @@ describe('controllers/events', async () => {
         const event2 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event2.status);
+
 
         // 12:00-12:00 crossed with above event3
         const event3 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, event3.status);
 
         // 09:00-10:00 event4
         eventData['date_start'] = new Date('2021 09:00');
@@ -216,8 +216,8 @@ describe('controllers/events', async () => {
         const event4 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event4.status);
 
         eventData['date_start'] = new Date('2021 09:00');
         eventData['date_end'] = new Date('2021 10:01');
@@ -226,6 +226,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
+        assert.equal(401, event5.status);
         assert.nestedPropertyVal(event5, 'body.code', 1104);
         assert.nestedPropertyVal(event5, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event5, 'body.data.events');
@@ -239,6 +240,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
+        assert.equal(401, event6.status);
         assert.nestedPropertyVal(event6, 'body.code', 1104);
         assert.nestedPropertyVal(event6, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event6, 'body.data.events');
@@ -246,6 +248,37 @@ describe('controllers/events', async () => {
         assert.equal(3, event6.body.data.events.length);
         // 3 events already in db
         // 09:00-10:00 event4 // 10:00-11:00 event1 // 11:00-12:00 event2
+
+    });
+
+    it('add same time but differant room', async () => {
+        await Event.deleteMany({});
+        const eventData = generateValidEventData();
+
+        // 10:00-11:00 event1
+        eventData['date_start'] = new Date('2021 10:00');
+        eventData['date_end'] = new Date('2021 11:00');
+        eventData['title'] = 'event1';
+        eventData.roomId = globalRoomActive.id;
+        const event1 = await agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
+
+        const room2 = await createRoom();
+        const room2EventData = {
+            roomId: room2['_id'],
+            title: 'room2event title',
+            description: 'room2event description',
+            date_start: event1.body.data['date_start'],
+            date_end: event1.body.data['date_end'],
+        };
+        const event2 = await agent.post('/api/v1/events/add')
+            .send(room2EventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event2.status);
     });
 
     it('change', async() => {
@@ -263,8 +296,8 @@ describe('controllers/events', async () => {
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
 
         // 10:00-11:00 event1
         eventData = generateValidEventData(globalRoomActive.id);
@@ -274,8 +307,8 @@ describe('controllers/events', async () => {
         const event2 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event2.status);
 
         // 11:00-12:00 event3
         eventData = generateValidEventData(globalRoomActive.id);
@@ -284,8 +317,8 @@ describe('controllers/events', async () => {
         const event3 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, event3.status);
 
         // 3 events createted
         // 09:00-10:00 event1 // 10:00-11:00 event2 // 11:00-12:00 event3
@@ -299,8 +332,8 @@ describe('controllers/events', async () => {
         const reqFieldsErr = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, reqFieldsErr.status);
         assert.nestedProperty(reqFieldsErr, 'body.data.errors.title');
         assert.nestedProperty(reqFieldsErr, 'body.data.errors.description');
         assert.nestedPropertyVal(reqFieldsErr, 'body.code', 1101);
@@ -310,8 +343,8 @@ describe('controllers/events', async () => {
         const shortTitleErr = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, shortTitleErr.status);
         assert.nestedProperty(shortTitleErr.body, 'data.errors.title');
         assert.notNestedProperty(shortTitleErr.body, 'data.errors.description');
         assert.nestedPropertyVal(shortTitleErr.body, 'code', 1101);
@@ -324,8 +357,8 @@ describe('controllers/events', async () => {
         const eventIdErr = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, eventIdErr.status);
         assert.nestedPropertyVal(eventIdErr.body, 'code', 1107);
         assert.nestedPropertyVal(eventIdErr.body, 'message', 'Event id is required');
 
@@ -334,11 +367,11 @@ describe('controllers/events', async () => {
             title: 'eve',
             description: 'event description',
         }
-        const ventIdErr = await agent.post('/api/v1/events/change')
+        const eventIdErrOk = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, eventIdErrOk.status);
 
         changeData = {
             '_id': event3.body.data['_id'],
@@ -348,8 +381,8 @@ describe('controllers/events', async () => {
         const ok1 = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, ok1.status);
 
         changeData = {
             '_id': event3.body.data['_id'],
@@ -360,8 +393,8 @@ describe('controllers/events', async () => {
         const crossed1 = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, crossed1.status);
         assert.equal(2, crossed1.body.data.events.length);
 
         changeData = {
@@ -372,8 +405,8 @@ describe('controllers/events', async () => {
         const crossed2 = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, crossed2.status);
         assert.equal(2, crossed2.body.data.events.length);
 
         changeData = {
@@ -385,8 +418,8 @@ describe('controllers/events', async () => {
         const crossed3 = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(401);
+            .expect('Content-Type', /json/);
+        assert.equal(401, crossed3.status);
         assert.equal(1, crossed3.body.data.events.length);
 
         changeData = {
@@ -397,7 +430,56 @@ describe('controllers/events', async () => {
         const crossed4 = await agent.post('/api/v1/events/change')
             .send(changeData)
             .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(201);
+            .expect('Content-Type', /json/);
+        assert.equal(201, crossed4.status);
     }); // 3 events createted // 09:00-10:00 event1 // 10:00-11:00 event2 // 11:00-12:00 event3
+
+    it('delete', async () => {
+        await Event.deleteMany({});
+        const eventData = generateValidEventData();
+
+
+        // 10:00-11:00 event1
+        eventData['date_start'] = new Date('2021 10:00');
+        eventData['date_end'] = new Date('2021 11:00');
+        eventData['title'] = 'event1';
+        eventData.roomId = globalRoomActive.id;
+        const event1 = await agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
+
+        const delete1 = await agent.post('/api/v1/events/delete')
+            .send({'_id': event1.body.data['_id']})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, delete1.status);
+    });
+
+    it('delete not own event', async () => {
+        // await Event.deleteMany({});
+        const eventData = generateValidEventData();
+
+        // 10:00-11:00 event1
+        eventData['date_start'] = new Date('2021 10:00');
+        eventData['date_end'] = new Date('2021 11:00');
+        eventData['title'] = 'event1';
+        eventData.roomId = globalRoomActive.id;
+        const event1 = await agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
+
+        user2 = await createAndLoginUser(agent); // login to another user
+
+        const delete1 = await agent.post('/api/v1/events/delete')
+            .send({'_id': event1.body.data['_id']})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.nestedPropertyVal(delete1, 'body.code', 1106);
+        assert.nestedPropertyVal(delete1, 'body.message', 'This event does not belong to you');
+        assert.equal(401, delete1.status);
+    });
 });
