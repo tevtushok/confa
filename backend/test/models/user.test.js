@@ -89,17 +89,17 @@ describe('models/user', async () => {
         err = new User({}).validateSync();
         assert.nestedPropertyVal(err, 'errors.password.message', 'password is required');
 
-        err = new User({password: 'weak password'}).validateSync(); 
+        err = new User({password: 'weak password'}).validateSync();
         assert.nestedPropertyVal(err,
             'errors.password.message',
             'password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?');
 
-        err = new User({password: 'weakPass#'}).validateSync(); 
+        err = new User({password: 'weakPass#'}).validateSync();
         assert.nestedPropertyVal(err,
             'errors.password.message',
             'password must contain 8 characters and at least one number, one letter and one unique character such as !#$%&?');
 
-        err = new User({password: 'weakPass#1'}).validateSync(); 
+        err = new User({password: 'weakPass#1'}).validateSync();
         assert.notNestedProperty(err, 'errors.password');
 
         return done();
@@ -109,7 +109,7 @@ describe('models/user', async () => {
         const data = {
             name: userUtils.generateValidName(),
             email: userUtils.generateValidEmail(),
-            password: userUtils.generateValidPassword() 
+            password: userUtils.generateValidPassword()
         };
         const user = new User(data);
         const err = user.validateSync();
@@ -127,7 +127,7 @@ describe('models/user', async () => {
         const data = {
             name: validUsername,
             email: validEmail,
-            password: validPassword 
+            password: validPassword
         };
         const user = new User(data);
         const err = user.validateSync();
@@ -137,13 +137,13 @@ describe('models/user', async () => {
             if (err) return done(err);
             User.authenticate(newEmail, data.password, (authErr, authRes) => {
                 assert.ok(authErr);
-                assert.equal(authErr.code, 401);
+                assert.equal(authErr.code, 2100);
                 assert.equal(authErr.message, 'Email not found');
             });
 
             User.authenticate(data.email, userUtils.generateValidPassword, (authErr, authRes) => {
                 assert.ok(authErr);
-                assert.equal(authErr.code, 401);
+                assert.equal(authErr.code, 2101);
                 assert.equal(authErr.message, 'Authentication failed');
 
                 return done();

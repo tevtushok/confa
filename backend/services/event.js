@@ -1,12 +1,8 @@
-const dayjs = require('dayjs');
 const Event = require('../models/event');
 const Room = require('../models/room');
 const { jsonResponse, filterRequest } = require('../utils/utils');
-const { SUCCESS, FAILURE, ERRORS } = require('../utils/apiCodes');
-const { MODELS: MODELS_ERRORS } = require('../includes/errors/codes');
+const { MODELS, API, SUCCESS, FAILURE }= require('../includes/codes');
 const { EventError } = require('../includes/errors/models');
-
-const today = dayjs().format('MM-DD-YYYY');
 
 module.exports.add = async (req, res) => {
     try {
@@ -17,30 +13,30 @@ module.exports.add = async (req, res) => {
         if (validationErr) {
             // userId is not user form field. so, if userId is invalid its server error
             if ('userId' in validationErr.errors) {
-                return jsonResponse(req, res, 500, ERRORS.EVENTS.ADD, null, 'Invalid user id');
+                return jsonResponse(req, res, 500, API.EVENTS.ADD, null, 'Invalid user id');
             }
-            return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_VALIDATION, validationErr, 'Validation error');
+            return jsonResponse(req, res, 401, API.EVENTS.ADD_VALIDATION, validationErr, 'Validation error');
         }
         const room = await Room.findOne({_id: eventData.roomId});
         if (!room) {
-            return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_ROOM_NOT_EXISTS, validationErr, 'Room does not exists');
+            return jsonResponse(req, res, 401, API.EVENTS.ADD_ROOM_NOT_EXISTS, validationErr, 'Room does not exists');
         }
         if (room && room['status'] !== 'active') {
-            return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_ROOM_NOT_ACTIVE, validationErr, 'Room is not active');
+            return jsonResponse(req, res, 401, API.EVENTS.ADD_ROOM_NOT_ACTIVE, validationErr, 'Room is not active');
         }
         newEvent.status = 'active';
         newEvent.save((err, event) => {
             if (err) {
-                if (err instanceof EventError && err.code === MODELS_ERRORS.EVENT.CROSS_DATES) {
-                    return jsonResponse(req, res, 401, ERRORS.EVENTS.ADD_CROSS_DATES, {events: err.data}, err.message);
+                if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
+                    return jsonResponse(req, res, 401, API.EVENTS.ADD_CROSS_DATES, {events: err.data}, err.message);
                 }
-                return jsonResponse(req, res, 500, ERRORS.EVENTS.ADD, err, 'Database error');
+                return jsonResponse(req, res, 500, API.EVENTS.ADD, err, 'Database error');
             }
             return jsonResponse(req, res, 201, SUCCESS, event, 'Event added');
         });
     }
     catch (err) {
-        return jsonResponse(req, res, 500, ERRORS.EVENTS.ADD, null, 'Error while adding event');
+        return jsonResponse(req, res, 500, API.EVENTS.ADD, null, 'Error while adding event');
     }
 }
 

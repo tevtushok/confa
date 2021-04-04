@@ -97,7 +97,6 @@ describe('models/event', () => {
         //10:40-10:50 -  10:30-10:41 status is closed
         event.status = 'closed';
         event.save((err, res) => {
-            if (err) throw err;
             date_start = new Date('2021 10:30');
             date_end = new Date('2021 10:41');
             Event.getEventsBetweenDates(event.roomId, event.date_start, event.date_end, false, (err, res) => {

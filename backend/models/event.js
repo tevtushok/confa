@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const { EventError } = require('../includes/errors/models');
-const { MODELS: ERRORS } = require('../includes/errors/codes');
+const CODES = require('../includes/codes').MODELS;
 
 const eventSchema = new mongoose.Schema({
     roomId: {
@@ -47,7 +47,7 @@ const eventSchema = new mongoose.Schema({
 });
 
 
-eventSchema.statics.getEventsBetweenDates = function (roomId, dateStart, dateEnd, exclude_id = false,  callback) {
+eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, dateEnd, exclude_id = false,  callback) {
     const filterArgs = {
         roomId: roomId,
         status: 'active',
@@ -68,7 +68,9 @@ eventSchema.statics.getEventsBetweenDates = function (roomId, dateStart, dateEnd
         ]
     };
     if (exclude_id) {
-        filterArgs.id = {'$ne': exclude_id};
+        filterArgs['_id'] = {'$ne': exclude_id};
+        // const explain = await this.find(filterArgs).explain();
+        // console.log(explain)
     }
     this.find(filterArgs)
         .exec(function (err, events) {
@@ -84,7 +86,7 @@ eventSchema.pre('save', function (next) {
     mongoose.models.Event.getEventsBetweenDates(this.roomId, this.date_start, this.date_end, this.id, (err, events) => {
         if (err) next(err);
         if (events.length) {
-            next(new EventError(ERRORS.EVENT.CROSS_DATES, 'Date is crossed with other event', events));
+            next(new EventError(CODES.EVENT.CROSS_DATES, 'Date is crossed with other event', events));
         }
         else {
             next();

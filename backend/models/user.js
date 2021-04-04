@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { UserError } = require('../includes/errors/models');
+const CODES = require('../includes/codes').MODELS;
 
 const userSchema = new mongoose.Schema({
     status: {
@@ -57,7 +58,7 @@ userSchema.statics.authenticate = function (email, password, callback) {
 			return callback(err)
 		}
 		else if (!user) {
-            return callback(new UserError(401,'Email not found'));
+            return callback(new UserError(CODES.USER.EMAIL_NOT_FOUND,'Email not found'));
 		}
 		else {
 			bcrypt.compare(password , user.password, function (err, result) {
@@ -65,7 +66,7 @@ userSchema.statics.authenticate = function (email, password, callback) {
 					return callback(null, user);
 				}
 				else {
-                    return callback(new UserError(401,'Authentication failed'));
+                    return callback(new UserError(CODES.USER.INVALID_PWD,'Authentication failed'));
 				}
 			})
 		}

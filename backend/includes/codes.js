@@ -1,7 +1,11 @@
 module.exports.MODELS = {
     EVENT: {
         CROSS_DATES: 2000
-    }
+    },
+    USER: {
+        EMAIL_NOT_FOUND: 2100,
+        INVALID_PWD: 2101,
+    },
 };
 
 module.exports.API = {
