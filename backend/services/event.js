@@ -26,14 +26,23 @@ module.exports.add = async (req, res) => {
             return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
         }
 
-        newEvent.save((err, event) => {
+        newEvent.save(async (err, event) => {
             if (err) {
                 if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
                     return jsonResponse(req, res, 401, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error');
             }
-            return jsonResponse(req, res, 201, SUCCESS, {event: event}, 'Event added');
+            const opts = [
+                { path: 'room', model: 'Room', select: ['_id', 'number', 'title'] },
+                { path: 'user', model: 'User', select: ['_id', 'name', 'title'] },
+            ];
+            Event.populate(event, opts, function (err, event) {
+                if (err) {
+                    return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error');
+                }
+                return jsonResponse(req, res, 201, SUCCESS, {event: event}, 'Event added');
+            });
         });
     }
     catch (err) {
@@ -84,7 +93,16 @@ module.exports.change = async (req, res) => {
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error on Event update');
             }
-            return jsonResponse(req, res, 201, SUCCESS, {event: dbEvent}, 'Event updated');
+            const opts = [
+                { path: 'room', model: 'Room', select: ['_id', 'number', 'title'] },
+                { path: 'user', model: 'User', select: ['_id', 'name', 'title'] },
+            ];
+            Event.populate(event, opts, function (err, event) {
+                if (err) {
+                    return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error on Event update');
+                }
+                return jsonResponse(req, res, 201, SUCCESS, {event: event}, 'Event updated');
+            });
         });
     }
     catch (err) {
