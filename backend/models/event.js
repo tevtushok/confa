@@ -3,12 +3,12 @@ const { EventError } = require('../includes/errors/models');
 const CODES = require('../includes/codes').MODELS;
 
 const eventSchema = new mongoose.Schema({
-    roomId: {
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room',
         required: [true, '{PATH} is required'],
     },
-    userId: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: [true, '{PATH} is required'],
@@ -49,7 +49,7 @@ const eventSchema = new mongoose.Schema({
 
 eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, dateEnd, exclude_id = false,  callback) {
     const filterArgs = {
-        roomId: roomId,
+        room: roomId,
         status: 'active',
         '$or':
         [
@@ -82,9 +82,8 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
         });
 };
 
-// check for dates crossing with other event by roomId
 eventSchema.pre('save', function (next) {
-    mongoose.models.Event.getEventsBetweenDates(this.roomId, this.date_start, this.date_end, this['_id'], (err, events) => {
+    mongoose.models.Event.getEventsBetweenDates(this.room, this.date_start, this.date_end, this['_id'], (err, events) => {
         if (err) next(err);
         if (events.length) {
             next(new EventError(CODES.EVENT.CROSS_DATES, 'Date is crossed with other event', events));

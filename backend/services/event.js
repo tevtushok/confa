@@ -6,19 +6,19 @@ const { EventError } = require('../includes/errors/models');
 
 module.exports.add = async (req, res) => {
     try {
-        const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title', 'description']);
-        eventData.userId = req.user.id; // userId from user session
+        const eventData  = filterRequest(req.body, ['room', 'date_start', 'date_end', 'title', 'description']);
+        eventData.user = req.user.id; // user from user session
         eventData.status = 'active';
         const newEvent = new Event(eventData);
         const validationErr = newEvent.validateSync();
         if (validationErr) {
-            // userId is not user form field. so, if userId is invalid its server error
-            if ('userId' in validationErr.errors) {
+            // user is not user form field. so, if user is invalid its server error
+            if ('user' in validationErr.errors) {
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, null, 'Invalid user id');
             }
             return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
         }
-        const room = await Room.findById(newEvent.roomId);
+        const room = await Room.findById(newEvent.room);
         if (!room) {
             return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
         }
@@ -43,8 +43,8 @@ module.exports.add = async (req, res) => {
 
 module.exports.change = async (req, res) => {
     try {
-        const eventData  = filterRequest(req.body, ['roomId', 'date_start', 'date_end', 'title', 'description']);
-        eventData.userId = req.user.id; // userId from user session
+        const eventData  = filterRequest(req.body, ['room', 'date_start', 'date_end', 'title', 'description']);
+        eventData.user = req.user.id; // user from user session
         const eventId = req.body['_id'];
         if (!eventId) {
             return jsonResponse(req, res, 401,
@@ -55,11 +55,11 @@ module.exports.change = async (req, res) => {
             return jsonResponse(req, res, 401,
                 API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
         }
-        else if (false === dbEvent['userId'].equals(req.user.id)) {
+        else if (false === dbEvent['user'].equals(req.user.id)) {
             return jsonResponse(req, res, 401,
                 API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
         }
-        const roomId = 'roomId' in eventData ? eventData.roomId : dbEvent.roomId;
+        const roomId = 'room' in eventData ? eventData.room : dbEvent.room;
         const room = await Room.findById(roomId);
         if (!room) {
             return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
@@ -71,8 +71,8 @@ module.exports.change = async (req, res) => {
         dbEvent.set(eventData);
         const validationErr = dbEvent.validateSync(null, true);
         if (validationErr) {
-            // userId is not user form field. so, if userId is invalid its server error
-            if ('userId' in validationErr.errors) {
+            // user is not user form field. so, if user is invalid its server error
+            if ('user' in validationErr.errors) {
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, null, 'Invalid user id');
             }
             return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
@@ -100,7 +100,7 @@ module.exports.delete = async (req, res) => {
             return jsonResponse(req, res, 401,
                 API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
         }
-        else if (false === dbEvent['userId'].equals(req.user.id)) {
+        else if (false === dbEvent['user'].equals(req.user.id)) {
             return jsonResponse(req, res, 401,
                 API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
         }

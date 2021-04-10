@@ -35,8 +35,8 @@ describe('models/event', () => {
             const user = await createUser();
             const room = await createRoom();
             const event = new Event({
-                roomId: room.id,
-                userId: user.id,
+                room: room.id,
+                user: user.id,
                 title: 'event title',
                 description: 'event description',
                 status: 'active',
@@ -62,35 +62,35 @@ describe('models/event', () => {
         // 10:40-10:50 - 10:40-10:50
         date_start = new Date('2021 10:40');
         date_end = new Date('2021 10:50');
-        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+        Event.getEventsBetweenDates(event.room, date_start, date_end, false, (err, res) => {
             assert.isNotEmpty(res);
         });
 
         // 10:40-10:50 - 10:30-10:40
         date_start = new Date('2021 10:30');
         date_end = new Date('2021 10:40');
-        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+        Event.getEventsBetweenDates(event.room, date_start, date_end, false, (err, res) => {
             assert.isEmpty(res);
         });
 
         // 10:40-10:50 - 10:30-10:41
         date_start = new Date('2021 10:30');
         date_end = new Date('2021 10:41');
-        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+        Event.getEventsBetweenDates(event.room, date_start, date_end, false, (err, res) => {
             assert.isNotEmpty(res);
         });
 
         //10:40-10:50 -  10:49-10:55
         date_start = new Date('2021 10:49');
         date_end = new Date('2021 10:55');
-        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+        Event.getEventsBetweenDates(event.room, date_start, date_end, false, (err, res) => {
             assert.isNotEmpty(res);
         });
 
         // 10:40-10:50 - 10:50-10:55
         date_start = new Date('2021 10:50');
         date_end = new Date('2021 10:55');
-        Event.getEventsBetweenDates(event.roomId, date_start, date_end, false, (err, res) => {
+        Event.getEventsBetweenDates(event.room, date_start, date_end, false, (err, res) => {
             assert.isEmpty(res);
         });
 
@@ -99,43 +99,43 @@ describe('models/event', () => {
         event.save((err, res) => {
             date_start = new Date('2021 10:30');
             date_end = new Date('2021 10:41');
-            Event.getEventsBetweenDates(event.roomId, event.date_start, event.date_end, false, (err, res) => {
+            Event.getEventsBetweenDates(event.room, event.date_start, event.date_end, false, (err, res) => {
                 assert.isEmpty(res);
             });
         });
     });
 
-    it('check roomId field', (done) => {
+    it('check room field', (done) => {
         let err = new Event({}).validateSync();
-        assert.equal('roomId is required', err.errors.roomId.message);
+        assert.equal('room is required', err.errors.room.message);
 
-        err = new Event({roomId: ''}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.roomId.name', 'CastError');
+        err = new Event({room: ''}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.room.name', 'CastError');
 
-        err = new Event({roomId: '1n1r1e11'}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.roomId.name', 'CastError');
+        err = new Event({room: '1n1r1e11'}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.room.name', 'CastError');
 
-        err = new Event({roomId: mongoose.Types.ObjectId()}).validateSync();
+        err = new Event({room: mongoose.Types.ObjectId()}).validateSync();
         if (err) {
-            assert.notNestedProperty(err, 'errors.roomId');
+            assert.notNestedProperty(err, 'errors.room');
         }
         return done();
     });
 
 
-    it('check userId field', (done) => {
+    it('check user field', (done) => {
         let err = new Event({}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.userId.message', 'userId is required');
+        assert.nestedPropertyVal(err, 'errors.user.message', 'user is required');
 
-        err = new Event({userId: ''}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.userId.name', 'CastError');
+        err = new Event({user: ''}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.user.name', 'CastError');
 
-        err = new Event({userId: '1231023sdfx'}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.userId.name', 'CastError');
+        err = new Event({user: '1231023sdfx'}).validateSync();
+        assert.nestedPropertyVal(err, 'errors.user.name', 'CastError');
 
-        err = new Event({userId: mongoose.Types.ObjectId()}).validateSync();
+        err = new Event({user: mongoose.Types.ObjectId()}).validateSync();
         if (err) {
-            assert.notNestedProperty(err, 'errors.userId');
+            assert.notNestedProperty(err, 'errors.user');
         }
         return done();
     });
@@ -238,8 +238,8 @@ describe('models/event', () => {
                 date_end.setMinutes(date_end.getMinutes() + 30);
 
                 const event = new Event({
-                    roomId: room.id,
-                    userId: user.id,
+                    room: room.id,
+                    user: user.id,
                     title: 'event title',
                     description: 'event description',
                     status: 'active',
@@ -267,8 +267,8 @@ describe('models/event', () => {
                 const date_start = new Date();
                 const date_end = new Date();
                 err = new Event({
-                    roomId: room.id,
-                    userId: user.id,
+                    room: room.id,
+                    user: user.id,
                     title: 'event title',
                     status: 'active',
                     date_start: date_start,
@@ -278,8 +278,8 @@ describe('models/event', () => {
 
                 date_end.setMinutes(date_end.getMinutes() - 1);
                 err = new Event({
-                    roomId: room.id,
-                    userId: user.id,
+                    room: room.id,
+                    user: user.id,
                     title: 'event title',
                     status: 'active',
                     date_start: date_start,
@@ -289,8 +289,8 @@ describe('models/event', () => {
 
                 date_end.setMinutes(date_end.getMinutes() + 2);
                 err = new Event({
-                    roomId: room.id,
-                    userId: user.id,
+                    room: room.id,
+                    user: user.id,
                     title: 'event title',
                     status: 'active',
                     date_start: date_start,

@@ -70,24 +70,24 @@ describe('controllers/events', async () => {
             });
     });
 
-    it('add, roomId is invalid', (done) => {
+    it('add, room is invalid', (done) => {
         agent.post('/api/v1/events/add')
-            .send({roomId: 'id1'})
+            .send({room: 'id1'})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
                 assert.equal(401, res.status);
-                assert.nestedProperty(res, 'body.data.errors.roomId');
+                assert.nestedProperty(res, 'body.data.errors.room');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
                 return done();
             });
     });
 
-    it('add, roomId not found', (done) => {
+    it('add, room not found', (done) => {
         const eventData = generateValidEventData();
-        eventData.roomId = mongoose.Types.ObjectId();
+        eventData.room = mongoose.Types.ObjectId();
         agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -103,7 +103,7 @@ describe('controllers/events', async () => {
 
     it('add, room is not active', (done) => {
         const eventData = generateValidEventData();
-        eventData.roomId = globalRoomInActive.id;
+        eventData.room = globalRoomInActive.id;
         agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -119,7 +119,7 @@ describe('controllers/events', async () => {
 
     it('add, invalid date_start, date_end', (done) => {
         const eventData = generateValidEventData();
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         eventData['date_start'] = 'y2020-10-10';
         eventData['date_end'] = '02 2021 12:25';
         agent.post('/api/v1/events/add')
@@ -139,7 +139,7 @@ describe('controllers/events', async () => {
 
     it('add, date_start == date_end', (done) => {
         const eventData = generateValidEventData();
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         eventData['date_end'] = eventData['date_start'];
         agent.post('/api/v1/events/add')
             .send(eventData)
@@ -157,7 +157,7 @@ describe('controllers/events', async () => {
 
     it('add, date_start > date_end', (done) => {
         const eventData = generateValidEventData();
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const date_end = new Date(eventData['date_start']);
         date_end.setMinutes(date_end.getMinutes() - 11);
         eventData['date_end'] = date_end;
@@ -184,7 +184,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -259,7 +259,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -268,7 +268,7 @@ describe('controllers/events', async () => {
 
         const room2 = await createRoom();
         const room2EventData = {
-            roomId: room2['_id'],
+            room: room2['_id'],
             title: 'room2event title',
             description: 'room2event description',
             date_start: event1.body.data.event.date_start,
@@ -303,7 +303,7 @@ describe('controllers/events', async () => {
         eventData = generateValidEventData(globalRoomActive.id);
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const event2 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -443,7 +443,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
@@ -465,7 +465,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
-        eventData.roomId = globalRoomActive.id;
+        eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/add')
             .send(eventData)
             .set('Accept', 'application/json')
