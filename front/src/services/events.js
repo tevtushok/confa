@@ -13,3 +13,17 @@ export const eventList = async (ymd, roomsArg) => {
 			};
 	}
 };
+
+export const add = async (data) => {
+	try {
+        console.log('/event/add', data);
+		return await api.post('/events/add', data);
+	}
+	catch (error) {
+        console.log('/event/add - catch', error);
+		return {
+				error: true,
+				response: error.response
+			};
+	}
+};
