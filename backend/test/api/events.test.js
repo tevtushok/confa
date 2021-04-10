@@ -251,6 +251,33 @@ describe('controllers/events', async () => {
 
     });
 
+    it('add ignore seconds', async () => {
+        // be sure Events is empty
+        await Event.deleteMany({});
+        const eventData = generateValidEventData();
+
+        // 10:00-11:00 event1
+        eventData['date_start'] = new Date('2021 16:05');
+        eventData['date_end'] = new Date('2021 16:35:35');
+        eventData['title'] = 'event1';
+        eventData.room = globalRoomActive.id;
+        const event1 = await agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event1.status);
+
+        // 11:00-12:00 event2
+        eventData['title'] = 'event2';
+        eventData['date_start'] = new Date('2021 16:35');
+        eventData['date_end'] = new Date('2021 17:50');
+        const event2 = await agent.post('/api/v1/events/add')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event2.status);
+    });
+
     it('add same time but differant room', async () => {
         await Event.deleteMany({});
         const eventData = generateValidEventData();

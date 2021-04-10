@@ -48,6 +48,10 @@ const eventSchema = new mongoose.Schema({
 
 
 eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, dateEnd, exclude_id = false,  callback) {
+    const date_start = new Date(dateStart);
+    date_start.setSeconds(0,0);
+    const date_end = new Date(dateEnd);
+    date_end.setSeconds(0,0);
     const filterArgs = {
         room: roomId,
         status: 'active',
@@ -55,14 +59,14 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
         [
             {
                 '$and': [
-                    { date_start: {'$gte': dateStart} },
-                    { date_start: {'$lt': dateEnd} },
+                    { date_start: {'$gte': dateStart.toISOString()} },
+                    { date_start: {'$lt': dateEnd.toISOString()} },
                 ]
             },
             {
                 '$and': [
-                    { date_start: {'$lt': dateStart} },
-                    { date_end: {'$gt': dateStart} },
+                    { date_start: {'$lt': dateStart.toISOString()} },
+                    { date_end: {'$gt': dateStart.toISOString()} },
                 ]
             },
         ]
@@ -73,7 +77,7 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
         // console.log(explain)
     }
     this.find(filterArgs)
-        .populate('userId', ['_id', 'name'])
+        .populate('user', ['_id', 'name'])
         .exec(function (err, events) {
             if (err) {
                 return callback(err)
@@ -83,6 +87,12 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
 };
 
 eventSchema.pre('save', function (next) {
+    const dateStart = new Date(this.date_start);
+    dateStart.setSeconds(0,0);
+    const dateEnd = new Date(this.date_end);
+    dateEnd.setSeconds(0,0);
+    this.date_start = dateStart.toISOString();
+    this.date_end = dateEnd.toISOString();
     mongoose.models.Event.getEventsBetweenDates(this.room, this.date_start, this.date_end, this['_id'], (err, events) => {
         if (err) next(err);
         if (events.length) {
