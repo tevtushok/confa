@@ -111,8 +111,8 @@ class Events extends BaseComponent {
             ))}
             </Grid>
             <Grid container className="addEvent">
-                <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>
-                    <Link color="secondary" to="/events/add">new event</Link>
+                <Button component={Link} to="/events/add" variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>
+                    Add event
                 </Button>
             </Grid>
             </div>

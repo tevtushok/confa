@@ -13,8 +13,7 @@ export default class Response {
 
     getApiCode() {
         console.log('getApiCode', this.getNestedPropertyValue(this, 'data.code'));
-        console.log(this);
-        return this.getNestedPropertyValue(this, 'data.code');
+        return parseInt(this.getNestedPropertyValue(this, 'data.code'));
     }
 
     getApiMessage() {
@@ -28,11 +27,7 @@ export default class Response {
     }
 
     hasValidApiResponse() {
-        let qq = (this.getApiCode() !== null
-            && this.getApiMessage() !== null
-            && this.getApiData() !== null) ? true : false;
-        console.log('hasValidApiResponse', qq);
-        return (this.getApiCode() !== null
+        return (Number.isInteger(this.getApiCode())
             && this.getApiMessage() !== null
             && this.getApiData() !== null) ? true : false;
     }

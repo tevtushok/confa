@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link as routerLink } from 'react-router-dom';
 import dayjs from 'dayjs';
 import DateUtils from '@date-io/dayjs';
@@ -13,7 +13,6 @@ import {
     Grid,
     Link,
 } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert'
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
@@ -27,8 +26,6 @@ import ServiceMessage from '../../components/ServiceMessage'
 
 import './index.scss';
 
-// console.log('roomsApi', roomsApi);
-
 class AddEvent extends React.Component {
     constructor(props) {
         super(props)
@@ -37,9 +34,8 @@ class AddEvent extends React.Component {
         this.state = {
             roomsList: [],
             eventRoomId: null,
-            eventRoomNumber: null,
-            eventTitle: 'title',
-            eventDescription: 'desc',
+            eventTitle: '',
+            eventDescription: '',
             eventStartDateTime: this.defaultStartFrom,
             eventDuration: 30,
             isLoading: false,
@@ -143,12 +139,12 @@ class AddEvent extends React.Component {
             const apiCode = result.response.getApiCode();
             const apiData = result.response.getApiData();
             const apiMessage = result.response.getApiMessage();
-            if (apiCode == CODES.EVENTS.VALIDATION) {
+            if (apiCode === CODES.EVENTS.VALIDATION) {
                 const errorFields = result.response.getErrorFields();
                 this.setValidationError('Validation error', errorFields);
                 console.log('AddEvent->Validation error', errorFields);
             }
-            else if (apiCode == CODES.EVENTS.CROSS_DATES) {
+            else if (apiCode === CODES.EVENTS.CROSS_DATES) {
                 const dbEvents = apiData.events;
                 if (false === Array.isArray(dbEvents)) {
                     this.setServerError('Invalid data from server');
@@ -160,18 +156,18 @@ class AddEvent extends React.Component {
                 dbEvents.forEach(event => {
                     const dateStart = dayjs(event.date_start).format('DD-MM-YYYY HH:mm');
                     const dateEnd = dayjs(event.date_end).format('DD-MM-YYYY HH:mm');
-                    crossedWith.push(`<p>${dateStart} - ${dateEnd} reserved by: ${event.user.name}</p>`);
+                    crossedWith.push(`<Fragment>${dateStart} - ${dateEnd} reserved by: ${event.user.name}</Fragment>`);
                 });
                 const serviceMessage = 'Date is crossed with enother events:' +  crossedWith.join(' ');
                 this.setValidationError(serviceMessage, errorFields);
                 console.log('AddEvent->Validation error', errorFields);
             }
-            else if (apiCode == CODES.EVENTS.ROOM_NOT_EXISTS) {
+            else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
                 const serviceMessage = 'Room does not exist. Please try another room';
                 this.setValidationError(serviceMessage);
                 console.log('Room does not exists', apiMessage);
             }
-            else if (apiCode == CODES.EVENTS.ROOM_NOT_ACTIVE) {
+            else if (apiCode === CODES.EVENTS.ROOM_NOT_ACTIVE) {
                 const serviceMessage = 'Room is closed. Please try another room';
                 this.setValidationError(serviceMessage);
                 console.log('Room not active', apiMessage);
@@ -245,8 +241,8 @@ class AddEvent extends React.Component {
         else if (this.state.serverError === true) {
             return (
                 <Container maxWidth="md">
-                    <div className="addEvent page">
-                        <ServiceMessage message={this.state.serviceMessage}/>
+                    <div className="addEvent page serverError">
+                        <ServiceMessage data={this.state.serviceMessage}/>
                     </div>
                 </Container>
             );
@@ -308,6 +304,7 @@ class AddEvent extends React.Component {
                                     value={this.state.eventStartDateTime}
                                     disablePast
                                     ampm={false}
+                                    minutesStep={5}
                                     onChange={this.handleStartDateTimeChange} />
                             </MuiPickersUtilsProvider>
                         </FormControl>
@@ -332,20 +329,17 @@ class AddEvent extends React.Component {
                                 <TextField multiline fullWidth value={this.state.eventDescription} onChange={this.handleDescriptionChange}/>
                             </FormControl>
                         </Grid>
+                        {this.state.serviceMessage &&(
+                            <Grid item xs={12}>
+                                <ServiceMessage data={this.state.serviceMessage}/>
+                            </Grid>
+                        )}
                         <Grid item xs={12}>
-                            {this.state.serviceMessage && (
-                            <Alert className="rooms__alert" severity="error">
-                                <div dangerouslySetInnerHTML={{ __html:this.state.serviceMessage}}></div>
-                            </Alert>
-                            )}
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button size="large" className="btnAddEvent" variant="contained" fullWidth
+                            <Button size="large" disabled={this.state.isLoading} className="btnAddEvent" variant="contained" fullWidth
                                 type="button" color="secondary" onClick={this.handleAddEvent}>Add event</Button>
                         </Grid>
                     </Grid>
                     {this.state.isLoading && <Bayan/>}
-                    <ServiceMessage errors={this.state.errors} message={this.state.serviceMessage}/>
                 </Container>
             );
         }
