@@ -73,6 +73,7 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
         // console.log(explain)
     }
     this.find(filterArgs)
+        .populate('userId', ['_id', 'name'])
         .exec(function (err, events) {
             if (err) {
                 return callback(err)
