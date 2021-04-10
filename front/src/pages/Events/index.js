@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import BaseComponent from '../../components/BaseComponent'
 import EventsRoom from '../../components/EventsRoom'
 import {
@@ -14,14 +15,16 @@ import {
 import Alert from '@material-ui/lab/Alert'
 
 import { eventList as eventListApi } from '../../services/events'
-import { roomList as roomListApi } from '../../services/rooms'
+import { list as roomsListApi } from '../../services/rooms'
 
-class Shedule extends BaseComponent {
+import './index.scss';
+
+class Events extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {
             events: [],
-            roomList: [],
+            roomsList: [],
             isLoading: false,
             errorMessage: '',
             roomsFilter : [],
@@ -57,26 +60,23 @@ class Shedule extends BaseComponent {
                 this.alert({errorMessage: 'Invalid data from server'})
                 return;
             }
-            this.setState({events: eventsResp.data.data})
-            //console.log(eventsResp.data.data)
+            this.setState({events: eventsResp.data.data.events})
+            console.log(eventsResp.data.data)
         }
     }
 
     async getRoomList() {
         this.setLoading(true);
-        const resp = await roomListApi();
+        const resp = await roomsListApi();
         this.setLoading(false);
         if (resp.error) {
+            console.log('getRoomList error', resp)
             this.alert({errorMessage: 'Room list loading fairule'})
             return;
         }
         else {
-            if (!resp.data?.data) {
-                this.alert({errorMessage: 'Invalid room list from server'})
-                return
-            }
-            this.setState({roomList: resp.data.data});
-            console.log('getRoomList', resp.data.data)
+            this.setState({roomsList: resp.data.data.rooms});
+            console.log('getRoomList', resp.data.data.rooms)
         }
     }
 
@@ -90,31 +90,34 @@ class Shedule extends BaseComponent {
     render() {
         return (
             <div className="events page">
-            <h2>Shedule</h2>
-            <div id="SheduleMessages">
+            <h2>Events</h2>
+            <div id="EventsMessages">
             {this.state.errorMessage && (
                 <Alert className="rooms__alert" severity="error">{this.state.errorMessage}</Alert>
             )}
             </div>
-            <div>
+            <Grid container className="filter">
                 <ToggleButtonGroup size="small" value={this.state.roomsFilter} onChange={this.roomFilterToogleRoom} aria-label="Room filter">
-                {this.state.roomList.map((room, index) => (
-                    <ToggleButton key={room._id} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
+                {this.state.roomsList.map((room, index) => (
+                    <ToggleButton key={room['_id']} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
                 ))}
                 </ToggleButtonGroup>
-            </div>
-            <Grid container spacing={3} className="events">
+            </Grid>
+            <Grid container className="roomsList">
             {this.state.events.map((event, index) => (
                 <Grid key={event.room._id} item md={6} sm={12}>
                 <EventsRoom data={event}/>
                 </Grid>
             ))}
             </Grid>
+            <Grid container className="addEvent">
+                <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>
+                    <Link color="secondary" to="/events/add">new event</Link>
+                </Button>
+            </Grid>
             </div>
         );
     }
-
-
 }
 
-export default Shedule;
+export default Events;

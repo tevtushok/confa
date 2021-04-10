@@ -5,13 +5,13 @@ import { Switch, withRouter, Route } from "react-router-dom";
 import { verifyAuthService } from './services/auth'
 import PrivateRoute from './routes/PrivateRoute'
 import Loader from './components/Loader';
-import Header from './components/Header'
-import Footer from './components/Footer'
+import Header from './components/Header';
+import Footer from './components/Footer';
 import Login from './pages/Login';
-import Register from './pages/Register'
-import Profile from './pages/Profile'
-import Events from './pages/Events'
-import NewEvent from './pages/NewEvent'
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import Events from './pages/Events';
+import AddEvent from './pages/AddEvent';
 import Page404 from './pages/Page404'
 import ServerError from './pages/ServerError'
 
@@ -64,7 +64,7 @@ class App extends React.Component {
                             </Container>
                         </main>
                         <Footer/>
-                    </div>  
+                    </div>
                 </ThemeProvider>
             );
         }
@@ -80,8 +80,8 @@ class App extends React.Component {
                             <Route path="/login" component={Login} exact/>
                             <Route path="/register" component={Register} exact/>
 
-                            <PrivateRoute path="/events" component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
-                            <PrivateRoute path="/newEvent" component={NewEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/events" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/events/add" exact component={AddEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/@:username" component={Profile} isLoggedIn={this.props.userStore.isLoggedIn}/>
 
@@ -92,7 +92,7 @@ class App extends React.Component {
                         </Container>
                     </main>
                     <Footer/>
-                </div>  
+                </div>
             </ThemeProvider>
         );
     }

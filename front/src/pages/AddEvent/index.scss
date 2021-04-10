@@ -1,0 +1,14 @@
+.addEvent{
+   .MuiAlert-root {
+       margin:0;
+   }
+   .created p {
+       text-align: center;
+   }
+   .created a {
+       text-decoration: underline;
+       &:hover {
+           text-decoration: none;
+       }
+   }
+}

@@ -26,12 +26,13 @@ const stores = {
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
+// <React.StrictMode>
+//   <App />
+// </React.StrictMode>
 ReactDOM.render(
   <Provider {...stores}>
     <Router history={history}>
-    <React.StrictMode>
       <App />
-    </React.StrictMode>
     </Router>
   </Provider>,
   document.getElementById('root')
