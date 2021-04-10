@@ -7,7 +7,8 @@
         "test-models": "NODE_ENV=test mocha --file ./test/models/setup.js ./test/models/**/*.test.js",
         "test-api": "NODE_ENV=test mocha ./test/api/**/*.test.js",
         "test": "npm run test-models && npm run test-api",
-        "dev": "nodemon server.js"
+        "dev": "nodemon server.js",
+        "start": "npm run dev"
     },
     "author": "",
     "license": "ISC",

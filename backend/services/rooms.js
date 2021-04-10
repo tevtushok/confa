@@ -2,21 +2,21 @@ const Room = require('../models/room');
 const { jsonResponse } = require('../includes/utils');
 const { SUCCESS, FAILURE, API } = require('../includes/codes');
 
-const listRooms = async (req, res) => {
+module.exports.list = async (req, res) => {
 	try {
-		await Room.getAvailable((err, rooms) => {
-			return jsonResponse(req, res, 200, null, rooms, 'Success')
+		Room.getActive((err, rooms) => {
+            if (err) {
+                return jsonResponse(req, res, 500, FAILURE, null, 'Database error')
+            }
+            // return jsonResponse(req, res, 400, FAILURE, null, 'Database error')
+			return jsonResponse(req, res, 200, null, {rooms: rooms}, 'Success')
 		});
 
 	}
 	catch (err) {
 		return jsonResponse(req, res, 500,
-            API.ROOMS.ERROR_ROOM_FAILURE,
+            FAILURE,
             null, 'Error while reading room list'
         );
 	}
-}
-
-module.exports = {
-	listRooms: listRooms,
 }

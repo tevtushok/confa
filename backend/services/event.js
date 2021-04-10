@@ -33,7 +33,7 @@ module.exports.add = async (req, res) => {
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error');
             }
-            return jsonResponse(req, res, 201, SUCCESS, event, 'Event added');
+            return jsonResponse(req, res, 201, SUCCESS, {event: event}, 'Event added');
         });
     }
     catch (err) {
@@ -84,7 +84,7 @@ module.exports.change = async (req, res) => {
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.SAVE, err, 'Database error on Event update');
             }
-            return jsonResponse(req, res, 201, SUCCESS, dbEvent, 'Event updated');
+            return jsonResponse(req, res, 201, SUCCESS, {event: dbEvent}, 'Event updated');
         });
     }
     catch (err) {
@@ -113,6 +113,10 @@ module.exports.delete = async (req, res) => {
     catch(err) {
         return jsonResponse(req, res, 500, API.EVENTS.DELETE, err, 'Error while delete event');
     }
+};
+
+module.exports.eventList = async (req, res) => {
+    return jsonResponse(req, res, 200, SUCCESS, {events: []}, 'Success');
 };
 
 // router.get('/listToday', eventService.listToday);

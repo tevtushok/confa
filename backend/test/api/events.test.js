@@ -271,8 +271,8 @@ describe('controllers/events', async () => {
             roomId: room2['_id'],
             title: 'room2event title',
             description: 'room2event description',
-            date_start: event1.body.data['date_start'],
-            date_end: event1.body.data['date_end'],
+            date_start: event1.body.data.event.date_start,
+            date_end: event1.body.data.event.date_end,
         };
         const event2 = await agent.post('/api/v1/events/add')
             .send(room2EventData)
@@ -325,7 +325,7 @@ describe('controllers/events', async () => {
 
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             title: '',
             description: '',
         }
@@ -363,7 +363,7 @@ describe('controllers/events', async () => {
         assert.nestedPropertyVal(eventIdErr.body, 'message', 'Event id is required');
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             title: 'eve',
             description: 'event description',
         }
@@ -374,7 +374,7 @@ describe('controllers/events', async () => {
         assert.equal(201, eventIdErrOk.status);
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             title: 'eve',
             description: 'event description',
         }
@@ -385,7 +385,7 @@ describe('controllers/events', async () => {
         assert.equal(201, ok1.status);
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             // change 11:00 to 09.30 and it will be crossed with events 1,2
             date_start: new Date('2021 09:00'),
         }
@@ -398,7 +398,7 @@ describe('controllers/events', async () => {
         assert.equal(2, crossed1.body.data.events.length);
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             // change 10:00 to 09.30 and it will be crossed with events 1,2
             date_start: new Date('2021 09:30'),
         }
@@ -410,7 +410,7 @@ describe('controllers/events', async () => {
         assert.equal(2, crossed2.body.data.events.length);
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             // change 11:00 to 10:00 and it will be crossed with event2
             date_start: new Date('2021 10:00'),
         }
@@ -423,7 +423,7 @@ describe('controllers/events', async () => {
         assert.equal(1, crossed3.body.data.events.length);
 
         changeData = {
-            '_id': event3.body.data['_id'],
+            '_id': event3.body.data.event._id,
             // change 11:00 to 10:00 and it will be crossed with event2
             date_end: new Date('2021 13:00'),
         }
@@ -451,14 +451,14 @@ describe('controllers/events', async () => {
         assert.equal(201, event1.status);
 
         const delete1 = await agent.post('/api/v1/events/delete')
-            .send({'_id': event1.body.data['_id']})
+            .send({'_id': event1.body.data.event._id})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, delete1.status);
     });
 
     it('delete not own event', async () => {
-        // await Event.deleteMany({});
+        await Event.deleteMany({});
         const eventData = generateValidEventData();
 
         // 10:00-11:00 event1
@@ -475,7 +475,7 @@ describe('controllers/events', async () => {
         user2 = await createAndLoginUser(agent); // login to another user
 
         const delete1 = await agent.post('/api/v1/events/delete')
-            .send({'_id': event1.body.data['_id']})
+            .send({'_id': event1.body.data.event._id})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.nestedPropertyVal(delete1, 'body.code', 1106);

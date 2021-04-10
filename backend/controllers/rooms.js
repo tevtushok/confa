@@ -3,6 +3,6 @@ const roomsService = require('../services/rooms');
 let router = express.Router();
 
 
-router.get('/', roomsService.listRooms);
+router.get('/list', roomsService.list);
 
 module.exports = router;

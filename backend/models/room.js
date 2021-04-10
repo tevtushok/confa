@@ -25,4 +25,12 @@ const roomSchema = new mongoose.Schema({
     },
 });
 
+roomSchema.statics.getActive = async function (callback) {
+	this.find({ status: 'active' })
+    .exec((err, rooms) => {
+        if (err) return callback(err, null);
+        callback(null, rooms);
+    });
+};
+
 module.exports = mongoose.model('Room', roomSchema)

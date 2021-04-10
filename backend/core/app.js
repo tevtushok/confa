@@ -30,14 +30,17 @@ mongoose.connect(
     process.env.DB_CONNECT,
     { useNewUrlParser: true , useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false, },
     function(err) {
-        if (err) throw err;
+        if (err) {
+            console.error('Mongo connection error:' + err.message);
+            process.exit(1);
+        }
         const admin = new mongoose.mongo.Admin(mongoose.connection.db);
         admin.buildInfo(function (err, info) {
             console.log('connected to mongodb ' + info.version);
         });
     });
 
-// enable CORS 
+// enable CORS
 app.use(cors({
     origin: process.env.CORS_ORIGIN, // front-end url
     credentials: true, // for secure httpOnly cookie

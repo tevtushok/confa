@@ -3,6 +3,7 @@ const User = require('../models/user');
 const { jsonResponse } = require('../includes/utils');
 const { SUCCESS, FAILURE, API } = require('../includes/codes');
 const { cookie_options } = require('../configs/config');
+const { UserError } = require('../includes/errors/models');
 const jsonwebtoken = require('jsonwebtoken');
 
 module.exports.register = async (req, res, next) => {
@@ -40,9 +41,12 @@ module.exports.login = (req, res, next) => {
 		return jsonResponse(req, res, 400, API.AUTH.EMPTY_CREDENTIALS, null, "Email and password is required")
 	}
 	User.authenticate(email, password,  function (err, user) {
-		if (err || !user) {
-			return jsonResponse(req, res, 401, API.AUTH.INVALID_CREDENTIALS, null, "Invalid credentials");
-		}
+        if (err instanceof UserError) {
+            return jsonResponse(req, res, 401, API.AUTH.INVALID_CREDENTIALS, null, "Invalid credentials");
+        }
+        if (err || !user) {
+            return jsonResponse(req, res, 500, API.AUTH.LOGIN, err, "Server error");
+        }
 		const jwtData = {
             id: user.id,
 			email: user.email,
@@ -50,18 +54,14 @@ module.exports.login = (req, res, next) => {
             isAdmin: user.isAdmin
 		};
 		const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
-
 		// save token to client cookies
 		res.cookie('token', token, cookie_options);
 
-		const ret = {
-			token: token,
-			user: {
-				name: user.name,
-				email: user.email,
-				isAdmin: user.isAdmin
-			}
-		};
+        const ret = {'user': {
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        }};
 
 		return jsonResponse(req, res, 201, SUCCESS, ret, 'Logged in');
 	});
@@ -83,7 +83,7 @@ module.exports.verify = (req, res) => {
 			user: {
 				name: user.name,
 				email: user.email,
-				role: user.role
+                isAdmin: user.isAdmin,
 			}
 		};
 
