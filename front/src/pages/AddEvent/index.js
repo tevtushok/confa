@@ -14,7 +14,7 @@ import {
     Link,
     Typography,
 } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Skeleton, Alert } from '@material-ui/lab';
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
@@ -47,6 +47,7 @@ class AddEvent extends React.Component {
             errors: {},
             serverError: null,
             pageLoaded: false,
+            crossedEvents: null,
         }
 
         this.handleStartDateTimeChange = this.handleStartDateTimeChange.bind(this)
@@ -153,15 +154,9 @@ class AddEvent extends React.Component {
                     console.log('Expected array of events from database', apiMessage);
                     return;
                 }
-                const errorFields = {date_start: false, date_end: false};
-                const crossedWith = [];
-                dbEvents.forEach(event => {
-                    const dateStart = dayjs(event.date_start).format('DD-MM-YYYY HH:mm');
-                    const dateEnd = dayjs(event.date_end).format('DD-MM-YYYY HH:mm');
-                    crossedWith.push(`<Fragment>${dateStart} - ${dateEnd} reserved by: ${event.user.name}</Fragment>`);
-                });
-                const serviceMessage = 'Date is crossed with enother events:' +  crossedWith.join(' ');
-                this.setValidationError(serviceMessage, errorFields);
+                const errorFields = {date_start: true, date_end: true};
+                const serviceMessage = 'Date is crossed with enother events';
+                this.setValidationError(serviceMessage, errorFields, {crossedEvents:dbEvents});
                 console.log('AddEvent->Validation error', errorFields);
             }
             else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
@@ -304,13 +299,13 @@ class AddEvent extends React.Component {
                     <h2 className="text-center">New event</h2>
                     <Grid container spacing={3}>
                         <Grid item xs={4}>
-                            <FormControl error={!!this.state.errors && !!this.state.errors.room}>
+                            <FormControl fullWidth error={!!this.state.errors && !!this.state.errors.room}>
                             <FormHelperText>Rooms list</FormHelperText>
                             <Select
                                 onChange={this.handleRoomChange}
                                 value={this.state.eventRoomId}
                             >
-                            {this.state.roomsList.map((room, index) => (
+                            {Array.isArray(this.state.roomsList) && this.state.roomsList.map((room, index) => (
                                 <MenuItem key={room['_id']} value={room['_id']}>{room.number}</MenuItem>
                             ))}
                             </Select>
@@ -351,15 +346,25 @@ class AddEvent extends React.Component {
                         </Grid>
                         {this.state.serviceMessage &&(
                             <Grid item xs={12}>
-                                <ServiceMessage data={this.state.serviceMessage}/>
+                                <Alert severity="error">
+                                    <div>{this.state.serviceMessage}</div>
+                                        {Array.isArray(this.state.crossedEvents) && this.state.crossedEvents.map((event, index) => (
+                                            <div className="crossedEvents">
+                                                {dayjs(event.date_start).format('DD-MM-YY HH:mm')}
+                                                -{dayjs(event.date_end).format('HH:mm')}
+                                                &nbsp; reserved by <Link component={routerLink} variant="inherit" to={`/@${event.user._id}`}>{event.user.name}</Link>
+                                            </div>
+                                        ))}
+                                </Alert>
                             </Grid>
                         )}
                         <Grid item xs={12}>
                             <Button size="large" disabled={this.state.isLoading} className="btnAddEvent" variant="contained" fullWidth
-                                type="button" color="secondary" onClick={this.handleAddEvent}>Add event</Button>
+                                type="button" color="secondary" onClick={this.handleAddEvent}>Add event
+                            </Button>
+                            {this.state.isLoading && <Bayan/>}
                         </Grid>
                     </Grid>
-                    {this.state.isLoading && <Bayan/>}
                 </Container>
             );
         }
