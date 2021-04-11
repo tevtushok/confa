@@ -15,7 +15,17 @@
 	flex: 1;
 }
 
-.page h2 {
-	margin-bottom: 1em;
-	text-align: center;
+.page {
+    &.loading {
+        align-content: center;
+        justify-content: center;
+    }
+    h2 {
+        margin-bottom: 1em;
+        text-align: center;
+    }
+    .btnContainer {
+        margin-top: 1rem;
+        display: flex;
+    }
 }

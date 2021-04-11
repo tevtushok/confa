@@ -14,13 +14,16 @@ class userStore {
 		this.user = undefined;
 		this.isLoggedIn = false;
 	}
-	
+
 	get LoggedIn() {
 		return this.isLoggedIn;
 	}
 	set LoggedIn(state) {
 		this.setLoggedIn(state);
 	}
+    get user() {
+        return this.user;
+    }
 	get userRole() {
 		if (this.user && this.user.role) {
 			return this.user.role;

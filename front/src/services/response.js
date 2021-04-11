@@ -28,8 +28,7 @@ export default class Response {
 
     hasValidApiResponse() {
         return (Number.isInteger(this.getApiCode())
-            && this.getApiMessage() !== null
-            && this.getApiData() !== null) ? true : false;
+            && this.getApiMessage() !== null) ? true : false;
     }
 
     getErrorFields() {

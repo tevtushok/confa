@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link as routerLink } from 'react-router-dom';
 import dayjs from 'dayjs';
 import DateUtils from '@date-io/dayjs';
@@ -12,7 +12,6 @@ import {
     Container,
     Grid,
     Link,
-    Typography,
 } from '@material-ui/core';
 import { Skeleton, Alert } from '@material-ui/lab';
 import {
@@ -349,16 +348,16 @@ class AddEvent extends React.Component {
                                 <Alert severity="error">
                                     <div>{this.state.serviceMessage}</div>
                                         {Array.isArray(this.state.crossedEvents) && this.state.crossedEvents.map((event, index) => (
-                                            <div className="crossedEvents">
+                                            <div className="crossedEvents" key={index}>
                                                 {dayjs(event.date_start).format('DD-MM-YY HH:mm')}
                                                 -{dayjs(event.date_end).format('HH:mm')}
-                                                &nbsp; reserved by <Link component={routerLink} variant="inherit" to={`/@${event.user._id}`}>{event.user.name}</Link>
+                                                &nbsp; reserved by <Link component={routerLink} variant="inherit" to={`/@${event.user.name}`}>{event.user.name}</Link>
                                             </div>
                                         ))}
                                 </Alert>
                             </Grid>
                         )}
-                        <Grid item xs={12}>
+                        <Grid container className="btnContainer">
                             <Button size="large" disabled={this.state.isLoading} className="btnAddEvent" variant="contained" fullWidth
                                 type="button" color="secondary" onClick={this.handleAddEvent}>Add event
                             </Button>

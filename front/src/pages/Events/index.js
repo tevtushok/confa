@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import BaseComponent from '../../components/BaseComponent'
 import EventsRoom from '../../components/EventsRoom'
+import Bayan from '../../components/Bayan'
 import {
     Button,
     Grid,
+    Container,
 } from '@material-ui/core'
 
 import {
@@ -28,6 +30,7 @@ class Events extends BaseComponent {
             isLoading: false,
             errorMessage: '',
             roomsFilter : [],
+            pageLoaded: false,
         }
         this.roomFilterToogleRoom = this.roomFilterToogleRoom.bind(this)
     }
@@ -36,11 +39,12 @@ class Events extends BaseComponent {
         this.setState({isLoading: state});
     }
 
-    componentDidMount() {
-        this.getRoomList();
+    async componentDidMount() {
+        await this.getRoomList();
 
         let ymd = this.getDate()
-        this.getEvents(ymd);
+        await this.getEvents(ymd);
+        this.setState({pageLoaded: true});
     }
 
     getDate() {
@@ -88,34 +92,41 @@ class Events extends BaseComponent {
     }
 
     render() {
+        if (!this.state.pageLoaded) {
+            return (
+                <Container maxWidth="md" className="deleteEvent page loading">
+                    <Bayan/>
+                </Container>
+            );
+        }
         return (
-            <div className="events page">
-            <h2>Events</h2>
-            <div id="EventsMessages">
-            {this.state.errorMessage && (
-                <Alert className="rooms__alert" severity="error">{this.state.errorMessage}</Alert>
-            )}
-            </div>
-            <Grid container className="filter">
-                <ToggleButtonGroup size="small" value={this.state.roomsFilter} onChange={this.roomFilterToogleRoom} aria-label="Room filter">
-                {this.state.roomsList.map((room, index) => (
-                    <ToggleButton key={room['_id']} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
-                ))}
-                </ToggleButtonGroup>
-            </Grid>
-            <Grid container className="roomsList">
-            {this.state.events.map((event, index) => (
-                <Grid key={event.room._id} item md={6} sm={12}>
-                <EventsRoom data={event}/>
+            <Container maxWidth="md" className="events page">
+                <h2>Events</h2>
+                <div id="EventsMessages">
+                {this.state.errorMessage && (
+                    <Alert className="rooms__alert" severity="error">{this.state.errorMessage}</Alert>
+                )}
+                </div>
+                <Grid container className="filter">
+                    <ToggleButtonGroup size="small" value={this.state.roomsFilter} onChange={this.roomFilterToogleRoom} aria-label="Room filter">
+                    {this.state.roomsList.map((room, index) => (
+                        <ToggleButton key={room['_id']} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
+                    ))}
+                    </ToggleButtonGroup>
                 </Grid>
-            ))}
-            </Grid>
-            <Grid container className="addEvent">
-                <Button component={Link} to="/events/add" variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>
-                    Add event
-                </Button>
-            </Grid>
-            </div>
+                <Grid container className="roomsList">
+                {this.state.events.map((event, index) => (
+                    <Grid key={event.room._id} item md={6} sm={12}>
+                    <EventsRoom data={event}/>
+                    </Grid>
+                ))}
+                </Grid>
+                <div className="addEvent btnContainer">
+                    <Button component={Link} to="/events/add" variant="contained" color="secondary" fullWidth type="submit" disabled={this.state.isLoading}>
+                        Add event
+                    </Button>
+                </div>
+            </Container>
         );
     }
 }
