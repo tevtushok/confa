@@ -104,6 +104,22 @@ eventSchema.pre('save', function (next) {
     });
 });
 
+eventSchema.statics.details = function (filter, eventId, callback) {
+    Event.findOne(filter).exec(function (err, event) {
+        if (err) {
+            return callback(err);
+            const opts = [
+                { path: 'room', model: 'Room', select: ['_id', 'number', 'title'] },
+                { path: 'user', model: 'User', select: ['_id', 'name', 'title'] },
+            ];
+            Event.populate(event, opts, function (err, event) {
+                return callback(err);
+                return event;
+            });
+        }
+    });
+};
+
 eventSchema.statics.getActiveByYmd = function (roomId, ymd, callback) {
     this.find({
         status: 'active',

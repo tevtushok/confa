@@ -477,11 +477,11 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
 
-        const delete1 = await agent.post('/api/v1/events/delete')
-            .send({'_id': event1.body.data.event._id})
+        const delete1 = await agent.delete('/api/v1/events/' + event1.body.data.event._id)
+            .send()
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(201, delete1.status);
+        assert.equal(200, delete1.status);
     });
 
     it('delete not own event', async () => {
@@ -501,8 +501,8 @@ describe('controllers/events', async () => {
 
         user2 = await createAndLoginUser(agent); // login to another user
 
-        const delete1 = await agent.post('/api/v1/events/delete')
-            .send({'_id': event1.body.data.event._id})
+        const delete1 = await agent.delete('/api/v1/events/' + event1.body.data.event._id)
+            .send()
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.nestedPropertyVal(delete1, 'body.code', 1106);

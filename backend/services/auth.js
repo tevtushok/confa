@@ -58,6 +58,7 @@ module.exports.login = (req, res, next) => {
 		res.cookie('token', token, cookie_options);
 
         const ret = {'user': {
+            id: user.id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
@@ -81,6 +82,7 @@ module.exports.verify = (req, res) => {
 	.then(user => {
 		const ret = {
 			user: {
+                id: user.id,
 				name: user.name,
 				email: user.email,
                 isAdmin: user.isAdmin,

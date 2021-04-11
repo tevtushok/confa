@@ -3,6 +3,7 @@ const Room = require('../models/room');
 const { jsonResponse, filterRequest } = require('../includes/utils');
 const { MODELS, API, SUCCESS, FAILURE }= require('../includes/codes');
 const { EventError } = require('../includes/errors/models');
+const mongoose = require('mongoose');
 
 module.exports.add = async (req, res) => {
     try {
@@ -112,7 +113,10 @@ module.exports.change = async (req, res) => {
 
 module.exports.delete = async (req, res) => {
     try {
-        const eventId = req.body['_id'];
+        const eventId = req.params.id;
+        if (false === mongoose.Types.ObjectId.isValid(eventId)) {
+            return jsonResponse(req, res, 400, API.EVENTS.DELETE_ID_INVALID, null, 'invalid eventId');
+        }
         const dbEvent = await Event.findById(eventId).exec();
         if (!dbEvent) {
             return jsonResponse(req, res, 401,
@@ -125,13 +129,45 @@ module.exports.delete = async (req, res) => {
         else {
             dbEvent.status = 'deleted';
             await dbEvent.save();
-            return jsonResponse(req, res, 201, SUCCESS, null, 'Event deleted');
+            return jsonResponse(req, res, 200, SUCCESS, null, 'Event deleted');
         }
     }
     catch(err) {
         return jsonResponse(req, res, 500, API.EVENTS.DELETE, err, 'Error while delete event');
     }
 };
+
+module.exports.details = async(req, res) => {
+    try {
+        const eventId = req.params.id;
+        if (!eventId) {
+            return jsonResponse(req, res, 400, API.EVENTS.DETAILS_ID_REQUIRED, null, 'eventId is required');
+        }
+        if (false === mongoose.Types.ObjectId.isValid(eventId)) {
+            return jsonResponse(req, res, 400, API.EVENTS.DETAILS_ID_INVALID, null, 'invalid eventId');
+        }
+        // { _id: eventId, status: 'active' })
+        const event = await Event.findOne({ _id: eventId, status: 'active' }).exec();
+        const opts = [
+            { path: 'room', model: 'Room', select: ['_id', 'number', 'title'] },
+            { path: 'user', model: 'User', select: ['_id', 'name', 'title'] },
+        ];
+        Event.populate(event, opts, function (err, event) {
+            if (err) {
+                return jsonResponse(req, res, 500, API.EVENTS.DETAILS, err, 'Database error');
+            }
+            if (!event) {
+                return jsonResponse(req, res, 404, API.EVENTS.DETAILS_NOT_FOUND, null, 'Event not found');
+            }
+            return jsonResponse(req, res, 200, SUCCESS, {event: event}, 'Event details');
+        });
+    }
+    catch(err) {
+        return jsonResponse(req, res, 500, API.EVENTS.DETAILS, err, 'Error while reached event details');
+    }
+
+
+}
 
 module.exports.eventList = async (req, res) => {
     return jsonResponse(req, res, 200, SUCCESS, {events: []}, 'Success');
