@@ -128,7 +128,7 @@ class Login extends React.Component {
 							<FormHelperText>{serviceMsg}</FormHelperText>
 						</FormControl>
 						<FormControl>
-							<Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={this.state.isLoading}>Login</Button>
+							<Button variant="contained" color="secondary"  fullWidth type="submit" disabled={this.state.isLoading}>Login</Button>
 						</FormControl>
 						<p className="login__invite">
 							<Link color="primary" component={LinkRouter} to="/register">

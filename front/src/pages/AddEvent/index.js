@@ -358,7 +358,7 @@ class AddEvent extends React.Component {
                             </Grid>
                         )}
                         <Grid container className="btnContainer">
-                            <Button size="large" disabled={this.state.isLoading} className="btnAddEvent" variant="contained" fullWidth
+                            <Button  disabled={this.state.isLoading} className="btnAddEvent" variant="contained" fullWidth
                                 type="button" color="secondary" onClick={this.handleAddEvent}>Add event
                             </Button>
                             {this.state.isLoading && <Bayan/>}

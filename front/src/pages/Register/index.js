@@ -137,7 +137,7 @@ export default function Resister(props) {
                         <FormHelperText>{serviceMsg}</FormHelperText>
                     </FormControl>
                     <FormControl>
-                        <Button variant="contained" color="secondary" size="large" fullWidth type="submit" disabled={isLoading}>Register</Button>
+                        <Button variant="contained" color="secondary"  fullWidth type="submit" disabled={isLoading}>Register</Button>
                     </FormControl>
                 </form>
             </div>
