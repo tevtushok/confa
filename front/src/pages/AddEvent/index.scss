@@ -11,4 +11,10 @@
            text-decoration: none;
        }
    }
+   .MuiSkeleton-root {
+       height: 3.5rem;
+   }
+   .MuiSkeleton-root.button {
+       height: 4rem;
+   }
 }

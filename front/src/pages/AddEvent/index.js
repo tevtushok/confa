@@ -12,7 +12,9 @@ import {
     Container,
     Grid,
     Link,
+    Typography,
 } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
@@ -231,10 +233,28 @@ class AddEvent extends React.Component {
     render() {
         if (!this.state.pageLoaded) {
             return (
-                <Container maxWidth="md">
-                    <div className="addEvent page">
-                        <Bayan/>
-                    </div>
+                <Container maxWidth="md" className="addEvent page skeleton">
+                    <h2 className="text-center">New event</h2>
+                    <Grid container spacing={3}>
+                        <Grid item xs={4}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Skeleton height="4rem"/>
+                        </Grid>
+                    </Grid>
                 </Container>
             );
         }
@@ -281,7 +301,7 @@ class AddEvent extends React.Component {
             console.log('else render');
             return (
                 <Container maxWidth="md" className="addEvent page">
-                    <h2 className="text-center">New Event</h2>
+                    <h2 className="text-center">New event</h2>
                     <Grid container spacing={3}>
                         <Grid item xs={4}>
                             <FormControl error={!!this.state.errors && !!this.state.errors.room}>
