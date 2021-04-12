@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import Bayan from '../../components/Bayan'
 import { Button, Container, FormControl, TextField, FormHelperText } from '@material-ui/core'
-import authApi from '../../services/authApix'
+import authApi from '../../services/authApi'
 
 import './index.scss';
 

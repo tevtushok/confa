@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as LinkRouter, Redirect } from 'react-router-dom';
-import authApi from '../../services/authApix'
+import authApi from '../../services/authApi'
 import CODES from '../../services/codes'
 import { inject } from 'mobx-react';
 import Bayan from '../../components/Bayan'

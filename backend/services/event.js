@@ -5,7 +5,7 @@ const { MODELS, API, SUCCESS, FAILURE } = require('../includes/codes');
 const { EventError } = require('../includes/errors/models');
 const mongoose = require('mongoose');
 
-module.exports.add = async (req, res) => {
+module.exports.addEvent = async (req, res) => {
     try {
         const eventData  = filterRequest(req.body, ['room', 'date_start', 'date_end', 'title', 'description']);
         eventData.user = req.user.id; // user from user session
@@ -51,7 +51,7 @@ module.exports.add = async (req, res) => {
     }
 };
 
-module.exports.change = async (req, res) => {
+module.exports.changeEvent = async (req, res) => {
     try {
         const eventData  = filterRequest(req.body, ['room', 'date_start', 'date_end', 'title', 'description']);
         eventData.user = req.user.id; // user from user session
@@ -115,7 +115,7 @@ module.exports.change = async (req, res) => {
     }
 }
 
-module.exports.delete = async (req, res) => {
+module.exports.deleteEvent = async (req, res) => {
     try {
         const eventId = req.params.id;
         if (!eventId) {
@@ -144,7 +144,7 @@ module.exports.delete = async (req, res) => {
     }
 };
 
-module.exports.details = async(req, res) => {
+module.exports.getEvent = async(req, res) => {
     try {
         const eventId = req.params.id;
         if (!eventId) {

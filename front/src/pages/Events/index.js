@@ -18,8 +18,8 @@ import Alert from '@material-ui/lab/Alert'
 
 // import { eventList as eventListApi } from '../../services/events'
 // import { list as roomsListApi } from '../../services/rooms'
-import roomsApi from '../../services/roomsApix'
-import eventsApi from '../../services/eventsApix';
+import roomsApi from '../../services/roomsApi'
+import eventsApi from '../../services/eventsApi';
 
 import './index.scss';
 

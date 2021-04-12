@@ -1,4 +1,4 @@
-import Api from './apix';
+import Api from './api';
 
 class RoomsApi extends Api {
     list() {

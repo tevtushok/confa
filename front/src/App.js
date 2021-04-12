@@ -2,7 +2,7 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Switch, withRouter, Route } from "react-router-dom";
 
-import authApi from './services/authApix'
+import authApi from './services/authApi'
 import PrivateRoute from './routes/PrivateRoute'
 import Loader from './components/Loader';
 import Header from './components/Header';

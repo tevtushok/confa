@@ -8,7 +8,7 @@ import {
     Grid,
     Button,
 } from '@material-ui/core';
-import eventsApi from '../../services/eventsApix';
+import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 import Bayan from '../../components/Bayan'
@@ -51,7 +51,7 @@ class DeleteEvent extends React.Component {
 
     async loadEventDetails() {
         this.setState({isLoading: true});
-        const result = await eventsApi.details(this.eventId);
+        const result = await eventsApi.getEvent(this.eventId);
         const apiData = result.response.getApiData();
         const apiCode = result.response.getApiCode();
         if (result.error) {
@@ -102,7 +102,7 @@ class DeleteEvent extends React.Component {
     handleDeleteEvent = async() => {
         this.setState({isLoading: true});
         console.log('handleDeleteEvent');
-        const result = await eventsApi.delete(this.eventId);
+        const result = await eventsApi.deleteEvent(this.eventId);
         const apiMessage = result.response.getApiMessage();
         const apiCode = result.response.getApiCode();
         if (result.error) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import authApi from '../../services/authApix'
+import authApi from '../../services/authApi'
 import { inject } from 'mobx-react';
 import Link from '@material-ui/core/Link'
 

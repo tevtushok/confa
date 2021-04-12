@@ -18,8 +18,8 @@ import {
     DateTimePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
-import roomsApi from '../../services/roomsApix'
-import eventsApi from '../../services/eventsApix';
+import roomsApi from '../../services/roomsApi'
+import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 import Bayan from '../../components/Bayan'
@@ -136,7 +136,7 @@ class AddEvent extends React.Component {
             date_start: dateStart,
             date_end: dateEnd,
         };
-        const result = await eventsApi.add(postData);
+        const result = await eventsApi.addEvent(postData);
         if (result.error) {
             const apiCode = result.response.getApiCode();
             const apiData = result.response.getApiData();
