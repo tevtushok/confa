@@ -16,8 +16,10 @@ import {
 
 import Alert from '@material-ui/lab/Alert'
 
-import { eventList as eventListApi } from '../../services/events'
-import { list as roomsListApi } from '../../services/rooms'
+// import { eventList as eventListApi } from '../../services/events'
+// import { list as roomsListApi } from '../../services/rooms'
+import roomsApi from '../../services/roomsApix'
+import eventsApi from '../../services/eventsApix';
 
 import './index.scss';
 
@@ -53,7 +55,7 @@ class Events extends BaseComponent {
 
     async getEvents(ymd, rooms) {
         this.setLoading(true);
-        const eventsResp = await eventListApi(ymd, rooms);
+        const eventsResp = await eventsApi.list(ymd, rooms);
         this.setLoading(false);
         if (eventsResp.error) {
             this.alert({errorMessage: 'Data loading fairule'})
@@ -71,16 +73,19 @@ class Events extends BaseComponent {
 
     async getRoomList() {
         this.setLoading(true);
-        const resp = await roomsListApi();
+        const result = await roomsApi.list();
+        const apiCode = result.response.getApiCode();
+        const apiData = result.response.getApiData();
+        const apiMessage = result.response.getApiMessage();
         this.setLoading(false);
-        if (resp.error) {
-            console.log('getRoomList error', resp)
+        if (result.error) {
+            console.log('getRoomList error', result.error)
             this.alert({errorMessage: 'Room list loading fairule'})
             return;
         }
         else {
-            this.setState({roomsList: resp.data.data.rooms});
-            console.log('getRoomList', resp.data.data.rooms)
+            this.setState({roomsList: apiData.rooms});
+            console.log('getRoomList', apiData.rooms)
         }
     }
 

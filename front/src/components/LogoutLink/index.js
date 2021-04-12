@@ -1,12 +1,12 @@
 import React from 'react';
-import { logoutAuthService } from '../../services/auth'
+import authApi from '../../services/authApix'
 import { inject } from 'mobx-react';
 import Link from '@material-ui/core/Link'
 
 @inject('userStore')
 class LogoutLink extends React.Component {
 	async doLogout() {
-		await logoutAuthService();
+		authApi.logout();
 		this.props.userStore.unsetUser();
 	}
 	render() {

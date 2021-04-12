@@ -2,7 +2,7 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Switch, withRouter, Route } from "react-router-dom";
 
-import { verifyAuthService } from './services/auth'
+import authApi from './services/authApix'
 import PrivateRoute from './routes/PrivateRoute'
 import Loader from './components/Loader';
 import Header from './components/Header';
@@ -34,10 +34,11 @@ import './App.scss'
 @observer
 class App extends React.Component {
     async componentDidMount() {
-        const auth = await verifyAuthService();
-        if (!auth.error && auth.data.data.user) {
-            console.info(auth.data.data.user);
-            this.props.userStore.setUser(auth.data.data.user);
+        const auth = await authApi.verify();
+        const apiData = auth.response.getApiData();
+        if (!auth.error && apiData.user) {
+            console.info(apiData.user);
+            this.props.userStore.setUser(apiData.user);
         }
         else {
             if ((500 === auth.response.status)) {
@@ -51,7 +52,18 @@ class App extends React.Component {
         const isLoggedIn = this.props.userStore.loggedIn;
         const userRole = this.props.userStore.userRole;
         if (!this.props.commonStore.appLoaded) {
-            return (<Loader/>);
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline/>
+                    <div className="app">
+                        <Header/>
+                        <main>
+                            <Loader/>
+                        </main>
+                        <Footer/>
+                    </div>
+                </ThemeProvider>
+            );
         }
 
         if (this.props.commonStore.getServerError()) {

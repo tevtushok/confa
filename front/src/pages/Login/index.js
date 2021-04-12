@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link as LinkRouter, Redirect } from 'react-router-dom';
-import { loginAuthService } from '../../services/auth'
+import authApi from '../../services/authApix'
+import CODES from '../../services/codes'
 import { inject } from 'mobx-react';
 import Bayan from '../../components/Bayan'
 import { Container, FormControl, TextField, Button, Link, FormHelperText } from '@material-ui/core'
@@ -29,22 +30,32 @@ class Login extends React.Component {
 		this.setState({serviceMsg: ''});
 		this.validateEmail(this.state.email);
 		this.validatePassword(this.state.password);
-		if (Object.keys(this.state.errors).length) {
-		}
-		else {
+		if (!Object.keys(this.state.errors).length) {
 			this.setState({isLoading: true});
-			loginAuthService(this.state.email, this.state.password)
-				.then((res) => {
-					this.setState({isLoading: false});
-					if (res.error) {
-						let message = (res.response.data.message)
-							? res.response.data.message : res.response.statusText;
-						this.setState({serviceMsg: message})
-					}
-					else {
-						this.props.userStore.setUser(res.data.data.user);
-					}
-				});
+            authApi.login(this.state.email, this.state.password)
+                .then((auth) => {
+                    this.setState({isLoading: false});
+                    const apiMessage = auth.response.getApiMessage();
+                    const apiData = auth.response.getApiData();
+                    const apiCode = auth.response.getApiCode();
+                    switch(apiCode) {
+                        case 0:
+                            this.props.userStore.setUser(apiData.user);
+                            break;
+                        case CODES.AUTH.INVALID_CREDENTIALS:
+                        case CODES.AUTH.EMPTY_CREDENTIALS:
+                            this.setState({serviceMsg: 'Invalid credentials'})
+                            break;
+                        default:
+                            console.log('default case', auth.response.statusText, apiMessage);
+                            const message = apiMessage ? apiMessage : auth.response.statusText;
+                            this.setState({serviceMsg: message})
+                    }
+                })
+                .catch(err => {
+                    console.log('catch error', err.response.getApiMessage(), err.response.statusText);
+                    this.setState({serviceMsg: 'Server error'});
+                });
 		}
 	};
 
@@ -64,7 +75,7 @@ class Login extends React.Component {
 		}
 	}
 
-	validateEmail (email) {
+	validateEmail(email) {
 		let { errors } = this.state;
 		if (emailRegExp.test(email)) {
 			delete errors.email;
@@ -89,7 +100,7 @@ class Login extends React.Component {
 	render() {
 		if (this.props.userStore.isLoggedIn) {
 			return (
-				<Redirect to="/events"/>
+				<Redirect to="/"/>
 			);
 		}
 		const { errors } = this.state;

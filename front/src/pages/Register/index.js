@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import Bayan from '../../components/Bayan'
 import { Button, Container, FormControl, TextField, FormHelperText } from '@material-ui/core'
-import { registerAuthService } from '../../services/auth'
+import authApi from '../../services/authApix'
 
 import './index.scss';
 
@@ -16,7 +16,7 @@ export default function Resister(props) {
     const onSubmit = (data) => {
         setServiceMsg('');
         setLoading(true);
-        registerAuthService(data)
+        authApi.register(data)
             .then(res => {
                 setLoading(false);
                 if (res.error) {
