@@ -13,7 +13,7 @@ module.exports.API = {
         INVALID_USER: 1008,
     },
     EVENTS: {
-        SAVE: 1100,
+        FAILURE: 1100,
         VALIDATION: 1101,
         ROOM_NOT_EXISTS: 1102,
         ROOM_NOT_ACTIVE: 1103,
@@ -21,12 +21,7 @@ module.exports.API = {
         NOT_EXISTS: 1105,
         NOT_BELONG_TO_YOU: 1106,
         ID_REQUIRED: 1107,
-        DELETE: 1110,
-        DELETE_ID_INVALID: 1111,
-        DETAILS: 1120,
-        DETAILS_ID_REQUIRED: 1121,
-        DETAILS_ID_INVALID: 1122,
-        DETAILS_NOT_FOUND: 1123,
+        ID_INVALID: 1108,
     },
     LOGIN: {
         EMPTY_CREDENTIALS: 1200,
