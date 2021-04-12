@@ -17,20 +17,20 @@ module.exports.add = async (req, res) => {
             if ('user' in validationErr.errors) {
                 return jsonResponse(req, res, 500, API.EVENTS.FAILURE, null, 'Invalid user id');
             }
-            return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
+            return jsonResponse(req, res, 400, API.EVENTS.VALIDATION, validationErr, 'Validation error');
         }
         const room = await Room.findById(newEvent.room);
         if (!room) {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
+            return jsonResponse(req, res, 400, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
         }
         if (room && room['status'] !== 'active') {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
+            return jsonResponse(req, res, 400, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
         }
 
         newEvent.save(async (err, event) => {
             if (err) {
                 if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
-                    return jsonResponse(req, res, 401, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
+                    return jsonResponse(req, res, 400, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.FAILURE, err, 'Database error');
             }
@@ -57,29 +57,29 @@ module.exports.change = async (req, res) => {
         eventData.user = req.user.id; // user from user session
         const eventId = req.params.id;
         if (!eventId) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 400,
                 API.EVENTS.ID_REQUIRED, null, 'Event id is required');
         }
         if (false === mongoose.Types.ObjectId.isValid(eventId)) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 400,
                 API.EVENTS.ID_INVALID, null, 'Event id is invalid');
         }
         const dbEvent = await Event.findById(eventId).exec();
         if (!dbEvent) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 404,
                 API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
         }
         else if (false === dbEvent['user'].equals(req.user.id)) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 403,
                 API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
         }
         const roomId = 'room' in eventData ? eventData.room : dbEvent.room;
         const room = await Room.findById(roomId);
         if (!room) {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
+            return jsonResponse(req, res, 400, API.EVENTS.ROOM_NOT_EXISTS, null, 'Room does not exists');
         }
         if (room && room['status'] !== 'active') {
-            return jsonResponse(req, res, 401, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
+            return jsonResponse(req, res, 400, API.EVENTS.ROOM_NOT_ACTIVE, null, 'Room is not active');
         }
         // change mongo doc and start validate
         dbEvent.set(eventData);
@@ -89,12 +89,12 @@ module.exports.change = async (req, res) => {
             if ('user' in validationErr.errors) {
                 return jsonResponse(req, res, 500, API.EVENTS.FAILURE, null, 'Invalid user id');
             }
-            return jsonResponse(req, res, 401, API.EVENTS.VALIDATION, validationErr, 'Validation error');
+            return jsonResponse(req, res, 400, API.EVENTS.VALIDATION, validationErr, 'Validation error');
         }
         dbEvent.save((err, event) => {
             if (err) {
                 if (err instanceof EventError && err.code === MODELS.EVENT.CROSS_DATES) {
-                    return jsonResponse(req, res, 401, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
+                    return jsonResponse(req, res, 400, API.EVENTS.CROSS_DATES, {events: err.data}, err.message);
                 }
                 return jsonResponse(req, res, 500, API.EVENTS.FAILURE, err, 'Database error on Event update');
             }
@@ -126,11 +126,11 @@ module.exports.delete = async (req, res) => {
         }
         const dbEvent = await Event.findById(eventId).exec();
         if (!dbEvent) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 404,
                 API.EVENTS.NOT_EXISTS, null, 'This event does not exists');
         }
         else if (false === dbEvent['user'].equals(req.user.id)) {
-            return jsonResponse(req, res, 401,
+            return jsonResponse(req, res, 403,
                 API.EVENTS.NOT_BELONG_TO_YOU, null, 'This event does not belong to you');
         }
         else {
@@ -161,7 +161,7 @@ module.exports.details = async(req, res) => {
         ];
         Event.populate(event, opts, function (err, event) {
             if (err) {
-                return jsonResponse(req, res, 500, API.EVENTS.DETAILS, err, 'Database error');
+                return jsonResponse(req, res, 500, API.EVENTS.FAILURE, err, 'Database error');
             }
             if (!event) {
                 return jsonResponse(req, res, 404, API.EVENTS.NOT_EXISTS, null, 'Event not found');

@@ -33,7 +33,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.title');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -47,7 +47,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.title');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -62,7 +62,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.description');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -77,7 +77,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.room');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -94,7 +94,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedPropertyVal(res, 'body.code', 1102);
                 assert.nestedPropertyVal(res, 'body.message', 'Room does not exists');
                 return done();
@@ -110,7 +110,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedPropertyVal(res, 'body.code', 1103);
                 assert.nestedPropertyVal(res, 'body.message', 'Room is not active');
                 return done();
@@ -128,7 +128,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_start');
                 assert.nestedProperty(res, 'body.data.errors.date_end');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
@@ -147,7 +147,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_end');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -167,7 +167,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/)
             .end((err, res) => {
                 if(err) return done(err);
-                assert.equal(401, res.status);
+                assert.equal(400, res.status);
                 assert.nestedProperty(res, 'body.data.errors.date_end');
                 assert.nestedPropertyVal(res, 'body.code', 1101);
                 assert.nestedPropertyVal(res, 'body.message', 'Validation error');
@@ -207,7 +207,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, event3.status);
+        assert.equal(400, event3.status);
 
         // 09:00-10:00 event4
         eventData['date_start'] = new Date('2021 09:00');
@@ -226,7 +226,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, event5.status);
+        assert.equal(400, event5.status);
         assert.nestedPropertyVal(event5, 'body.code', 1104);
         assert.nestedPropertyVal(event5, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event5, 'body.data.events');
@@ -240,7 +240,7 @@ describe('controllers/events', async () => {
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, event6.status);
+        assert.equal(400, event6.status);
         assert.nestedPropertyVal(event6, 'body.code', 1104);
         assert.nestedPropertyVal(event6, 'body.message', 'Date is crossed with other event');
         assert.notEmpty(event6, 'body.data.events');
@@ -361,7 +361,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, reqFieldsErr.status);
+        assert.equal(400, reqFieldsErr.status);
         assert.nestedProperty(reqFieldsErr, 'body.data.errors.title');
         assert.nestedProperty(reqFieldsErr, 'body.data.errors.description');
         assert.nestedPropertyVal(reqFieldsErr, 'body.code', 1101);
@@ -373,7 +373,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, shortTitleErr.status);
+        assert.equal(400, shortTitleErr.status);
         assert.nestedProperty(shortTitleErr.body, 'data.errors.title');
         assert.notNestedProperty(shortTitleErr.body, 'data.errors.description');
         assert.nestedPropertyVal(shortTitleErr.body, 'code', 1101);
@@ -388,7 +388,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, eventIdErr.status);
+        assert.equal(400, eventIdErr.status);
         assert.nestedPropertyVal(eventIdErr.body, 'code', 1108);
         assert.nestedPropertyVal(eventIdErr.body, 'message', 'Event id is invalid');
 
@@ -424,7 +424,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, crossed1.status);
+        assert.equal(400, crossed1.status);
         assert.equal(2, crossed1.body.data.events.length);
 
         changeData = {
@@ -436,7 +436,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, crossed2.status);
+        assert.equal(400, crossed2.status);
         assert.equal(2, crossed2.body.data.events.length);
 
         changeData = {
@@ -449,7 +449,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(401, crossed3.status);
+        assert.equal(400, crossed3.status);
         assert.equal(1, crossed3.body.data.events.length);
 
         changeData = {
@@ -510,6 +510,19 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/);
         assert.nestedPropertyVal(delete1, 'body.code', 1106);
         assert.nestedPropertyVal(delete1, 'body.message', 'This event does not belong to you');
-        assert.equal(401, delete1.status);
+        assert.equal(403, delete1.status);
+    });
+
+    it('details Event id is invalid', async () => {
+        await Event.deleteMany({});
+        const eventData = generateValidEventData(globalRoomActive.id);
+        const event = await agent.get('/api/v1/events/11q')
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+
+        assert.equal(400, event.status);
+        assert.nestedPropertyVal(event, 'body.code', 1108);
+        assert.nestedPropertyVal(event, 'body.message', 'Event id is invalid');
     });
 });

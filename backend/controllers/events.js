@@ -5,7 +5,7 @@ let router = express.Router();
 router.post('/', eventService.add);
 router.put('/:id', eventService.change);
 router.delete('/:id', eventService.delete);
-router.get('/details/:id', eventService.details);
-router.get('/eventList', eventService.eventList);
+router.get('/:id', eventService.details);
+// router.get('/eventList', eventService.eventList);
 
 module.exports = router;
