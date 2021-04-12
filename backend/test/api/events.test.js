@@ -515,7 +515,6 @@ describe('controllers/events', async () => {
 
     it('details Event id is invalid', async () => {
         await Event.deleteMany({});
-        const eventData = generateValidEventData(globalRoomActive.id);
         const event = await agent.get('/api/v1/events/11q')
             .send()
             .set('Accept', 'application/json')
@@ -524,5 +523,42 @@ describe('controllers/events', async () => {
         assert.equal(400, event.status);
         assert.nestedPropertyVal(event, 'body.code', 1108);
         assert.nestedPropertyVal(event, 'body.message', 'Event id is invalid');
+    });
+
+    it('details 404', async () => {
+        await Event.deleteMany({});
+
+        const eventData = generateValidEventData(globalRoomActive.id);
+        const event = await agent.post('/api/v1/events')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event.status);
+        const eventId = globalRoomActive.id;
+        const details = await agent.get('/api/v1/events/' + eventId)
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(404, details.status);
+    });
+
+    it('details ok', async () => {
+        await Event.deleteMany({});
+
+        const eventData = generateValidEventData(globalRoomActive.id);
+        const event = await agent.post('/api/v1/events')
+            .send(eventData)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(201, event.status);
+
+        const details = await agent.get('/api/v1/events/' + event.body.data.event._id)
+            .send()
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/);
+        assert.equal(200, details.status);
+        assert.nestedProperty(details, 'body.data.event');
+        assert.nestedProperty(details, 'body.data.event.room');
+        assert.nestedProperty(details, 'body.data.event.user');
     });
 });
