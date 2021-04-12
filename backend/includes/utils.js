@@ -26,7 +26,8 @@ function jsonResponse(req, res, statusCode, apiCode = null, data = null, message
         response.data = data;
     }
 
-    return res.status(statusCode).json(response);
+    res.status(statusCode).json(response);
+    next();
 }
 
 function errorHandler(err, req, res, next) {

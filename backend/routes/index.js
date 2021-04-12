@@ -1,8 +1,9 @@
 const apiRoute = require('./v1');
 const adminApiRoute = require('./v1/admin')
 const jwt = require('express-jwt');
-const {public_routes, jwt_algorithms} = require('../configs/config');
-const {errorHandler} = require('../includes/utils');
+const { public_routes, jwt_algorithms } = require('../configs/config');
+const { errorHandler } = require('../includes/utils');
+const logger = require('../includes/logger');
 
 const init = (app) => {
 
@@ -10,14 +11,14 @@ const init = (app) => {
     	res.sendFile(__dirname + '/index.html');
     });
 
-    app.all('*', function (req, res, next) {
-        if (process.env.NODE_ENV !== 'test') {
-            console.log('Request: ' + req.method + ' '
-                + req.originalUrl + ' in: ' + new Date());
-            console.log(JSON.stringify(req.body));
-        }
-        return next();
-    });
+    // app.all('*', function (req, res, next) {
+    //     if (process.env.NODE_ENV !== 'test') {
+    //         console.log('Request: ' + req.method + ' '
+    //             + req.originalUrl + ' in: ' + new Date());
+    //         console.log(JSON.stringify(req.body));
+    //     }
+    //     return next();
+    // });
 
     app.use(
         jwt({
@@ -34,7 +35,7 @@ const init = (app) => {
     app.use('/api', apiRoute);
     app.use('/api', adminApiRoute);
 
-
+    // app.use(logger); // logger for req+res
 
 }
 module.exports = {

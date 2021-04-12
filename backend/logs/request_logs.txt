@@ -1,0 +1,2 @@
+[2021-4-12 14:58:19] GET:/api/v1/rooms/list 200 0.008 ms
+[2021-4-12 14:58:47] POST:/api/v1/auth/register 200 0.007 ms
