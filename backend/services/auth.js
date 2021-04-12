@@ -20,14 +20,14 @@ module.exports.register = async (req, res, next) => {
 
     User.findOne({ email: newUser.email}, (err, user) => {
         if (err) {
-            return jsonResponse(req, res, 500, API.AUTH.REGISTER, err, 'Error while saving user');
+            return jsonResponse(req, res, 500, API.AUTH.FAILURE, err, 'Error while saving user');
         }
         if (user) {
             return jsonResponse(req, res, 400, API.AUTH.EMAIL_EXISTS, null, 'Email should be unique');
         }
         newUser.save((err, user) => {
             if (err) {
-                return jsonResponse(req, res, 500, API.AUTH.REGISTER, err, 'Database error');
+                return jsonResponse(req, res, 500, API.AUTH.FAILURE, err, 'Database error');
             }
             return jsonResponse(req, res, 201, SUCCESS, null, 'User added');
         });
@@ -42,10 +42,10 @@ module.exports.login = (req, res, next) => {
 	}
 	User.authenticate(email, password,  function (err, user) {
         if (err instanceof UserError) {
-            return jsonResponse(req, res, 401, API.AUTH.INVALID_CREDENTIALS, null, "Invalid credentials");
+            return jsonResponse(req, res, 400, API.AUTH.INVALID_CREDENTIALS, null, "Invalid credentials");
         }
         if (err || !user) {
-            return jsonResponse(req, res, 500, API.AUTH.LOGIN, err, "Server error");
+            return jsonResponse(req, res, 500, API.AUTH.FAILURE, err, "Server error");
         }
 		const jwtData = {
             id: user.id,
@@ -75,7 +75,7 @@ module.exports.logout = (req, res, next) => {
 
 module.exports.verify = (req, res) => {
 	if (!req.user || !('email' in req.user) || !('password' in req.user)) {
-		return jsonResponse(req, res, 401, API.AUTH.UNSIGNED_TOKEN, null, 'Unsigned token');
+		return jsonResponse(req, res, 403, API.AUTH.UNSIGNED_TOKEN, null, 'Unsigned token');
 	}
 
 	User.findOne({email: req.user.email, status: 'enabled'})
@@ -88,10 +88,9 @@ module.exports.verify = (req, res) => {
                 isAdmin: user.isAdmin,
 			}
 		};
-
 		return jsonResponse(req, res, 200, SUCCESS, ret, 'Token verified');
 	})
 	.catch(err => {
-		return jsonResponse(req, res, 401, API.AUTH.INVALID_USER, null, 'Invalid user');
+		return jsonResponse(req, res, 400, API.AUTH.INVALID_USER, null, 'Invalid user');
 	});
 }

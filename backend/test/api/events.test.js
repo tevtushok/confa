@@ -558,7 +558,7 @@ describe('controllers/events', async () => {
             .expect('Content-Type', /json/);
         assert.equal(200, details.status);
         assert.nestedProperty(details, 'body.data.event');
-        assert.nestedProperty(details, 'body.data.event.room');
-        assert.nestedProperty(details, 'body.data.event.user');
+        expect(details).to.have.nested.property('body.data.event.room').that.is.an('object');
+        expect(details).to.have.nested.property('body.data.event.user').that.is.an('object');
     });
 });

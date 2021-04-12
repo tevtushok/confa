@@ -1,7 +1,7 @@
 // API CODES
 module.exports.API = {
     AUTH: {
-        REGISTER: 1000,
+        FAILURE: 1000,
         VALIDATION: 1001,
         EMAIL_EXISTS: 1002,
         LOGIN: 1003,

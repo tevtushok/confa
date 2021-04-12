@@ -43,7 +43,7 @@ function errorHandler(err, req, res, next) {
             break;
         case err.name === 'UnauthorizedError':
             // jwt authentication error
-            return jsonResponse(req, res, 401, MIDDLEWARE.JWT.UNAUTHORIZED, null, 'Unauthorized');
+            return jsonResponse(req, res, 403, MIDDLEWARE.JWT.UNAUTHORIZED, null, 'Unauthorized');
             break;
         default:
             //jsonResponse(req, res, 401, API_CODES.FAILURE, null, err.message);
