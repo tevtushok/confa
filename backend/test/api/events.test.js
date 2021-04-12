@@ -27,7 +27,7 @@ describe('controllers/events', async () => {
     });
 
     it('add, title is required', (done) => {
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send({})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -42,7 +42,7 @@ describe('controllers/events', async () => {
     });
 
     it('add, title len < 3', (done) => {
-        agent.post('/api/v1/events/add') .send({title: 'tq'})
+        agent.post('/api/v1/events') .send({title: 'tq'})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -56,7 +56,7 @@ describe('controllers/events', async () => {
     });
 
     it('add, description is required', (done) => {
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send({})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -71,7 +71,7 @@ describe('controllers/events', async () => {
     });
 
     it('add, room is invalid', (done) => {
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send({room: 'id1'})
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -88,7 +88,7 @@ describe('controllers/events', async () => {
     it('add, room not found', (done) => {
         const eventData = generateValidEventData();
         eventData.room = mongoose.Types.ObjectId();
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -104,7 +104,7 @@ describe('controllers/events', async () => {
     it('add, room is not active', (done) => {
         const eventData = generateValidEventData();
         eventData.room = globalRoomInActive.id;
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -122,7 +122,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         eventData['date_start'] = 'y2020-10-10';
         eventData['date_end'] = '02 2021 12:25';
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -141,7 +141,7 @@ describe('controllers/events', async () => {
         const eventData = generateValidEventData();
         eventData.room = globalRoomActive.id;
         eventData['date_end'] = eventData['date_start'];
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -161,7 +161,7 @@ describe('controllers/events', async () => {
         const date_end = new Date(eventData['date_start']);
         date_end.setMinutes(date_end.getMinutes() - 11);
         eventData['date_end'] = date_end;
-        agent.post('/api/v1/events/add')
+        agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -185,7 +185,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
         eventData.room = globalRoomActive.id;
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -195,7 +195,7 @@ describe('controllers/events', async () => {
         eventData['title'] = 'event2';
         eventData['date_start'] = new Date('2021 11:00');
         eventData['date_end'] = new Date('2021 12:00');
-        const event2 = await agent.post('/api/v1/events/add')
+        const event2 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -203,7 +203,7 @@ describe('controllers/events', async () => {
 
 
         // 12:00-12:00 crossed with above event3
-        const event3 = await agent.post('/api/v1/events/add')
+        const event3 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -213,7 +213,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 09:00');
         eventData['date_end'] = new Date('2021 10:00');
         eventData['title'] = 'event4';
-        const event4 = await agent.post('/api/v1/events/add')
+        const event4 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -222,7 +222,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 09:00');
         eventData['date_end'] = new Date('2021 10:01');
         eventData['title'] = 'event4';
-        const event5 = await agent.post('/api/v1/events/add')
+        const event5 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -236,7 +236,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 09:30');
         eventData['date_end'] = new Date('2021 13:00');
         eventData['title'] = 'event6';
-        const event6 = await agent.post('/api/v1/events/add')
+        const event6 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -261,7 +261,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 16:35:35');
         eventData['title'] = 'event1';
         eventData.room = globalRoomActive.id;
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -271,7 +271,7 @@ describe('controllers/events', async () => {
         eventData['title'] = 'event2';
         eventData['date_start'] = new Date('2021 16:35');
         eventData['date_end'] = new Date('2021 17:50');
-        const event2 = await agent.post('/api/v1/events/add')
+        const event2 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -287,7 +287,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
         eventData.room = globalRoomActive.id;
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -301,7 +301,7 @@ describe('controllers/events', async () => {
             date_start: event1.body.data.event.date_start,
             date_end: event1.body.data.event.date_end,
         };
-        const event2 = await agent.post('/api/v1/events/add')
+        const event2 = await agent.post('/api/v1/events')
             .send(room2EventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -320,7 +320,7 @@ describe('controllers/events', async () => {
         eventData = generateValidEventData(globalRoomActive.id);
         eventData['date_start'] = new Date('2021 09:00');
         eventData['date_end'] = new Date('2021 10:00');
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -331,7 +331,7 @@ describe('controllers/events', async () => {
         eventData['date_start'] = new Date('2021 10:00');
         eventData['date_end'] = new Date('2021 11:00');
         eventData.room = globalRoomActive.id;
-        const event2 = await agent.post('/api/v1/events/add')
+        const event2 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -341,7 +341,7 @@ describe('controllers/events', async () => {
         eventData = generateValidEventData(globalRoomActive.id);
         eventData['date_start'] = new Date('2021 11:00');
         eventData['date_end'] = new Date('2021 12:00');
-        const event3 = await agent.post('/api/v1/events/add')
+        const event3 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -471,7 +471,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
         eventData.room = globalRoomActive.id;
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
@@ -493,7 +493,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 11:00');
         eventData['title'] = 'event1';
         eventData.room = globalRoomActive.id;
-        const event1 = await agent.post('/api/v1/events/add')
+        const event1 = await agent.post('/api/v1/events')
             .send(eventData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
