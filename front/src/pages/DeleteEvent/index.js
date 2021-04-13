@@ -12,7 +12,7 @@ import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 import Bayan from '../../components/Bayan'
-import ServiceMessage from '../../components/ServiceMessage'
+import ServerError from '../../components/ServerError'
 
 import './index.scss';
 @inject('userStore')
@@ -132,7 +132,7 @@ class DeleteEvent extends React.Component {
         else if (this.state.serverError === true) {
             return (
                 <Container maxWidth="md" className="deleteEvent page serverError">
-                    <ServiceMessage data={this.state.serviceMessage}/>
+                    <ServerError data={this.state.serviceMessage}/>
                 </Container>
             );
         }

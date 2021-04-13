@@ -1,7 +1,7 @@
 import React from 'react';
 import Alert from '@material-ui/lab/Alert'
 
-export default class ServiceMessage extends React.Component {
+export default class ServerError extends React.Component {
     constructor(props) {
         super(props);
         this.data = []
@@ -15,7 +15,7 @@ export default class ServiceMessage extends React.Component {
     }
     render() {
         return (
-            <Alert className="serviceMessage" severity={this.severity}>
+            <Alert className="ServerError" severity={this.severity}>
                 {this.data.map((row, index) => (
                     <div key={index}>{row}</div>
                 ))}

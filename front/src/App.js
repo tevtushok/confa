@@ -12,6 +12,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Events from './pages/Events';
 import AddEvent from './pages/AddEvent';
+import ChangeEvent from './pages/ChangeEvent';
 import DeleteEvent from './pages/DeleteEvent';
 import Page404 from './pages/Page404'
 import ServerError from './pages/ServerError'
@@ -96,6 +97,7 @@ class App extends React.Component {
 
                             <PrivateRoute path="/events" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/events/add" exact component={AddEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/events/change/:id" exact component={ChangeEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/events/delete/:id" exact component={DeleteEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/@:username" component={Profile} isLoggedIn={this.props.userStore.isLoggedIn}/>

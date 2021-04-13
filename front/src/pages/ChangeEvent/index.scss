@@ -1,0 +1,14 @@
+.changeEvent{
+   .MuiAlert-root {
+       margin:0;
+   }
+   .changed {
+       text-align: center;
+   }
+   .MuiSkeleton-root {
+       height: 3.5rem;
+   }
+   .MuiSkeleton-root.button {
+       height: 4rem;
+   }
+}

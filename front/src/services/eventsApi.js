@@ -5,6 +5,10 @@ class EventsApi extends Api{
         return this.axios.post('/events/event/', data);
     }
 
+    changeEvent(id, data) {
+        return this.axios.put('/events/event/' + id, data);
+    }
+
     deleteEvent(id) {
         return this.axios.delete('/events/event/' + id);
     }
