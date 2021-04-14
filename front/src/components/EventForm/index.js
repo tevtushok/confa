@@ -78,9 +78,9 @@ export default class EventForm extends React.Component {
                     </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                {this.props.saved &&(
-                        <Alert severity="success">
-                            Event changed!
+                {this.props.alert &&(
+                        <Alert severity={this.props.alert.severity}>
+                            {this.props.alert.message}
                         </Alert>
                 )}
                 </Grid>

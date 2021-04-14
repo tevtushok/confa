@@ -9,6 +9,11 @@ export class EventHelper extends Event {
         return dateEnd;
     }
 
+    static computeDuration(dateStart, dateEnd) {
+        const end = dayjs(dateEnd);
+        return end.diff(dateStart, 'minute');
+    }
+
     static dateFormat(date, format = '') {
         return dayjs(date).format(format);
     }

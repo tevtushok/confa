@@ -13,7 +13,6 @@ import { Event } from '../../includes/models';
 
 import EventForm from '../../components/EventForm'
 import EventFormSkeleton from '../../components/EventFormSkeleton';
-import EventChanged from '../../components/EventChanged';
 import NoRooms from '../../components/NoRooms';
 import ServerError from '../../components/ServerError';
 import AppError from '../../components/AppError';
@@ -114,7 +113,7 @@ class ChangeEvent extends SaveEvent {
             }
             this.setState({
                 changedEvent: apiData.event,
-                componentStatus: RENDER_STATES.SAVED,
+                renderState: RENDER_STATES.SAVED,
             });
         }
     }
@@ -126,6 +125,7 @@ class ChangeEvent extends SaveEvent {
             errors: null,
             changed: false,
             serviceMessage: '',
+            renderState: RENDER_STATES.COMMON,
         });
         await this.changeEvent();
         this.setState({ isLoading: false });
@@ -133,36 +133,30 @@ class ChangeEvent extends SaveEvent {
 
     render() {
         console.info('render', this.state.renderState);
-        console.log(RENDER_STATES);
+        let alert = null;
+        let component = null;
+        if (this.state.renderState === RENDER_STATES.SAVED) {
+            alert = { message: 'Event saved', severity: 'success' };
+        }
         switch(this.state.renderState) {
-            case RENDER_STATES.SAVED:
-                return (
-                    <Container maxWidth="md" className="changeEvent page created">
-                        <EventChanged event={this.state.event}/>
-                    </Container>
-                );
             case RENDER_STATES.NO_ROOMS:
-                return(
-                    <Container maxWidth="md" className="changeEvent page noRooms">
-                        <NoRooms/>
-                    </Container>
-                );
+                component = <NoRooms/>;
+                break;
             case RENDER_STATES.FAILURE:
-                return (
-                    <Container maxWidth="md" className="changeEvent page serverError">
-                        <ServerError data={this.state.serviceMessage}/>
-                    </Container>
-                );
+                component = <ServerError data={this.state.serviceMessage}/>;
+                break;
             case RENDER_STATES.INIT:
-                return (
-                    <Container maxWidth="md" className="changeEvent page skeleton">
+                component = (
+                    <>
                         <h2 className="text-center">Change event</h2>
                         <EventFormSkeleton/>
-                    </Container>
+                    </>
                 );
+                break;
+            case RENDER_STATES.SAVED:
             case RENDER_STATES.COMMON:
-                return (
-                    <Container maxWidth="md" className="changeEvent page">
+                component = (
+                    <>
                         <h2 className="text-center">Change event</h2>
                         <EventForm
                         isLoading={this.state.isLoading}
@@ -175,6 +169,7 @@ class ChangeEvent extends SaveEvent {
                         componentStatus={this.state.componentStatus}
 
                         event={this.state.event}
+                        alert={alert}
 
                         handleRoomChange={this.handleRoomChange}
                         handleStartDateTimeChange={this.handleStartDateTimeChange}
@@ -182,15 +177,18 @@ class ChangeEvent extends SaveEvent {
                         handleTitleChange={this.handleTitleChange}
                         handleDescriptionChange={this.handleDescriptionChange}
                         handleSubmit={this.handleSubmit} />
-                    </Container>
+                    </>
                 );
+                break;
             default:
-                return(
-                    <Container maxWidth="md" className="addEvent page">
-                        <AppError data="Application error"/>
-                    </Container>
-                );
+                component = <AppError data="Application error"/>;
         }
+
+        return(
+            <Container maxWidth="md" className={`addEvent page ${String(this.state.renderState).toLowerCase()}`}>
+                {component}
+            </Container>
+        );
     }
 }
 

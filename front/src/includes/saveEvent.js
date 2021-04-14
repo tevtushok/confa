@@ -1,6 +1,5 @@
 import React from 'react';
 import { BASE_RENDER_STATES } from './constants';
-import { Event } from './models';
 import { EventHelper } from './modelsHelpers';
 import dayjs from 'dayjs';
 import ApiDataTypeError from '../services/error';
@@ -160,7 +159,9 @@ export default class SaveEvent extends React.Component {
     }
 
     handleRoomChange(e) {
-        this.setState({event: { ...this.state.event, roomId: e.target.value }});
+        const event = this.state.event;
+        event.room._id = e.target.value;
+        this.setState({event: event});
     }
 
     handleTitleChange(e) {

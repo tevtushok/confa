@@ -1,23 +1,26 @@
 import React from 'react';
-import { Container } from '@material-ui/core';
+import { Link as routerLink } from 'react-router-dom';
+import { Container, Link } from '@material-ui/core';
+
 import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
+
 import { RENDER_STATES } from '../../includes/saveEvent';
 import { Event } from '../../includes/models';
 import { EventHelper } from '../../includes/modelsHelpers';
 import SaveEvent from '../../includes/saveEvent';
+
 import EventForm from '../../components/EventForm';
 import NoRooms from '../../components/NoRooms';
 import EventFormSkeleton from '../../components/EventFormSkeleton';
-import EventCreated from '../../components/EventCreated';
 import ServerError from '../../components/ServerError';
 import AppError from '../../components/AppError';
 
 import './index.scss';
 
 
-class AddEvent extends SaveEvent {
+export default class AddEvent extends SaveEvent {
     constructor(props) {
         super(props)
         const defaultStartFrom = new Date();
@@ -47,7 +50,7 @@ class AddEvent extends SaveEvent {
                 renderState: RENDER_STATES.COMMON,
             });
         }
-        this.setState({isLoading: false});
+        this.setState({isLoading: false });
     }
 
     async addEvent() {
@@ -128,34 +131,23 @@ class AddEvent extends SaveEvent {
 
     render() {
         console.info('render', this.state.renderState);
+        let component = null;
         switch(this.state.renderState) {
             case RENDER_STATES.SAVED:
-                return (
-                    <Container maxWidth="md" className="addEvent page created">
-                        <EventCreated event={this.state.createdEvent}/>
-                    </Container>
-                );
+                component = <EventCreated event={this.state.createdEvent}/>;
+                break;
             case RENDER_STATES.NO_ROOMS:
-                return(
-                    <Container maxWidth="md" className="addEvent page noRooms">
-                        <NoRooms/>
-                    </Container>
-                );
+                component = <NoRooms/>;
+                break;
             case RENDER_STATES.FAILURE:
-                return (
-                    <Container maxWidth="md" className="addEvent page serverError">
-                        <ServerError data={this.state.serviceMessage}/>
-                    </Container>
-                );
+                component = <ServerError data={this.state.serviceMessage}/>;
+                break;
             case RENDER_STATES.INIT:
-                return (
-                    <Container maxWidth="md" className="addEvent page skeleton">
-                        <EventFormSkeleton/>
-                    </Container>
-                );
+                component = <EventFormSkeleton/>;
+                break;
             case RENDER_STATES.COMMON:
-                return (
-                    <Container maxWidth="md" className="addEvent page">
+                component = (
+                    <>
                         <h2 className="text-center">Add event</h2>
                         <EventForm
                             isLoading={this.state.isLoading}
@@ -176,17 +168,31 @@ class AddEvent extends SaveEvent {
                             handleDescriptionChange={this.handleDescriptionChange}
                             handleSubmit={this.handleAddEvent}
                         />
-                    </Container>
+                    </>
                 );
+                break;
             default:
-                return(
-                    <Container maxWidth="md" className="addEvent page">
-                        <AppError data="Application error"/>
-                    </Container>
-                );
-
+                component = <AppError data="Application error"/>;
         }
+
+        return(
+            <Container maxWidth="md" className={`addEvent page ${String(this.state.renderState).toLowerCase()}`}>
+                {component}
+            </Container>
+        );
     }
 }
 
-export default AddEvent;
+function EventCreated(props) {
+    return (
+        <div className="created text-center">
+            <h2>Event created successfuly in room #{props.event.room.number}.</h2>
+            <p>Start in: {EventHelper.dateFormat(props.event.date_start, 'DD-MM-YYYY HH:mm')}</p>
+            <p>Duration: {EventHelper.computeDuration(props.event.date_start, props.event.date_end)} minutes</p>
+            <p>
+                You can <Link component={routerLink} variant="inherit" to={`/events/change/${props.event._id}`}>change</Link>&nbsp;or&nbsp;
+                <Link component={routerLink} variant="inherit" to={`/events/delete/${props.event._id}`}>delete</Link>
+            </p>
+        </div>
+    );
+}
