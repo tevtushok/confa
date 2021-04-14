@@ -27,6 +27,8 @@ export default class EventForm extends React.Component {
         this.submitBtnText = this.props.action;
     }
     render() {
+        console.info('EventForm render');
+        console.log(this.props);
         return (
             <Grid container spacing={3} className="eventForm">
                 <Grid item xs={4}>
@@ -34,7 +36,7 @@ export default class EventForm extends React.Component {
                     <FormHelperText>Rooms list</FormHelperText>
                     <Select
                         onChange={this.props.handleRoomChange}
-                        value={this.props.event.roomId}
+                        value={this.props.event.room._id}
                     >
                     {Array.isArray(this.props.roomsList) && this.props.roomsList.map((room, index) => (
                         <MenuItem key={room['_id']} value={room['_id']}>{room.number}</MenuItem>

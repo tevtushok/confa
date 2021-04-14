@@ -4,6 +4,8 @@ import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 import { RENDER_STATES } from '../../includes/saveEvent';
+import { Event } from '../../includes/models';
+import { EventHelper } from '../../includes/modelsHelpers';
 import SaveEvent from '../../includes/saveEvent';
 import EventForm from '../../components/EventForm';
 import NoRooms from '../../components/NoRooms';
@@ -18,18 +20,15 @@ import './index.scss';
 class AddEvent extends SaveEvent {
     constructor(props) {
         super(props)
-        this.defaultStartFrom = new Date();
-        this.defaultStartFrom.setMinutes(5 * (Math.round(this.defaultStartFrom.getMinutes() / 5)));
-        const event = {
-            roomId: null,
-            userId: null,
-            title: '',
-            description: '',
-            date_start: this.defaultStartFrom,
+        const defaultStartFrom = new Date();
+        defaultStartFrom.setMinutes(5 * (Math.round(defaultStartFrom.getMinutes() / 5)));
+        const eventModel = new Event({
+            date_start: EventHelper.dateFormat(defaultStartFrom),
             duration: 30,
-        };
+        });
+        console.info('eventModel', eventModel);
         this.state = {
-            event: event,
+            event: eventModel,
             roomsList: [],
             renderState: RENDER_STATES.INIT,
             serviceMessage: '',
@@ -53,6 +52,7 @@ class AddEvent extends SaveEvent {
 
     async addEvent() {
         const postData = this.getPostData();
+        console.info('addEvent with:', postData);
         const result = await eventsApi.addEvent(postData);
         if (result.error) {
             const apiCode = result.response.getApiCode();

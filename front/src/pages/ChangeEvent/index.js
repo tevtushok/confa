@@ -1,18 +1,22 @@
 import React from 'react';
+import { Container } from '@material-ui/core';
+
 import { inject } from 'mobx-react';
-import dayjs from 'dayjs';
+
 import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
+
 import { RENDER_STATES } from '../../includes/saveEvent';
 import SaveEvent from '../../includes/saveEvent';
+import { Event } from '../../includes/models';
+
 import EventForm from '../../components/EventForm'
 import EventFormSkeleton from '../../components/EventFormSkeleton';
 import EventChanged from '../../components/EventChanged';
 import NoRooms from '../../components/NoRooms';
 import ServerError from '../../components/ServerError';
 import AppError from '../../components/AppError';
-import { Container } from '@material-ui/core';
 
 import './index.scss';
 
@@ -21,20 +25,13 @@ import './index.scss';
 class ChangeEvent extends SaveEvent {
     constructor(props) {
         super(props)
-        this.defaultStartFrom = new Date();
-        this.defaultStartFrom.setMinutes(5 * (Math.round(this.defaultStartFrom.getMinutes() / 5)));
-        this.eventId = this.props.match.params.id;
-        console.info('eventId', this.props.match.params.id);
-        const event = {
-            roomId: null,
-            userId: null,
-            title: '',
-            description: '',
-            date_start: this.defaultStartFrom,
+        const eventId = this.props.match.params.id;
+        const eventModel = new Event({
+            _id: eventId,
             duration: 30,
-        };
+        });
         this.state = {
-            event: event,
+            event: eventModel,
             roomsList: [],
             renderState: RENDER_STATES.INIT,
             serviceMessage: '',
@@ -46,9 +43,7 @@ class ChangeEvent extends SaveEvent {
     }
 
     async componentDidMount() {
-        this.setState({
-            isLoading: true,
-        });
+        this.setState({ isLoading: true, });
         await this.loadRoomList();
         await this.loadEventDetails();
         if (this.state.renderState === RENDER_STATES.INIT) {
@@ -56,80 +51,13 @@ class ChangeEvent extends SaveEvent {
                 renderState: RENDER_STATES.COMMON,
             });
         }
-        this.setState({
-            isLoading: false,
-        });
-    }
-
-    async loadEventDetails() {
-        const result = await eventsApi.getEvent(this.eventId);
-        const apiData = result.response.getApiData();
-        const apiCode = result.response.getApiCode();
-        if (result.error) {
-            if (result.error instanceof ApiDataTypeError) {
-                console.error('ApiDataTypeError');
-            }
-            else if (404 === result.response.status) {
-                this.setServerError('Event not found');
-                console.log('Event not found');
-            }
-            if (apiCode === CODES.EVENTS.DETAILS_ID_REQUIRED) {
-                this.setServerError('Event Id is required');
-                console.log('eventId is required');
-            }
-            else if (apiCode === CODES.EVENTS.DETAILS_ID_INVALID) {
-                this.setServerError('Invalid event Id');
-                console.log('Invalid eventId');
-            }
-            else {
-                this.setServerError('Invalid data from server');
-                console.log('Invalid data from server');
-            }
-        }
-        else {
-            console.info(apiData.event.user._id);
-            if ('object' !== typeof apiData.event) {
-                this.setServerError('Invalid data from serverq');
-                console.log('Invalid data. Expected object event');
-                return;
-            }
-            else if (apiData.event.user._id !== this.props.userStore.user.id) {
-                this.setServerError('Permission denined!');
-                console.log('owner error', this.props.userStore.user.id, apiData.event.user._id);
-                return;
-            }
-            else {
-                const dateStart = dayjs(apiData.event.date_start);
-                const dateEnd = dayjs(apiData.event.date_end);
-                const duration = dateEnd.diff(dateStart, 'minute');
-                const eventState = {
-                    roomId: apiData.event.room._id,
-                    userId: apiData.event.user._id,
-                    title: apiData.event.title,
-                    description: apiData.event.description,
-                    date_start: apiData.event.date_start,
-                    duration: duration,
-                };
-                this.setState({
-                    serviceMessage: '',
-                    event: eventState,
-                });
-            }
-        }
+        this.setState({ isLoading: false, });
     }
 
     async changeEvent() {
-        const dateStart = dayjs(this.state.event.date_start).format();
-        const dateEnd = dayjs(dateStart).add(this.state.event.duration, 'minute').format();
-        console.info('changeEvent dates', dateStart, dateEnd);
-        const postData = {
-            room: this.state.event.roomId,
-            title: this.state.event.title,
-            description: this.state.event.description,
-            date_start: dateStart,
-            date_end: dateEnd,
-        };
-        const result = await eventsApi.changeEvent(this.eventId, postData);
+        const postData = this.getPostData();
+        console.info('changeEvent with:', postData);
+        const result = await eventsApi.changeEvent(this.state.event._id, postData);
         if (result.error) {
             const apiCode = result.response.getApiCode();
             const apiData = result.response.getApiData();

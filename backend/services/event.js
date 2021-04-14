@@ -106,7 +106,7 @@ module.exports.changeEvent = async (req, res) => {
                 if (err) {
                     return jsonResponse(req, res, 500, API.EVENTS.FAILURE, err, 'Database error on Event update');
                 }
-                return jsonResponse(req, res, 201, SUCCESS, {event: event}, 'Event updated');
+                return jsonResponse(req, res, 200, SUCCESS, {event: event}, 'Event updated');
             });
         });
     }

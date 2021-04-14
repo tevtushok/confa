@@ -401,7 +401,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(201, eventIdErrOk.status);
+        assert.equal(200, eventIdErrOk.status);
 
         changeData = {
             title: 'eve',
@@ -412,7 +412,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(201, ok1.status);
+        assert.equal(200, ok1.status);
 
         changeData = {
             // change 11:00 to 09.30 and it will be crossed with events 1,2
@@ -461,7 +461,7 @@ describe('controllers/events', async () => {
             .send(changeData)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
-        assert.equal(201, crossed4.status);
+        assert.equal(200, crossed4.status);
     }); // 3 events createted // 09:00-10:00 event1 // 10:00-11:00 event2 // 11:00-12:00 event3
 
     it('delete', async () => {
