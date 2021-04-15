@@ -1,7 +1,7 @@
 // API CODES
 const CODES = {
     AUTH: {
-        REGISTER: 1000,
+        FAILURE: 1000,
         VALIDATION: 1001,
         EMAIL_EXISTS: 1002,
         LOGIN: 1003,
@@ -13,7 +13,7 @@ const CODES = {
         INVALID_USER: 1008,
     },
     EVENTS: {
-        SAVE: 1100,
+        FAILURE: 1100,
         VALIDATION: 1101,
         ROOM_NOT_EXISTS: 1102,
         ROOM_NOT_ACTIVE: 1103,
@@ -21,10 +21,7 @@ const CODES = {
         NOT_EXISTS: 1105,
         NOT_BELONG_TO_YOU: 1106,
         ID_REQUIRED: 1107,
-        DELETE: 1110,
-        DETAILS: 1120,
-        DETAILS_ID_REQUIRED: 1121,
-        DETAILS_ID_INVALID: 1122,
+        ID_INVALID: 1108,
     },
     LOGIN: {
         EMPTY_CREDENTIALS: 1200,
@@ -34,5 +31,9 @@ const CODES = {
         INVALID_TOKEN: 1204,
         EMAIL_EXISTS: 1205,
     },
+    ROOMS: {
+        FAILURE: 1300,
+        INVALID_DATE: 1301,
+    }
 }
 export default CODES;

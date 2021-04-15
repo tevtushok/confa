@@ -31,6 +31,10 @@ module.exports.API = {
         INVALID_TOKEN: 1204,
         EMAIL_EXISTS: 1205,
     },
+    ROOMS: {
+        FAILURE: 1300,
+        INVALID_DATE: 1301,
+    }
 }
 
 // MONGOOSE MODELS CODES

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTheme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
+import { inject } from 'mobx-react';
 
 import {
     ArrowLeft as ArrowLeftIcon,
@@ -35,7 +36,7 @@ function StatusBar(props) {
     const classes = useStyles();
     //console.log(theme)
     return <div className={`eventsRoom__status-bar ${classes.root}`}></div>;
-    
+
 }
 
 function TimeButton(props) {
@@ -59,8 +60,8 @@ function TimeButton(props) {
 
 
 }
-
-export default class EventsRoom extends React.Component {
+@inject('userStore')
+class EventsRoom extends React.Component {
 	constructor(props) {
 		super(props)
 		this.data = this.props.data;
@@ -136,3 +137,4 @@ export default class EventsRoom extends React.Component {
 		);
 	}
 }
+export default EventsRoom;

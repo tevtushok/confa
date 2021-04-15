@@ -1,10 +1,9 @@
-
+const jsonwebtoken = require('jsonwebtoken');
+const { cookie_options } = require('../configs/config');
 const User = require('../models/user');
 const { jsonResponse } = require('../includes/utils');
 const { SUCCESS, FAILURE, API } = require('../includes/codes');
-const { cookie_options } = require('../configs/config');
 const { UserError } = require('../includes/errors/models');
-const jsonwebtoken = require('jsonwebtoken');
 
 module.exports.register = async (req, res, next) => {
 	const newUser = new User({

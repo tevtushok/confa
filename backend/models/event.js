@@ -91,8 +91,8 @@ eventSchema.pre('save', function (next) {
     dateStart.setSeconds(0,0);
     const dateEnd = new Date(this.date_end);
     dateEnd.setSeconds(0,0);
-    this.date_start = dateStart.toISOString();
-    this.date_end = dateEnd.toISOString();
+    // this.date_start = dateStart.toISOString();
+    // this.date_end = dateEnd.toISOString();
     mongoose.models.Event.getEventsBetweenDates(this.room, this.date_start, this.date_end, this['_id'], (err, events) => {
         if (err) next(err);
         if (events.length) {

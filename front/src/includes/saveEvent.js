@@ -1,4 +1,4 @@
-import React from 'react';
+import BaseComponent from '../components/BaseComponent';
 import { BASE_RENDER_STATES } from './constants';
 import { EventHelper } from './modelsHelpers';
 import dayjs from 'dayjs';
@@ -13,7 +13,7 @@ export const RENDER_STATES = {
     SAVED: 'SAVED',
 };
 
-export default class SaveEvent extends React.Component {
+export default class SaveEvent extends BaseComponent {
     constructor(props) {
         super(props);
         this.handleStartDateTimeChange = this.handleStartDateTimeChange.bind(this)
