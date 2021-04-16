@@ -6,11 +6,10 @@ import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 
-import { RENDER_STATES } from '../../includes/saveEvent';
 import { Event } from '../../includes/models';
 import { EventHelper } from '../../includes/modelsHelpers';
-import SaveEvent from '../../includes/saveEvent';
 
+import SaveEvent, { RENDER_STATES } from '../../components/SaveEvent';
 import EventForm from '../../components/EventForm';
 import NoRooms from '../../components/NoRooms';
 import EventFormSkeleton from '../../components/EventFormSkeleton';
@@ -29,17 +28,13 @@ export default class AddEvent extends SaveEvent {
             date_start: EventHelper.dateFormat(defaultStartFrom),
             duration: 30,
         });
-        console.info('eventModel', eventModel);
         this.state = {
+            ...this.state,
             event: eventModel,
             roomsList: [],
-            renderState: RENDER_STATES.INIT,
-            serviceMessage: '',
             createdEvent: null,
-            errors: {},
             crossedEvents: null,
-            isLoading: false,
-        }
+        };
         this.handleAddEvent = this.handleAddEvent.bind(this);
     }
 

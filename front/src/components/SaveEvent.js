@@ -1,11 +1,13 @@
-import BaseComponent from '../components/BaseComponent';
-import { BASE_RENDER_STATES } from './constants';
-import { EventHelper } from './modelsHelpers';
 import dayjs from 'dayjs';
+
+import { EventHelper } from '../includes/modelsHelpers';
+
 import ApiDataTypeError from '../services/error';
 import roomsApi from '../services/roomsApi'
 import eventsApi from '../services/eventsApi'
 import CODES from '../services/codes'
+
+import BaseComponent, { RENDER_STATES as BASE_RENDER_STATES } from '../components/BaseComponent';
 
 export const RENDER_STATES = {
     ...BASE_RENDER_STATES,
@@ -14,14 +16,6 @@ export const RENDER_STATES = {
 };
 
 export default class SaveEvent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.handleStartDateTimeChange = this.handleStartDateTimeChange.bind(this)
-        this.handleDurationChange = this.handleDurationChange.bind(this);
-        this.handleRoomChange = this.handleRoomChange.bind(this);
-        this.handleTitleChange = this.handleTitleChange.bind(this);
-        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-    }
 
     getPostData() {
         const dateStart = EventHelper.dateFormat(this.state.event.date_start);
@@ -39,33 +33,6 @@ export default class SaveEvent extends BaseComponent {
         };
         return postData;
 
-    }
-
-    setServerError(message, opts = {}) {
-        const defaults = {
-            serviceMessage: message,
-            renderState: RENDER_STATES.FAILURE,
-        };
-        const state = Object.assign(defaults, opts);
-        this.setState(state);
-    }
-
-    setPermissionError(message, opts = {}) {
-        const defaults = {
-            serviceMessage: message,
-            renderState: RENDER_STATES.FAILURE,
-        };
-        const state = Object.assign(defaults, opts);
-        this.setState(state);
-    }
-
-    setValidationError(message, errors = {}, opts = {}) {
-        const defaults = {
-            serviceMessage: message,
-            errors: errors,
-        };
-        const state = Object.assign(defaults, opts);
-        this.setState(state);
     }
 
     async loadRoomList() {
@@ -149,26 +116,25 @@ export default class SaveEvent extends BaseComponent {
         }
     }
 
-    handleStartDateTimeChange(datetime) {
-        // const event = new Event(this.state.event);
+    handleStartDateTimeChange = (datetime) => {
         this.setState({event: { ...this.state.event, date_start: datetime }});
-    }
+    };
 
-    handleDurationChange(e) {
+    handleDurationChange = (e) => {
         this.setState({event: {...this.state.event, duration: e.target.value }});
-    }
+    };
 
-    handleRoomChange(e) {
+    handleRoomChange = (e) => {
         const event = this.state.event;
         event.room._id = e.target.value;
         this.setState({event: event});
-    }
+    };
 
-    handleTitleChange(e) {
+    handleTitleChange = (e) => {
         this.setState({event: { ...this.state.event, title: e.target.value }});
-    }
+    };
 
-    handleDescriptionChange(e) {
+    handleDescriptionChange = (e) => {
         this.setState({event: { ...this.state.event, description: e.target.value }});
-    }
+    };
 }

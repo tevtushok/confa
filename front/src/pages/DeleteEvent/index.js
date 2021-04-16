@@ -10,13 +10,12 @@ import {
     Button,
 } from '@material-ui/core';
 
-import SaveEvent from '../../includes/saveEvent';
 import { Event } from '../../includes/models';
-import { RENDER_STATES } from '../../includes/saveEvent';
 
 import eventsApi from '../../services/eventsApi';
 import CODES from '../../services/codes';
 
+import SaveEvent, { RENDER_STATES } from '../../components/SaveEvent';
 import Bayan from '../../components/Bayan'
 import NoRooms from '../../components/NoRooms';
 import ServerError from '../../components/ServerError';
@@ -34,12 +33,7 @@ class DeleteEvent extends SaveEvent {
         const eventModel = new Event({
             _id: eventId,
         });
-        this.state = {
-            isLoading: false,
-            serviceMessage: '',
-            event: eventModel,
-            renderState: RENDER_STATES.INIT,
-        }
+        this.state = { ...this.state, event: eventModel }
     }
 
     async componentDidMount() {

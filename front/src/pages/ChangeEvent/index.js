@@ -7,10 +7,9 @@ import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
 
-import { RENDER_STATES } from '../../includes/saveEvent';
-import SaveEvent from '../../includes/saveEvent';
 import { Event } from '../../includes/models';
 
+import SaveEvent, { RENDER_STATES } from '../../components/SaveEvent';
 import EventForm from '../../components/EventForm'
 import EventFormSkeleton from '../../components/EventFormSkeleton';
 import NoRooms from '../../components/NoRooms';
@@ -30,14 +29,11 @@ class ChangeEvent extends SaveEvent {
             duration: 30,
         });
         this.state = {
+            ...this.state,
             event: eventModel,
             roomsList: [],
-            renderState: RENDER_STATES.INIT,
-            serviceMessage: '',
             changed: false,
-            errors: {},
             crossedEvents: null,
-            isLoading: false,
         }
     }
 
@@ -61,7 +57,11 @@ class ChangeEvent extends SaveEvent {
             const apiCode = result.response.getApiCode();
             const apiData = result.response.getApiData();
             const apiMessage = result.response.getApiMessage();
-            if (apiCode === CODES.EVENTS.VALIDATION) {
+            if (apiCode === CODES.EVENTS.NOT_BELONG_TO_YOU) {
+                this.setServerError('Permission denined!');
+                console.log('permission error', apiMessage);
+            }
+            else if (apiCode === CODES.EVENTS.VALIDATION) {
                 const errorFields = result.response.getErrorFields();
                 this.setValidationError('Validation error', errorFields);
                 console.log('changeEvent->Validation error', errorFields);

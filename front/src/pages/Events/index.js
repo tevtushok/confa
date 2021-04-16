@@ -13,14 +13,13 @@ import {
     Alert,
 } from '@material-ui/lab'
 
-import BaseComponent from '../../components/BaseComponent'
+import BaseComponent, { RENDER_STATES as BASE_RENDER_STATES } from '../../components/BaseComponent'
 import EventsRoom from '../../components/EventsRoom'
 import Bayan from '../../components/Bayan'
 import NoRooms from '../../components/NoRooms';
 import ServerError from '../../components/ServerError';
 import AppError from '../../components/AppError';
 
-import { BASE_RENDER_STATES } from '../../includes/constants';
 
 import CODES from '../../services/codes';
 import ApiDataTypeError from '../../services/error';
@@ -126,7 +125,6 @@ export default class Events extends BaseComponent {
                         {this.state.data.map((room, index) => (
                             <Grid key={room._id} item md={6} sm={12}>
                             {/* <EventsRoom data={event}/>--> */}
-                            <EventsRoom data={room}/>
                             </Grid>
                         ))}
                         </Grid>
