@@ -87,12 +87,13 @@ eventSchema.statics.getEventsBetweenDates = async function (roomId, dateStart, d
 };
 
 eventSchema.pre('save', function (next) {
+    // sets second and milliseconds to zero to avoid collisions
     const dateStart = new Date(this.date_start);
     dateStart.setSeconds(0,0);
     const dateEnd = new Date(this.date_end);
     dateEnd.setSeconds(0,0);
-    // this.date_start = dateStart.toISOString();
-    // this.date_end = dateEnd.toISOString();
+    this.date_start = dateStart;
+    this.date_end = dateEnd;
     mongoose.models.Event.getEventsBetweenDates(this.room, this.date_start, this.date_end, this['_id'], (err, events) => {
         if (err) next(err);
         if (events.length) {

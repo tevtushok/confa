@@ -11,11 +11,15 @@
 # logs 
 /logs
 
+# temp files
+temp*
+
 
 # production
 /build
 
 # vim swap files 
+*.swo
 *.swp
 
 # misc

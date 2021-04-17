@@ -180,6 +180,28 @@ module.exports.eventList = async (req, res) => {
     return jsonResponse(req, res, 200, SUCCESS, {events: []}, 'Success');
 };
 
+module.exports.myEvents = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        Event.find({user: userId})
+            .sort({date_start: 1})
+            .populate('room', '_id number')
+            .populate('user', '_id name email')
+            .exec((err, events) => {
+            if (err) {
+                return jsonResponse(req, res, 500, API.EVENTS.FAILURE,
+                    null, 'Database error');
+            }
+            return jsonResponse(req, res, 200, SUCCESS,
+                {events: events}, 'Success');
+        });
+    }
+    catch (err) {
+        return jsonResponse(req, res, 500, API.EVENTS.FAILURE,
+            null, 'Error while reached events');
+    }
+};
+
 // router.get('/listToday', eventService.listToday);
 // router.get('/listTomorow', eventService.listTomorow);
 
