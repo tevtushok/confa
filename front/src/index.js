@@ -32,7 +32,9 @@ const history = syncHistoryWithStore(browserHistory, routingStore);
 ReactDOM.render(
   <Provider {...stores}>
     <Router history={history}>
-      <App />
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
     </Router>
   </Provider>,
   document.getElementById('root')

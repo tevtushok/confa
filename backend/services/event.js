@@ -183,7 +183,7 @@ module.exports.eventList = async (req, res) => {
 module.exports.myEvents = async (req, res) => {
     const userId = req.user.id;
     try {
-        Event.find({user: userId})
+        Event.find({ user: userId, status: 'active', })
             .sort({date_start: 1})
             .populate('room', '_id number')
             .populate('user', '_id name email')

@@ -29,18 +29,17 @@ import eventsApi from '../../services/eventsApi';
 import './index.scss';
 
 const RENDER_STATES = { ...BASE_RENDER_STATES, NO_ROOMS: 'NO_ROOMS', };
+const TIME_STEP = 30; // in minutes
+const TIMELINE_LEN = 7; // in minutes
 
 export default class Events extends BaseComponent {
     constructor(props) {
         super(props);
         this.state = {
-            data: null,
-            isLoading: false,
-            errorMessage: '',
-            roomsFilter : [],
-            pageLoaded: false,
-            renderState: RENDER_STATES.INIT,
-        }
+            ...this.state,
+            date: null,
+            roomsFilter: [],
+        };
     }
 
     async componentDidMount() {
@@ -97,6 +96,42 @@ export default class Events extends BaseComponent {
         let ymd = this.getDate()
         this.getEvents(ymd, newFilter)
     }
+    /*
+     * Summary. array with times eg. [10:30, 11:00: 11:30...]
+     * Description.
+     * Return array of time for EventsRoom component. Only for current day.
+     * If some time is next day - time will be: time = time - @timeStep minutes. Its need for pretty interface.
+     * @timeStep - step for time ranges
+     * @length length of result
+     * @return {array} sorted array with times
+     */
+    getTimeLine(timeStep = TIME_STEP, length = TIMELINE_LEN) {
+        let timeLine = [];
+        const NOW = dayjs().second(0).millisecond(0);
+        const START_FROM = dayjs(NOW).minute(
+            timeStep * (Math.round(NOW.minute() / timeStep))
+        );
+        for (let i = 0, back = 1; i < length; i++) {
+            let time = START_FROM.add((timeStep* i), 'minutes');
+            if (time.day() > NOW.day()) {
+                time = START_FROM.substract((timeStep * back++), 'minutes');
+                let label = time.format('HH:mm');
+                timeLine.unshift({
+                    time: label,
+                    date: time,
+                });
+            }
+            else {
+                let label = time.format('HH:mm');
+                timeLine.unshift({
+                    time: label,
+                    date: time,
+                });
+            }
+        }
+        return timeLine.sort((a,b) => a.date - b.date);
+
+    }
 
     render() {
         console.info('render events page', this.state.renderState);
@@ -112,6 +147,9 @@ export default class Events extends BaseComponent {
                 component = <NoRooms/>;
                     break;
             case RENDER_STATES.COMMON:
+                // <EventsRoom data={event}/>
+                const timeLine = this.getTimeLine();
+                console.info('RENDER_STATES.COMMON', timeLine);
                 component = (
                     <>
                         <Grid container className="filter">
@@ -121,10 +159,10 @@ export default class Events extends BaseComponent {
                                 ))}
                             </ToggleButtonGroup>
                         </Grid>
-                        <Grid container className="roomsList">
+                        <Grid container className="eventsRoom" spacing={4}>
                         {this.state.data.map((room, index) => (
                             <Grid key={room._id} item md={6} sm={12}>
-                            {/* <EventsRoom data={event}/>--> */}
+                                <EventsRoom timeLine={timeLine} room={room}/>
                             </Grid>
                         ))}
                         </Grid>

@@ -21,6 +21,10 @@ class EventsApi extends Api{
         let params = { date: ymd, rooms: rooms}
 		return this.axios.get('/events/list', { params: params })
     }
+
+    getMyEvents() {
+		return this.axios.get('/events/myEvents');
+    }
 }
 
 export default new EventsApi();
