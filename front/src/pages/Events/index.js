@@ -29,8 +29,6 @@ import eventsApi from '../../services/eventsApi';
 import './index.scss';
 
 const RENDER_STATES = { ...BASE_RENDER_STATES, NO_ROOMS: 'NO_ROOMS', };
-const TIME_STEP = 30; // in minutes
-const TIMELINE_LEN = 7; // in minutes
 
 export default class Events extends BaseComponent {
     constructor(props) {
@@ -40,6 +38,7 @@ export default class Events extends BaseComponent {
             date: null,
             roomsFilter: [],
         };
+        this.timeLine = this.getTimeLine();
     }
 
     async componentDidMount() {
@@ -105,31 +104,131 @@ export default class Events extends BaseComponent {
      * @length length of result
      * @return {array} sorted array with times
      */
-    getTimeLine(timeStep = TIME_STEP, length = TIMELINE_LEN) {
-        let timeLine = [];
-        const NOW = dayjs().second(0).millisecond(0);
-        const START_FROM = dayjs(NOW).minute(
-            timeStep * (Math.round(NOW.minute() / timeStep))
-        );
-        for (let i = 0, back = 1; i < length; i++) {
-            let time = START_FROM.add((timeStep* i), 'minutes');
-            if (time.day() > NOW.day()) {
-                time = START_FROM.substract((timeStep * back++), 'minutes');
-                let label = time.format('HH:mm');
-                timeLine.unshift({
-                    time: label,
-                    date: time,
-                });
-            }
-            else {
-                let label = time.format('HH:mm');
-                timeLine.unshift({
-                    time: label,
-                    date: time,
-                });
-            }
+    // getTimeLine(timeStep = TIME_STEP, length = TIMELINE_LEN) {
+    //     let timeLine = [];
+    //     const NOW = dayjs().second(0).millisecond(0);
+    //     const START_FROM = dayjs(NOW).minute(
+    //         timeStep * (Math.round(NOW.minute() / timeStep))
+    //     );
+    //     for (let i = 0, back = 1; i < length; i++) {
+    //         let time = START_FROM.add((timeStep* i), 'minutes');
+    //         if (time.day() > NOW.day()) {
+    //             time = START_FROM.substract((timeStep * back++), 'minutes');
+    //             let label = time.format('HH:mm');
+    //             timeLine.unshift({
+    //                 time: label,
+    //                 date: time,
+    //             });
+    //         }
+    //         else {
+    //             let label = time.format('HH:mm');
+    //             timeLine.unshift({
+    //                 time: label,
+    //                 date: time,
+    //             });
+    //         }
+    //     }
+    //     return timeLine.sort((a,b) => a.date - b.date);
+
+    // }
+
+    /*
+     * Summary. array with times eg. [10:30, 11:00: 11:30...]
+     * Description.
+     * Return array of time for EventsRoom component. Only for current day.
+     * If some time is next day - time will be: time = time - @timeStep minutes. Its need for pretty interface.
+     * @timeStep - step for time ranges
+     * @length length of result
+     * @return {array} sorted array with times
+     */
+    getTimeLine() {
+        const stepMinutes = 30;
+        const timeLineLen = (60 / stepMinutes) * 24;
+        const timeLineGroupLen = 7;
+        const labelFormat = 'HH:mm';
+
+        let now = dayjs().second(0).millisecond(0);
+        now = now.minute(stepMinutes * (Math.round(now.minute() / stepMinutes)));
+        // const now = dayjs('18 apr 2021 23:00').second(0).millisecond(0);
+        // for client last possible time button is 23:30;
+        if (now.hour() === 23 && now.minute() > 30) {
+            now.minute(30);
         }
-        return timeLine.sort((a,b) => a.date - b.date);
+        else {
+            now.minute(stepMinutes * (Math.round(now.minute() / stepMinutes)));
+        }
+        const nowLabel = now.format(labelFormat);
+        let nowIndex = null;
+
+        const startOfDay = dayjs().startOf('day');
+        const endOfDay = dayjs().endOf('day').minute(30).second(0).millisecond(0);
+
+        let firstGroupDate = dayjs(now);
+        let firstGroupLabel = null;
+
+        let lastGroupDate = firstGroupDate.add(stepMinutes * (timeLineGroupLen - 1), 'minute').second(0).millisecond(0);
+        let lastGroupLabel = null;
+
+        let groupFirstItem = null, groupFirstItemIndex = null;
+        let groupLastItem = null, groupLastItemIndex = null;
+        let allItems = [];
+        let isOverTimed = false;
+
+        /*
+         * e.g. now = 22:00, with this checks first timeLine Button will be 20:30, last button = 23:30
+         * [{20:30}, 21:00, 21:30: #22:00#, 22:30, 23:00, {23:30}]
+         */
+
+        if (lastGroupDate.day() > now.day()) {
+            isOverTimed = true;
+            let shiftMinute = (lastGroupDate.hour() * 60) + lastGroupDate.minute();
+
+            lastGroupDate = endOfDay;
+            firstGroupDate = lastGroupDate.subtract(timeLineGroupLen * stepMinutes, 'minute');
+        }
+
+        firstGroupLabel = firstGroupDate.format(labelFormat);
+        lastGroupLabel = lastGroupDate.format(labelFormat);
+
+        // console.log(firstGroupDate, lastGroupDate);
+        // console.log(firstGroupLabel, lastGroupLabel);
+
+        for(let i = 0, back = 1; i < timeLineLen; i++) {
+            let date = startOfDay.add(i * stepMinutes, 'minute')
+            let label = date.format(labelFormat);
+            if (label === firstGroupLabel) {
+                groupFirstItem = label;
+                groupFirstItemIndex = i + (isOverTimed);
+            }
+            else if (label === lastGroupLabel) {
+                groupLastItem = label;
+                groupLastItemIndex = i + (isOverTimed);
+            }
+
+            if (label === nowLabel) {
+                nowIndex = i;
+            }
+
+            allItems.push({
+                time: label,
+                date: date,
+            });
+        }
+
+        let groupItems = allItems.slice(groupFirstItemIndex, groupLastItemIndex);
+
+        let timeLine = {
+            items: allItems,
+            nowLabel: nowLabel,
+            nowIndex: nowIndex,
+            fromLabel: groupFirstItem,
+            fromIndex: groupFirstItemIndex,
+            toLabel: groupLastItem,
+            toIndex: groupLastItemIndex,
+            groupItems: groupItems,
+        };
+
+        return timeLine;
 
     }
 
@@ -148,8 +247,7 @@ export default class Events extends BaseComponent {
                     break;
             case RENDER_STATES.COMMON:
                 // <EventsRoom data={event}/>
-                const timeLine = this.getTimeLine();
-                console.info('RENDER_STATES.COMMON', timeLine);
+                console.info('RENDER_STATES.COMMON', this.timeLine);
                 component = (
                     <>
                         <Grid container className="filter">
@@ -162,7 +260,7 @@ export default class Events extends BaseComponent {
                         <Grid container className="eventsRoom" spacing={4}>
                         {this.state.data.map((room, index) => (
                             <Grid key={room._id} item md={6} sm={12}>
-                                <EventsRoom timeLine={timeLine} room={room}/>
+                                <EventsRoom timeLine={this.timeLine} room={room}/>
                             </Grid>
                         ))}
                         </Grid>
@@ -214,3 +312,50 @@ export default class Events extends BaseComponent {
 //     </div>
 //     </Container>
 // );
+//
+//
+
+// function getTimeLine() {
+//   const stepMinutes = 30;
+//   const timeLineLen = 48;
+//   const timeLineGroupLen = 7;
+//   const labelFormat = 'HH:mm';
+
+//   const now = new Date('18 apr 2021 22:00');
+
+//   now.setSeconds(0, 0);
+
+
+//   const startOfDay = new Date('18 apr 2021 00:00');
+
+//   let firstGroupDate = new Date(now);
+//   /*
+//   firstGroupDate.setMinutes(
+//     stepMinutes * (Math.round(firstGroupDate.getMinutes() / stepMinutes)));
+//   firstGroupDate.setSeconds(0,0);
+//   */
+
+//   let firstGroupLabel = null;
+
+//   let lastGroupDate = new Date(firstGroupDate);
+//   lastGroupDate.setMinutes(lastGroupDate.getMinutes() + (stepMinutes * timeLineGroupLen));
+//   let lastGroupLabel = null;
+
+//   let groupFirstItem = null, groupFirstItemIndex = null;
+//   let groupLastItem = null, groupLastItemIndex = null;
+//   let allItems = [];
+//   let isOverTimed = false;
+
+//   if (now.getDay() < lastGroupDate.getDay()) {
+//     let overMinutes = (lastGroupDate.getTime() - now.getTime()) / (1000*60);
+//     let len = Math.round(overMinutes / 60);
+
+//     lastGroupDate.setMinutes(lastGroupDate.getMinutes() - (len * stepMinutes));
+
+//     firstGroupDate.setMinutes(firstGroupDate.getMinutes() - ((len-1) * stepMinutes));
+//     console.log(len, 'q,', firstGroupDate, lastGroupDate);
+//   }
+
+// }
+// console.log(210/60);
+// getTimeLine();

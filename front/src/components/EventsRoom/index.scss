@@ -1,4 +1,8 @@
-@mixin arrow {
+$availableColor: #5C7829;
+$pendingColor: #B7B327;
+$reservedColor: #CC3333;
+
+@mixin arrow-down {
     content: "";
     position: absolute;
     width: 0;
@@ -8,19 +12,40 @@
     border-width: .5rem .5rem 0 .5rem;
 }
 
-@mixin arrow-available {
-    @include arrow;
-    border-color: #5C7829 transparent transparent transparent;
+@mixin arrow-up {
+    @include arrow-down;
+    top: auto;
+    bottom: 0;
+    transform: rotate(180deg);
 }
 
-@mixin arrow-reserved {
-    @include arrow;
-    border-color: #CC3333 transparent transparent transparent;
+@mixin arrow-available-down {
+    @include arrow-down;
+    border-color: $availableColor transparent transparent transparent;
 }
 
-@mixin arrow-pending {
-    @include arrow;
-    border-color: #B7B327 transparent transparent transparent;
+@mixin arrow-available-up {
+    @include arrow-up;
+    border-color: $availableColor transparent transparent transparent;
+}
+
+@mixin arrow-reserved-down {
+    @include arrow-down;
+    border-color: $reservedColor transparent transparent transparent;
+}
+@mixin arrow-reserved-up {
+    @include arrow-down;
+    border-color: $reservedColor transparent transparent transparent;
+}
+
+@mixin arrow-pending-down {
+    @include arrow-down;
+    border-color: $pendingColor transparent transparent transparent;
+}
+
+@mixin arrow-pending-up {
+    @include arrow-up;
+    border-color: $pendingColor transparent transparent transparent;
 }
 
 .eventsRoom {
@@ -44,66 +69,87 @@
         width: 20px;
         margin-right: 1rem;
         &.available {
-            background-color: #5C7829;
+            background-color: $availableColor;
         }
         &.reserved {
-            background-color: #CC3333;
+            background-color: $reservedColor;
         }
         &.pending {
-            background-color: #B7B327;
+            background-color: $pendingColor;
         }
     }
 
     .timeline {
         display: flex;
-        flex-wrap: nowrap;
-        flex-shrink: 0;
-
         .prev img,
         .next img {
             height: 1rem;
+        }
+
+        .timeButtons {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            scroll-behavior: smooth;
         }
         .timebtn {
             border-radius: 0;
             color: #fff;
             background-color: #333;
-            min-width: 2rem;
+            min-width: 5rem;
+            max-width: 5rem;
             display: flex;
             flex: 1;
             justify-content: center;
             align-items: center;
             text-align: center;
-            border-bottom: 3px solid #333;
+            border: 3px solid #333;
+            border-left: none;
+            border-right: none;
+            border-top: 3px solid transparent;
             font-size: .8rem;
             padding: .5rem;
             cursor: pointer;
             transition: color .3s, opatity .3s;
-            &.selected {
-                color: #000;
-                cursor: default;
-                border-top: 3px solid;
-                position: relative;
-            }
             &.available {
-                border-color: #5C7829;
-                &.selected:after {
-                    @include arrow-available;
+                border-bottom-color: $availableColor;
+                &.selected {
+                    border-top-color: $availableColor;
+                    &:after {
+                        @include arrow-available-down;
+                    }
+                    &:before {
+                        @include arrow-available-up;
+                    }
                 }
             }
             &.reserved {
-                border-color: #CC3333;
-                &.selected:after {
-                    @include arrow-reserved;
+                border-bottom-color: $reservedColor;
+                &.selected {
+                    border-top-color: $reservedColor;
+                    &:after {
+                        @include arrow-reserved-down;
+                    }
+                    &:before {
+                        @include arrow-reserved-up;
+                    }
                 }
             }
             &.pending {
-                border-color: #B7B327;
-                &.selected:after {
-                    @include arrow-pending;
+                border-bottom-color: $pendingColor;
+                &.selected {
+                    border-top-color: $pendingColor;
+                    &:after {
+                        @include arrow-pending-down;
+                    }
+                    &:before {
+                        @include arrow-pending-up;
+                    }
                 }
             }
-            &:hover {
-                opacity: .9;
+            &.selected {
+                opacity: .8;
+                cursor: default;
             }
         }
     }

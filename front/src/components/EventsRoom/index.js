@@ -34,31 +34,55 @@ class EventsRoom extends React.Component {
         this.room = this.props.room;
         this.events = this.props.room.events;
         this.roomHasEvents = Array.isArray(this.events) && this.events.length;
-        this.timeLineRef = React.createRef();
 
-        // timeLineArray eg. [{time: '10:30', date: '2012-12-12 12:30'}]
-        this.timeLineArray = this.props.timeLine;
+        this.timeLineRef = React.createRef();
+        this.timeLineData = this.props.timeLine;
+        this.groupItems = this.timeLineData.groupItems;
+
         this.timeLine = {};
         this.prepTimeLine();
 
 
-        // first time button is default selected
-        this.selectedTime = this.timeLine[this.timeLineArray[0].time];
+        // select current time
+        this.nowIndex = this.timeLineData.nowIndex;
+        this.nowLabel = this.timeLineData.nowLabel;
+        this.selectedTime = this.timeLine[this.nowLabel];
+    }
+
+    scroll = (toRight = true) => {
+        const fromTime = this.selectedTime.time;
+        const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
+        const scrollCurent = timeButtons.style.scrollLeft;
+        const btnFrom = this.timeLineRef.current.querySelector(`button[data-time="${fromTime}"]`);
+        let scrollStep = btnFrom.offsetWidth;
+        if (!toRight) {
+            scrollStep = (-scrollStep);
+        }
+        timeButtons.scrollLeft += scrollStep;
+    };
+
+    scrollToRight = (e) => {
+        e.stopPropagation();
+        this.scroll();
+    }
+
+    scrollToLeft = (e) => {
+        e.stopPropagation();
+        this.scroll(false);
     }
 
     prepTimeLine() {
         this.timeLine = {};
         let selected = null;
-        this.timeLineArray.forEach(item => {
+        this.timeLineData.items.forEach(item => {
             selected = null === selected ? true : false;
             let status = STATUSES.AVAILABLE;
             let crossedOrPengingEvent = null;
             if (this.roomHasEvents) {
                 this.events.some(event => {
-                    let result = this.getStatusWithEvent(item.date, event);
-                    status = result.status;
-                    crossedOrPengingEvent = result.event;
-                    return STATUSES.AVAILABLE !== result.status;
+                    status = this.getStatus(item.date, event);
+                    crossedOrPengingEvent = event;
+                    return STATUSES.AVAILABLE !== status;
                 });
             }
             this.timeLine[item.time] = {
@@ -82,12 +106,24 @@ class EventsRoom extends React.Component {
         this.changeTime(time);
     };
 
+    componentDidMount() {
+        window.addEventListener('resize', this.updateDimensions);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateDimensions);
+    }
+
+    updateDimensions = () => {
+        let timeButtonWidth = (window.innerWidth - 80) / 7;
+        console.log(timeButtonWidth);
+        this.setState({
+            timeButtonWidth: timeButtonWidth
+        });
+    };
+
     changeTime = (time) => {
         // console.info('changeTime', time, this.timeLine[time]);
         this.selectedTime = this.timeLine[time];
-        this.setState({
-            selectedTime: this.selectedTime,
-        });
     }
 
     isReservedByMe(event) {
@@ -95,11 +131,7 @@ class EventsRoom extends React.Component {
         // return event.user._id === this.props.userStore.user.id);
     }
 
-    getStatusWithEvent(time, event) {
-        let result = {
-            status: STATUSES.AVAILABLE,
-            event: null,
-        }
+    getStatus(time, event) {
 
         let timeToCompare = dayjs(time).second(0).millisecond(0);
         let dateStart = dayjs(event.date_start).second(0).millisecond(0);
@@ -109,20 +141,18 @@ class EventsRoom extends React.Component {
         if (this.room.number === 401) {
             console.info(pendingTime, dateStart, dateEnd);
         }
+
         let isCrossed = timeToCompare >= dateStart && timeToCompare < dateEnd
-        // let isPending = pendingTime >= dateStart && pendingTime < dateEnd.add(30, 'minute');
-        let isPending = timeToCompare >= dateStart.subtract(30, 'minute') && pendingTime < dateEnd.add(30, 'minute');
-
         if (isCrossed) {
-            result.status = STATUSES.RESERVED;
-            result.event = event;
-        }
-        else if(isPending) {
-            result.status = STATUSES.PENDING;
-            result.event = event;
+            return STATUSES.RESERVED;
         }
 
-        return result;
+        let isPending = timeToCompare >= dateStart.subtract(30, 'minute') && pendingTime < dateEnd.add(30, 'minute');
+        if(isPending) {
+            return STATUSES.PENDING;
+        }
+
+        return STATUSES.AVAILABLE
     }
     debug(...data) {
         if (this.room.number <= 402) {
@@ -144,16 +174,17 @@ class EventsRoom extends React.Component {
     EventDetails() {
         // console.info('EventDetails')
         const room = this.room;
-        let status = this.selectedTime.status;
-        let disabled = this.selectedTime.disabled;
+        let selectedTime = this.selectedTime;
+        const disabled = selectedTime.disabled;
+        const status = selectedTime.status;
         const renderEventInfo = () => {
             switch(status) {
                 case STATUSES.PENDING:
                     return (
                         <div className="pengindEvent">
                             <div>Event is comming soon</div>
-                            <div>Start in: {EventHelper.dateFormatClient(this.selectedTime.event.date_start, 'HH:mm')}</div>
-                            <div>Ends in: {EventHelper.dateFormatClient(this.selectedTime.event.date_end, 'HH:mm')}</div>
+                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'HH:mm')}</div>
+                            <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );
                     break;
@@ -161,8 +192,8 @@ class EventsRoom extends React.Component {
                     return (
                         <div className="roomReserved">
                             <div>Room is reserved</div>
-                            <div>Start in: {EventHelper.dateFormatClient(this.selectedTime.event.date_start, 'HH:mm')}</div>
-                            <div>Ends in: {EventHelper.dateFormatClient(this.selectedTime.event.date_end, 'HH:mm')}</div>
+                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'HH:mm')}</div>
+                            <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );
                     break;
@@ -211,34 +242,38 @@ class EventsRoom extends React.Component {
     }
 
     TimeLine() {
+        const timeButtons = () => {
+            let buttons = [];
+            this.timeLineData.items.forEach((item, index) => {
+                const time = item.time;
+                const status = this.timeLine[time]['status'];
+                const className = `timebtn ${status} ${this.timeLine[time].className}`;
+                buttons.push(
+                    <Button key={index} onClick={this.handleTimeClick} data-time={time} className={className}>
+                    {time}
+                    </Button>
+                );
+            });
+            return <div className="timeButtons">{buttons}</div>;
+        };
+        const attrFrom = this.selectedTime.time;
+        // console.log(this.selectedTime);
+        // console.log(this.timeLineRef);
+        // this.timeLineData.items.forEach(item => {
+        //
         return (
-            <ButtonGroup ref={this.timeLineRef} size="small" className="timeline">
-                <Button className="prev">
+            <ButtonGroup ref={this.timeLineRef} size="small" className="timeline" data-from={attrFrom}>
+                <Button className="prev" onClick={this.scrollToLeft}>
                     <ArrowLeftIcon/>
                 </Button>
-                {this.timeLineArray.map((item, index) => (
-                    <TimeButton handleTimeClick={this.handleTimeClick}
-                        key={index} time={this.timeLine[item.time]}/>
-                ))}
-                <Button className="next">
+                    {timeButtons()}
+                <Button className="next" onClick={this.scrollToRight}>
                     <ArrowRightIcon/>
                 </Button>
             </ButtonGroup>
         );
     }
-
 }
 export default EventsRoom;
 
 
-function TimeButton(props) {
-    // disabled={props.time.disabled}
-    return (
-        <Button onClick={props.handleTimeClick}
-            data-time={props.time.time}
-            className={`timebtn ${props.time.className}
-                ${props.time.status} `}>
-            {props.time.time}
-        </Button>
-    );
-}
