@@ -14,7 +14,7 @@ import {
 } from '@material-ui/lab'
 
 import BaseComponent, { RENDER_STATES as BASE_RENDER_STATES } from '../../components/BaseComponent'
-import EventsRoom from '../../components/EventsRoom'
+import RoomEvents from '../../components/RoomEvents'
 import Bayan from '../../components/Bayan'
 import NoRooms from '../../components/NoRooms';
 import ServerError from '../../components/ServerError';
@@ -38,6 +38,7 @@ export default class Events extends BaseComponent {
             date: null,
             roomsFilter: [],
         };
+        this.roomEventsRef = React.createRef();
         this.timeLine = this.getTimeLine();
     }
 
@@ -46,6 +47,7 @@ export default class Events extends BaseComponent {
         await this.loadRoomsWithEventsOfDay();
         this.setState({ isLoading: false });
     }
+
 
     getDate() {
         return dayjs().startOf('day').toISOString()
@@ -95,47 +97,11 @@ export default class Events extends BaseComponent {
         let ymd = this.getDate()
         this.getEvents(ymd, newFilter)
     }
-    /*
-     * Summary. array with times eg. [10:30, 11:00: 11:30...]
-     * Description.
-     * Return array of time for EventsRoom component. Only for current day.
-     * If some time is next day - time will be: time = time - @timeStep minutes. Its need for pretty interface.
-     * @timeStep - step for time ranges
-     * @length length of result
-     * @return {array} sorted array with times
-     */
-    // getTimeLine(timeStep = TIME_STEP, length = TIMELINE_LEN) {
-    //     let timeLine = [];
-    //     const NOW = dayjs().second(0).millisecond(0);
-    //     const START_FROM = dayjs(NOW).minute(
-    //         timeStep * (Math.round(NOW.minute() / timeStep))
-    //     );
-    //     for (let i = 0, back = 1; i < length; i++) {
-    //         let time = START_FROM.add((timeStep* i), 'minutes');
-    //         if (time.day() > NOW.day()) {
-    //             time = START_FROM.substract((timeStep * back++), 'minutes');
-    //             let label = time.format('HH:mm');
-    //             timeLine.unshift({
-    //                 time: label,
-    //                 date: time,
-    //             });
-    //         }
-    //         else {
-    //             let label = time.format('HH:mm');
-    //             timeLine.unshift({
-    //                 time: label,
-    //                 date: time,
-    //             });
-    //         }
-    //     }
-    //     return timeLine.sort((a,b) => a.date - b.date);
-
-    // }
 
     /*
      * Summary. array with times eg. [10:30, 11:00: 11:30...]
      * Description.
-     * Return array of time for EventsRoom component. Only for current day.
+     * Return array of time for RoomEvents component. Only for current day.
      * If some time is next day - time will be: time = time - @timeStep minutes. Its need for pretty interface.
      * @timeStep - step for time ranges
      * @length length of result
@@ -228,6 +194,8 @@ export default class Events extends BaseComponent {
             groupItems: groupItems,
         };
 
+        console.log(timeLine);
+
         return timeLine;
 
     }
@@ -246,7 +214,6 @@ export default class Events extends BaseComponent {
                 component = <NoRooms/>;
                     break;
             case RENDER_STATES.COMMON:
-                // <EventsRoom data={event}/>
                 console.info('RENDER_STATES.COMMON', this.timeLine);
                 component = (
                     <>
@@ -257,10 +224,10 @@ export default class Events extends BaseComponent {
                                 ))}
                             </ToggleButtonGroup>
                         </Grid>
-                        <Grid container className="eventsRoom" spacing={4}>
+                        <Grid container className="roomEvents" spacing={4} ref={this.roomEventsRef}>
                         {this.state.data.map((room, index) => (
                             <Grid key={room._id} item md={6} sm={12}>
-                                <EventsRoom timeLine={this.timeLine} room={room}/>
+                                <RoomEvents timeLine={this.timeLine} room={room}/>
                             </Grid>
                         ))}
                         </Grid>
@@ -283,79 +250,3 @@ export default class Events extends BaseComponent {
         );
     }
 }
-// return (
-//     <Container maxWidth="md" className="events page">
-//     <h2>Events</h2>
-//     <div id="EventsMessages">
-//     {this.state.errorMessage && (
-//         <Alert className="rooms__alert" severity="error">{this.state.errorMessage}</Alert>
-//     )}
-//     </div>
-//     <Grid container className="filter">
-//     <ToggleButtonGroup size="small" value={this.state.roomsFilter} onChange={this.roomFilterToogleRoom} aria-label="Room filter">
-//     {this.state.roomsList.map((room, index) => (
-//         <ToggleButton key={room['_id']} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
-//     ))}
-//     </ToggleButtonGroup>
-//     </Grid>
-//     <Grid container className="roomsList">
-//     {this.state.events.map((event, index) => (
-//         <Grid key={event.room._id} item md={6} sm={12}>
-//         <EventsRoom data={event}/>
-//         </Grid>
-//     ))}
-//     </Grid>
-//     <div className="addEvent btnContainer">
-//     <Button component={Link} to="/events/add" variant="contained" color="secondary" fullWidth type="submit" disabled={this.state.isLoading}>
-//     Add event
-//     </Button>
-//     </div>
-//     </Container>
-// );
-//
-//
-
-// function getTimeLine() {
-//   const stepMinutes = 30;
-//   const timeLineLen = 48;
-//   const timeLineGroupLen = 7;
-//   const labelFormat = 'HH:mm';
-
-//   const now = new Date('18 apr 2021 22:00');
-
-//   now.setSeconds(0, 0);
-
-
-//   const startOfDay = new Date('18 apr 2021 00:00');
-
-//   let firstGroupDate = new Date(now);
-//   /*
-//   firstGroupDate.setMinutes(
-//     stepMinutes * (Math.round(firstGroupDate.getMinutes() / stepMinutes)));
-//   firstGroupDate.setSeconds(0,0);
-//   */
-
-//   let firstGroupLabel = null;
-
-//   let lastGroupDate = new Date(firstGroupDate);
-//   lastGroupDate.setMinutes(lastGroupDate.getMinutes() + (stepMinutes * timeLineGroupLen));
-//   let lastGroupLabel = null;
-
-//   let groupFirstItem = null, groupFirstItemIndex = null;
-//   let groupLastItem = null, groupLastItemIndex = null;
-//   let allItems = [];
-//   let isOverTimed = false;
-
-//   if (now.getDay() < lastGroupDate.getDay()) {
-//     let overMinutes = (lastGroupDate.getTime() - now.getTime()) / (1000*60);
-//     let len = Math.round(overMinutes / 60);
-
-//     lastGroupDate.setMinutes(lastGroupDate.getMinutes() - (len * stepMinutes));
-
-//     firstGroupDate.setMinutes(firstGroupDate.getMinutes() - ((len-1) * stepMinutes));
-//     console.log(len, 'q,', firstGroupDate, lastGroupDate);
-//   }
-
-// }
-// console.log(210/60);
-// getTimeLine();

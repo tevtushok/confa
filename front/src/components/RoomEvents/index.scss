@@ -1,0 +1,164 @@
+$availableColor: #5C7829;
+$pendingColor: #B7B327;
+$reservedColor: #CC3333;
+
+@mixin arrow-down {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    top:0;
+    border-style: solid;
+    border-width: .5rem .5rem 0 .5rem;
+}
+
+@mixin arrow-up {
+    @include arrow-down;
+    top: auto;
+    bottom: 0;
+    transform: rotate(180deg);
+}
+
+@mixin arrow-available-down {
+    @include arrow-down;
+    border-color: $availableColor transparent transparent transparent;
+}
+
+@mixin arrow-available-up {
+    @include arrow-up;
+    border-color: $availableColor transparent transparent transparent;
+}
+
+@mixin arrow-reserved-down {
+    @include arrow-down;
+    border-color: $reservedColor transparent transparent transparent;
+}
+@mixin arrow-reserved-up {
+    @include arrow-down;
+    border-color: $reservedColor transparent transparent transparent;
+}
+
+@mixin arrow-pending-down {
+    @include arrow-down;
+    border-color: $pendingColor transparent transparent transparent;
+}
+
+@mixin arrow-pending-up {
+    @include arrow-up;
+    border-color: $pendingColor transparent transparent transparent;
+}
+
+.roomEvents {
+    .baseWrapper {
+        color: #c3c3c3;
+        background-color: #282828;
+        min-height: 14.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+    }
+
+    .infoWrapper {
+        display: flex;
+        flex:1;
+        padding: 1rem 1rem 1rem .6rem;
+    }
+
+    .statusBar {
+        width: 20px;
+        margin-right: 1rem;
+        &.available {
+            background-color: $availableColor;
+        }
+        &.reserved {
+            background-color: $reservedColor;
+        }
+        &.pending {
+            background-color: $pendingColor;
+        }
+    }
+
+    .timeline {
+        display: flex;
+        .prev img,
+        .next img {
+            height: 1rem;
+        }
+        .MuiTabScrollButton-root.Mui-disabled {
+            opacity: .3;
+        }
+        .timeButtons {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+        .timebtn {
+            border-radius: 0;
+            color: #fff;
+            background-color: #333;
+            min-height: auto;
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 3px solid #333;
+            border-left: none;
+            border-right: none;
+            border-top: 3px solid transparent;
+            font-size: .8rem;
+            padding: .5rem;
+            cursor: pointer;
+            transition: color .3s, opatity .3s, width .3s;
+            &.available {
+                border-bottom-color: $availableColor;
+                &.selectedq {
+                    border-top-color: $availableColor;
+                    &:after {
+                        @include arrow-available-down;
+                    }
+                    &:before {
+                        @include arrow-available-up;
+                    }
+                }
+            }
+            &.reserved {
+                border-bottom-color: $reservedColor;
+                &.selectedq {
+                    border-top-color: $reservedColor;
+                    &:after {
+                        @include arrow-reserved-down;
+                    }
+                    &:before {
+                        @include arrow-reserved-up;
+                    }
+                }
+            }
+            &.pending {
+                border-bottom-color: $pendingColor;
+                &.selectedq {
+                    border-top-color: $pendingColor;
+                    &:after {
+                        @include arrow-pending-down;
+                    }
+                    &:before {
+                        @include arrow-pending-up;
+                    }
+                }
+            }
+            &.selectedq {
+                opacity: .8;
+                cursor: default;
+            }
+        }
+    }
+
+
+    .detailsWrapper {
+        display: flex;
+        flex-direction: column;
+        flex:1;
+    }
+}
