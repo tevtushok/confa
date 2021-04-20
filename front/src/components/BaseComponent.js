@@ -27,31 +27,31 @@ export default class BaseComponent extends React.Component {
 		}
 	}
 
-    setServerError = (message, opts = {}) => {
+    getServerErrorState = (message, opts = {}) => {
         const defaults = {
             serviceMessage: message,
             renderState: RENDER_STATES.FAILURE,
         };
         const state = Object.assign(defaults, opts);
-        this.setState(state);
+        return state;
     };
 
-    setPermissionError(message, opts = {}) {
+    getPermissionErrorState(message, opts = {}) {
         const defaults = {
             serviceMessage: message,
             renderState: RENDER_STATES.FAILURE,
         };
         const state = Object.assign(defaults, opts);
-        this.setState(state);
+        return state;
     }
 
-    setValidationError(message, errors = {}, opts = {}) {
+    getValidationErrorState(message, errors = {}, opts = {}) {
         const defaults = {
             serviceMessage: message,
             errors: errors,
         };
         const state = Object.assign(defaults, opts);
-        this.setState(state);
+        return state;
     }
 
 	alert = (obj, scroll = true) => {

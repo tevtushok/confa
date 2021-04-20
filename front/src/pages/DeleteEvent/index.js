@@ -38,34 +38,37 @@ class DeleteEvent extends SaveEvent {
 
     async componentDidMount() {
         this.setState({ isLoading: true, });
-        await this.loadEventDetails();
-        if (this.state.renderState === RENDER_STATES.INIT) {
-            this.setState({
-                renderState: RENDER_STATES.COMMON,
-            });
-        }
-        this.setState({ isLoading: false });
+        const newProps = await this.loadEventDetails();
+        this.setState({
+            isLoading: false,
+            ...newProps,
+        });
     }
 
-    handleDeleteEvent = async() => {
-        this.setState({isLoading: true});
-        console.log('handleDeleteEvent');
+    deleteEvent = async() => {
         const result = await eventsApi.deleteEvent(this.state.event._id);
         const apiMessage = result.response.getApiMessage();
         const apiCode = result.response.getApiCode();
         if (result.error) {
             if (apiCode === CODES.EVENTS.NOT_BELONG_TO_YOU) {
-                this.setServerError('Permission denined!');
                 console.log('permission error', apiMessage);
+                return this.getServerErrorState('Permission denined!');
             }
             else {
-                this.setServerError('Server error');
                 console.log('server error', apiMessage);
+                return this.getServerErrorState('Server error');
             }
         }
         else {
-            this.setState({renderState: RENDER_STATES.SAVED});
+            return { renderState: RENDER_STATES.SAVED };
         }
+    }
+
+    handleDeleteEvent = async() => {
+        console.log('handleDeleteEvent');
+        this.setState({ isLoading: true });
+        const newProps = this.deleteEvent();
+        this.setState({ isLoading: false, ...newProps });
     };
 
     render() {

@@ -3,8 +3,6 @@ import { withRouter } from "react-router";
 import { Link as routerLink } from 'react-router-dom';
 import { Container, Link } from '@material-ui/core';
 
-import dayjs from 'dayjs';
-
 import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
 import CODES from '../../services/codes';
@@ -71,7 +69,7 @@ class AddEvent extends SaveEvent {
         const dateStart = new Date();
         const dateEnd = new Date();
 
-        const regHHMM = /^\d\d\:\d\d/g;
+        const regHHMM = /^\d\d:\d\d/g;
 
         if (timeFrom && 0 === timeFrom.search(regHHMM)) {
             dateStart.setHours(...timeFrom.split(':'));
@@ -93,13 +91,12 @@ class AddEvent extends SaveEvent {
 
 
     async componentDidMount() {
-        await this.loadRoomList();
-        if (this.state.renderState === RENDER_STATES.INIT) {
-            this.setState({
-                renderState: RENDER_STATES.COMMON,
-            });
-        }
-        this.setState({isLoading: false });
+        this.setState({ isLoading: false, });
+        const newStateOpts = await this.loadRoomList();
+        this.setState({
+            isLoading: false,
+            ...newStateOpts,
+        });
     }
 
     async addEvent() {
@@ -112,38 +109,36 @@ class AddEvent extends SaveEvent {
             const apiMessage = result.response.getApiMessage();
             if (apiCode === CODES.EVENTS.VALIDATION) {
                 const errorFields = result.response.getErrorFields();
-                this.setValidationError('Validation error', errorFields);
                 console.log('AddEvent->Validation error', errorFields);
+                return this.getValidationErrorState('Validation error', errorFields);
             }
             else if (apiCode === CODES.EVENTS.CROSS_DATES) {
                 const dbEvents = apiData.events;
                 if (false === Array.isArray(dbEvents)) {
-                    this.setServerError('Invalid data from server');
                     console.log('Expected array of events from database', apiMessage);
-                    return;
+                    return this.getServerErrorState('Invalid data from server');
                 }
                 const errorFields = {date_start: true, date_end: true};
                 const serviceMessage = 'Date is crossed with enother events';
-                this.setValidationError(serviceMessage, errorFields, {crossedEvents:dbEvents});
                 console.log('AddEvent->Validation error', errorFields);
+                return this.getValidationErrorState(serviceMessage, errorFields, {crossedEvents:dbEvents});
             }
             else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
                 const serviceMessage = 'Room does not exist. Please try another room';
-                this.setValidationError(serviceMessage);
                 console.log('Room does not exists', apiMessage);
+                return this.getValidationErrorState(serviceMessage);
             }
             else if (apiCode === CODES.EVENTS.ROOM_NOT_ACTIVE) {
                 const serviceMessage = 'Room is closed. Please try another room';
-                this.setValidationError(serviceMessage);
                 console.log('Room not active', apiMessage);
+                return this.getValidationErrorState(serviceMessage);
             }
             else {
                 if (result.error instanceof ApiDataTypeError) {
                     console.error('addEvent->ApiDataTypeError');
                 }
-                this.setServerError('Invalid data from server');
                 console.log('AddEvent->Invalid data from server', result.error);
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
         }
         else {
@@ -151,19 +146,18 @@ class AddEvent extends SaveEvent {
             if (null === apiData.event || 'object' !== typeof apiData.event) {
                 console.log('addEvent>Invalid rooms data. Expected event object');
                 console.log(apiData);
-                this.setServerError('Invalid data from server');
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
             if (!apiData.event._id) {
                 console.log('addEvent>Invalid rooms data. Expected event id');
                 console.log(apiData);
-                this.setServerError('Invalid data from server');
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
-            this.setState({
+            const state = {
                 renderState: RENDER_STATES.SAVED,
                 createdEvent: apiData.event,
-            });
+            };
+            return state;
         }
     }
 
@@ -172,9 +166,10 @@ class AddEvent extends SaveEvent {
             isLoading: true,
             errors: null,
         });
-        await this.addEvent();
+        const newStateOpts = await this.addEvent();
         this.setState({
             isLoading: false,
+            ...newStateOpts,
         });
     }
 

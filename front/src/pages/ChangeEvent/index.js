@@ -39,14 +39,17 @@ class ChangeEvent extends SaveEvent {
 
     async componentDidMount() {
         this.setState({ isLoading: true, });
-        await this.loadRoomList();
-        await this.loadEventDetails();
-        if (this.state.renderState === RENDER_STATES.INIT) {
-            this.setState({
-                renderState: RENDER_STATES.COMMON,
-            });
+        let roomState = await this.loadRoomList();
+        if ('renderState' in roomState && roomState.renderState !== RENDER_STATES.COMMON) {
+            this.setState({ isLoading: false, ...roomState});
         }
-        this.setState({ isLoading: false, });
+        let eventState = await this.loadEventDetails();
+        if ('renderState' in eventState && eventState.renderState !== RENDER_STATES.COMMON) {
+            this.setState({ isLoading: false, ...eventState});
+        }
+        else {
+            this.setState({ isLoading: false, ...roomState, ...eventState});
+        }
     }
 
     async changeEvent() {
@@ -58,43 +61,41 @@ class ChangeEvent extends SaveEvent {
             const apiData = result.response.getApiData();
             const apiMessage = result.response.getApiMessage();
             if (apiCode === CODES.EVENTS.NOT_BELONG_TO_YOU) {
-                this.setServerError('Permission denined!');
                 console.log('permission error', apiMessage);
+                return this.getServerErrorState('Permission denined!');
             }
             else if (apiCode === CODES.EVENTS.VALIDATION) {
                 const errorFields = result.response.getErrorFields();
-                this.setValidationError('Validation error', errorFields);
                 console.log('changeEvent->Validation error', errorFields);
+                return this.getValidationErrorState('Validation error', errorFields);
             }
             else if (apiCode === CODES.EVENTS.CROSS_DATES) {
                 const dbEvents = apiData.events;
                 if (false === Array.isArray(dbEvents)) {
-                    this.setServerError('Invalid data from server');
                     console.log('Expected array of events from database', apiMessage);
-                    return;
+                    return this.getServerErrorState('Invalid data from server');
                 }
                 const errorFields = {date_start: true, date_end: true};
                 const serviceMessage = 'Date is crossed with enother events';
-                this.setValidationError(serviceMessage, errorFields, {crossedEvents:dbEvents});
                 console.log('changeEvent->Validation error', errorFields);
+                this.getValidationErrorState(serviceMessage, errorFields, {crossedEvents:dbEvents});
             }
             else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
                 const serviceMessage = 'Room does not exist. Please try another room';
-                this.setValidationError(serviceMessage);
                 console.log('Room does not exists', apiMessage);
+                return this.getValidationErrorState(serviceMessage);
             }
             else if (apiCode === CODES.EVENTS.ROOM_NOT_ACTIVE) {
                 const serviceMessage = 'Room is closed. Please try another room';
-                this.setValidationError(serviceMessage);
                 console.log('Room not active', apiMessage);
+                return this.getValidationErrorState(serviceMessage);
             }
             else {
                 if (result.error instanceof ApiDataTypeError) {
                     console.error('changeEvent->ApiDataTypeError');
                 }
-                this.setServerError('Invalid data from server');
                 console.log('changeEvent->Invalid data from server', result.error);
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
         }
         else {
@@ -102,19 +103,18 @@ class ChangeEvent extends SaveEvent {
             if (null === apiData.event || 'object' !== typeof apiData.event) {
                 console.log('changeEvent->Invalid rooms data. Expected event object');
                 console.log(apiData);
-                this.setServerError('Invalid data from server');
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
             if (!apiData.event._id) {
                 console.log('changeEvent>Invalid rooms data. Expected event id');
                 console.log(apiData);
-                this.setServerError('Invalid data from server');
-                return;
+                return this.getServerErrorState('Invalid data from server');
             }
-            this.setState({
+
+            return {
                 changedEvent: apiData.event,
                 renderState: RENDER_STATES.SAVED,
-            });
+            };
         }
     }
 
@@ -127,8 +127,8 @@ class ChangeEvent extends SaveEvent {
             serviceMessage: '',
             renderState: RENDER_STATES.COMMON,
         });
-        await this.changeEvent();
-        this.setState({ isLoading: false });
+        const state = await this.changeEvent();
+        this.setState({ isLoading: false, ...state });
     }
 
     render() {
