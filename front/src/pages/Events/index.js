@@ -24,7 +24,6 @@ import AppError from '../../components/AppError';
 import CODES from '../../services/codes';
 import ApiDataTypeError from '../../services/error';
 import roomsApi from '../../services/roomsApi'
-import eventsApi from '../../services/eventsApi';
 
 import './index.scss';
 
@@ -84,6 +83,7 @@ export default class Events extends BaseComponent {
                 });
                 return;
             }
+            // apiData.data.length = 1; // !!!!!!!!! for debug
             this.setState({
                 data: apiData.data,
                 renderState: RENDER_STATES.COMMON,
@@ -110,7 +110,6 @@ export default class Events extends BaseComponent {
     getTimeLine() {
         const stepMinutes = 30;
         const timeLineLen = (60 / stepMinutes) * 24;
-        const timeLineGroupLen = 7;
         const labelFormat = 'HH:mm';
 
         let now = dayjs().second(0).millisecond(0);
@@ -127,74 +126,32 @@ export default class Events extends BaseComponent {
         let nowIndex = null;
 
         const startOfDay = dayjs().startOf('day');
-        const endOfDay = dayjs().endOf('day').minute(30).second(0).millisecond(0);
 
-        let firstGroupDate = dayjs(now);
-        let firstGroupLabel = null;
-
-        let lastGroupDate = firstGroupDate.add(stepMinutes * (timeLineGroupLen - 1), 'minute').second(0).millisecond(0);
-        let lastGroupLabel = null;
-
-        let groupFirstItem = null, groupFirstItemIndex = null;
-        let groupLastItem = null, groupLastItemIndex = null;
         let allItems = [];
-        let isOverTimed = false;
 
-        /*
-         * e.g. now = 22:00, with this checks first timeLine Button will be 20:30, last button = 23:30
-         * [{20:30}, 21:00, 21:30: #22:00#, 22:30, 23:00, {23:30}]
-         */
-
-        if (lastGroupDate.day() > now.day()) {
-            isOverTimed = true;
-            let shiftMinute = (lastGroupDate.hour() * 60) + lastGroupDate.minute();
-
-            lastGroupDate = endOfDay;
-            firstGroupDate = lastGroupDate.subtract(timeLineGroupLen * stepMinutes, 'minute');
-        }
-
-        firstGroupLabel = firstGroupDate.format(labelFormat);
-        lastGroupLabel = lastGroupDate.format(labelFormat);
-
-        // console.log(firstGroupDate, lastGroupDate);
-        // console.log(firstGroupLabel, lastGroupLabel);
-
-        for(let i = 0, back = 1; i < timeLineLen; i++) {
+        for(let i = 0; i < timeLineLen; i++) {
             let date = startOfDay.add(i * stepMinutes, 'minute')
             let label = date.format(labelFormat);
-            if (label === firstGroupLabel) {
-                groupFirstItem = label;
-                groupFirstItemIndex = i + (isOverTimed);
-            }
-            else if (label === lastGroupLabel) {
-                groupLastItem = label;
-                groupLastItemIndex = i + (isOverTimed);
-            }
 
             if (label === nowLabel) {
                 nowIndex = i;
             }
 
             allItems.push({
-                time: label,
+                label: label,
                 date: date,
             });
         }
-
-        let groupItems = allItems.slice(groupFirstItemIndex, groupLastItemIndex);
 
         let timeLine = {
             items: allItems,
             nowLabel: nowLabel,
             nowIndex: nowIndex,
-            fromLabel: groupFirstItem,
-            fromIndex: groupFirstItemIndex,
-            toLabel: groupLastItem,
-            toIndex: groupLastItemIndex,
-            groupItems: groupItems,
         };
 
+        console.log('*********************************************');
         console.log(timeLine);
+        console.log('*********************************************');
 
         return timeLine;
 
@@ -215,6 +172,26 @@ export default class Events extends BaseComponent {
                     break;
             case RENDER_STATES.COMMON:
                 console.info('RENDER_STATES.COMMON', this.timeLine);
+
+                let breakPoints = {
+                    xs: 12,
+                    sm: 12,
+                    md: 6,
+                    lg: 6,
+                    xl: 6,
+                };
+                let spacing = 4;
+
+                if (this.state.data.length === 1) {
+                    breakPoints = {
+                        xs: 12,
+                        sm: 12,
+                        md: 12,
+                        lg: 12,
+                        xl: 12,
+                    };
+                    spacing = 0;
+                }
                 component = (
                     <>
                         <Grid container className="filter">
@@ -224,9 +201,9 @@ export default class Events extends BaseComponent {
                                 ))}
                             </ToggleButtonGroup>
                         </Grid>
-                        <Grid container className="roomEvents" spacing={4} ref={this.roomEventsRef}>
+                        <Grid container className="roomEvents" spacing={spacing} ref={this.roomEventsRef}>
                         {this.state.data.map((room, index) => (
-                            <Grid key={room._id} item md={6} sm={12}>
+                            <Grid key={room._id} item {...breakPoints}>
                                 <RoomEvents timeLine={this.timeLine} room={room}/>
                             </Grid>
                         ))}

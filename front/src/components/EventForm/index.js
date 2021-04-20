@@ -24,11 +24,15 @@ import './index.scss';
 export default class EventForm extends React.Component {
     constructor(props) {
         super(props);
+        console.log('EEEEEEEEEEEEEEEEEEEEvent form');
+        console.log(this.props);
         this.submitBtnText = this.props.action;
     }
     render() {
         console.info('EventForm render');
         console.log(this.props);
+        console.log('roomId', this.props.event.room._id);
+
         return (
             <Grid container spacing={3} className="eventForm">
                 <Grid item xs={4}>
@@ -39,7 +43,7 @@ export default class EventForm extends React.Component {
                         value={this.props.event.room._id}
                     >
                     {Array.isArray(this.props.roomsList) && this.props.roomsList.map((room, index) => (
-                        <MenuItem key={room['_id']} value={room['_id']}>{room.number}</MenuItem>
+                        <MenuItem key={room._id} value={room._id}>{room.number}</MenuItem>
                     ))}
                     </Select>
                     </FormControl>

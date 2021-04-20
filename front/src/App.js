@@ -5,6 +5,7 @@ import { Switch, withRouter, Route } from "react-router-dom";
 import authApi from './services/authApi'
 import PrivateRoute from './routes/PrivateRoute'
 import Loader from './components/Loader';
+import Bayan from './components/Bayan';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './pages/Login';
@@ -59,7 +60,7 @@ class App extends React.Component {
                     <div className="app">
                         <Header/>
                         <main>
-                            <Loader/>
+                            <Bayan/>
                         </main>
                         <Footer/>
                     </div>
@@ -96,7 +97,7 @@ class App extends React.Component {
                             <Route path="/register" component={Register} exact/>
 
                             <PrivateRoute path="/events" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>
-                            <PrivateRoute path="/events/add" exact component={AddEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
+                            <PrivateRoute path="/events/add/:roomId?/:from?/:to?" component={AddEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/events/change/:id" exact component={ChangeEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/events/delete/:id" exact component={DeleteEvent} isLoggedIn={this.props.userStore.isLoggedIn}/>
                             <PrivateRoute path="/" exact component={Events} isLoggedIn={this.props.userStore.isLoggedIn}/>

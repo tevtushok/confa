@@ -81,18 +81,31 @@ $reservedColor: #CC3333;
 
     .timeline {
         display: flex;
-        .prev img,
-        .next img {
-            height: 1rem;
+        height: 3rem;
+        .prev, .next {
+            width: 40px;
+            min-width: auto;
+            background-color: #333;
+            border-radius: 0;
         }
-        .MuiTabScrollButton-root.Mui-disabled {
-            opacity: .3;
+        .prev:disabled, .next:disabled {
+            cursor: default;
+            svg {
+                opacity: .3;
+            }
+        }
+        .buttonsWrapper {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex: 1;
         }
         .timeButtons {
             display: flex;
-            overflow: hidden;
-            position: relative;
-            scroll-behavior: smooth;
+            position: absolute;
+            left: 0;
+            height: 100%; 
+            transition: left .3s;
         }
         .timebtn {
             border-radius: 0;
@@ -114,41 +127,31 @@ $reservedColor: #CC3333;
             transition: color .3s, opatity .3s, width .3s;
             &.available {
                 border-bottom-color: $availableColor;
-                &.selectedq {
-                    border-top-color: $availableColor;
-                    &:after {
-                        @include arrow-available-down;
-                    }
-                    &:before {
-                        @include arrow-available-up;
-                    }
-                }
             }
             &.reserved {
                 border-bottom-color: $reservedColor;
-                &.selectedq {
-                    border-top-color: $reservedColor;
-                    &:after {
-                        @include arrow-reserved-down;
-                    }
-                    &:before {
-                        @include arrow-reserved-up;
-                    }
-                }
             }
             &.pending {
                 border-bottom-color: $pendingColor;
-                &.selectedq {
-                    border-top-color: $pendingColor;
-                    &:after {
-                        @include arrow-pending-down;
-                    }
-                    &:before {
-                        @include arrow-pending-up;
-                    }
+            }
+
+            &.intermediate {
+                border-top-color: $availableColor;
+            }
+
+            &.postData {
+                font-weight: bold;
+                text-decoration: underline;
+                border-top-color: $availableColor;
+                &:after {
+                    @include arrow-available-down;
+                }
+                &:before {
+                    @include arrow-available-up;
                 }
             }
-            &.selectedq {
+
+            &.selected {
                 opacity: .8;
                 cursor: default;
             }
@@ -160,5 +163,28 @@ $reservedColor: #CC3333;
         display: flex;
         flex-direction: column;
         flex:1;
+    }
+}
+
+
+.timeline .timebtn {
+    min-width: 72px;
+    width: 72px;
+    max-width: 72px;
+}
+
+@media (max-width: 960px) {
+    .timeline .timebtn {
+        width: auto;
+        max-width: none;
+        min-width: 27vh;
+    }
+}
+
+@media (max-width: 600px) {
+    .timeline .timebtn {
+        min-width: 72px;
+        width: 72px;
+        max-width: 72px;
     }
 }

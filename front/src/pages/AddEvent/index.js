@@ -1,6 +1,9 @@
 import React from 'react';
+import { withRouter } from "react-router";
 import { Link as routerLink } from 'react-router-dom';
 import { Container, Link } from '@material-ui/core';
+
+import dayjs from 'dayjs';
 
 import eventsApi from '../../services/eventsApi';
 import ApiDataTypeError from '../../services/error';
@@ -19,24 +22,75 @@ import AppError from '../../components/AppError';
 import './index.scss';
 
 
-export default class AddEvent extends SaveEvent {
+@withRouter
+class AddEvent extends SaveEvent {
     constructor(props) {
         super(props)
-        const defaultStartFrom = new Date();
-        defaultStartFrom.setMinutes(5 * (Math.round(defaultStartFrom.getMinutes() / 5)));
-        const eventModel = new Event({
-            date_start: EventHelper.dateFormat(defaultStartFrom),
-            duration: 30,
-        });
         this.state = {
             ...this.state,
-            event: eventModel,
             roomsList: [],
             createdEvent: null,
             crossedEvents: null,
         };
+        this.initEventState();
         this.handleAddEvent = this.handleAddEvent.bind(this);
     }
+
+    initEventState() {
+        const defaultStartFrom = new Date();
+        defaultStartFrom.setMinutes(5 * (Math.round(defaultStartFrom.getMinutes() / 5)));
+        let event = new Event({
+            date_start: EventHelper.dateFormat(defaultStartFrom),
+            duration: 30,
+        });
+
+        if (this.props.match.params.roomId) {
+            const parsedEvent = this.getEventFromUrl();
+            console.log(parsedEvent);
+            console.log(event);
+            event = {
+                ...event,
+                ...parsedEvent,
+            };
+            console.log(event);
+            console.log('****************');
+        }
+
+        this.state.event = event;
+    }
+
+    getEventFromUrl() {
+        const roomId = this.props.match.params.roomId;
+        const timeFrom = this.props.match.params.from;
+        const timeTo = this.props.match.params.to;
+
+        const parsedEvent = new Event({
+            room: { _id: roomId, },
+        });
+
+        const dateStart = new Date();
+        const dateEnd = new Date();
+
+        const regHHMM = /^\d\d\:\d\d/g;
+
+        if (timeFrom && 0 === timeFrom.search(regHHMM)) {
+            dateStart.setHours(...timeFrom.split(':'));
+            dateStart.setSeconds(0, 0);
+
+            parsedEvent.date_start = EventHelper.dateFormat(dateStart);
+        }
+
+        if (timeTo && 0 === timeTo.search(regHHMM)) {
+            dateEnd.setHours(...timeTo.split(':'));
+            dateEnd.setSeconds(0, 0);
+
+            parsedEvent.date_end = EventHelper.dateFormat(dateEnd);
+            parsedEvent.duration = EventHelper.computeDuration(dateStart, dateEnd);
+        }
+
+        return parsedEvent;
+    }
+
 
     async componentDidMount() {
         await this.loadRoomList();
@@ -191,3 +245,5 @@ function EventCreated(props) {
         </div>
     );
 }
+
+export default AddEvent;
