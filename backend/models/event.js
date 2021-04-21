@@ -20,7 +20,6 @@ const eventSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: [true, '{PATH} is required'],
     },
     status: {
         type: String,
