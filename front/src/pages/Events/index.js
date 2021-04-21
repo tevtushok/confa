@@ -3,12 +3,14 @@ import dayjs from 'dayjs';
 import {
     Grid,
     Container,
+    TextField,
 } from '@material-ui/core'
 
+import DateUtils from '@date-io/dayjs';
 import {
-    ToggleButtonGroup,
-    ToggleButton,
-} from '@material-ui/lab'
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 import BaseComponent, { RENDER_STATES as BASE_RENDER_STATES } from '../../components/BaseComponent'
 import RoomEvents from '../../components/RoomEvents'
@@ -31,8 +33,8 @@ export default class Events extends BaseComponent {
         super(props);
         this.state = {
             ...this.state,
-            date: null,
-            roomsFilter: [],
+            selectedDate: dayjs().format('YYYY-MM-DD'),
+            roomsFilter: '',
         };
         this.roomEventsRef = React.createRef();
     }
@@ -47,14 +49,17 @@ export default class Events extends BaseComponent {
         });
     }
 
-
     getDate() {
         return dayjs().startOf('day').toISOString()
     }
 
-    async loadRoomsWithEventsOfDay() {
-        const date = this.getDate();
-        const result = await roomsApi.getRoomsWithEventsOfDay(date);
+    applyRoomFilter = (value) => {
+        this.setState({ roomsFilter: value });
+    }
+
+    async loadRoomsWithEventsOfDay(date = null) {
+        const datePost = date || this.state.selectedDate;
+        const result = await roomsApi.getRoomsWithEventsOfDay(datePost);
         const apiCode = result.response.getApiCode();
         if (result.error || 0 !== apiCode) {
             if (CODES.ROOMS.INVALID_DATE === apiCode) {
@@ -80,18 +85,15 @@ export default class Events extends BaseComponent {
             }
             // apiData.data.length = 1; // !!!!!!!!! for debug
             const state = {
-                data: apiData.data,
+                rooms: apiData.data,
                 renderState: RENDER_STATES.COMMON,
             };
             return state;
         }
     }
 
-    roomFilterToogleRoom(e, newFilter) {
-        // let currentFilter = this.state.roomsFilter;
-        this.setState({roomsFilter: newFilter})
-        let ymd = this.getDate()
-        this.getEvents(ymd, newFilter)
+    handleRoomsFilterChange = (e) => {
+        this.setState({roomsFilter: e.target.value})
     }
 
     /*
@@ -151,12 +153,20 @@ export default class Events extends BaseComponent {
             nowIndex: nowIndex,
         };
 
-        console.log('*********************************************');
-        console.log(timeLine);
-        console.log('*********************************************');
-
         return timeLine;
 
+    }
+
+    handleDateChange = async(date) => {
+        this.setState({ selectedDate: date, isLoading: true });
+        const newStateOpts = await this.loadRoomsWithEventsOfDay(date);
+        console.warn(this.state.rooms);
+        console.warn(newStateOpts.rooms);
+        this.setState({
+            ...this.state,
+            ...newStateOpts,
+            isLoading: false,
+        });
     }
 
     render() {
@@ -174,25 +184,65 @@ export default class Events extends BaseComponent {
                     break;
             case RENDER_STATES.COMMON:
                 this.timeLine = this.getTimeLine();
-                console.info('RENDER_STATES.COMMON', this.timeLine);
+                let rooms = null;
+                let roomsFilter = this.state.roomsFilter;
+                if (roomsFilter.length) {
+                    let filteredField = 'title';
+                    // check value is integer, n ^ 0 returns type number so we dont need strict equals
+                    if (roomsFilter == (roomsFilter ^ 0)) {
+                        filteredField = 'number';
+                    }
+                    console.log(filteredField, roomsFilter);
+                    rooms = this.state.rooms.filter(room => {
+                        const re = new RegExp(roomsFilter, 'i');
+                        return -1 !== room[filteredField].toString().search(re);
+                    });
+                }
+                else {
+                    rooms = this.state.rooms;
+                }
+                console.warn('render', rooms);
                 let breakPoints = { xs: 12, sm: 12, md: 6, lg: 6, xl: 6, };
                 let spacing = 4;
 
-                if (this.state.data.length === 1) {
+                if (this.state.rooms.length === 1) {
                     breakPoints = { xs: 12, sm: 12, md: 12, lg: 12, xl: 12, };
                     spacing = 0;
                 }
+
+                const inputLabelProps = { shrink: true, };
+
                 component = (
                     <>
-                        <Grid container className="filter">
-                            <ToggleButtonGroup size="small" value={this.state.roomsFilter} onChange={this.roomFilterToogleRoom} aria-label="Room filter">
-                                {this.state.data.map((room, index) => (
-                                    <ToggleButton key={room._id} value={room.number} aria-label={room.number}>{room.number}</ToggleButton>
-                                ))}
-                            </ToggleButtonGroup>
+                        <Grid container className="filter" justify="center" spacing={4}>
+                            <Grid item xs={6} >
+                                <RoomFilter applyFilter={this.applyRoomFilter}
+                                    handleChange={this.handleRoomsFilterChange}
+                                value={this.state.roomsFilter}/>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <MuiPickersUtilsProvider utils={DateUtils}>
+                                    <KeyboardDatePicker
+                                        id="date-dialog"
+                                        label="Date"
+                                        format="DD/MM/YYYY"
+                                        InputLabelProps={inputLabelProps}
+                                        value={this.state.selectedDate}
+                                        onChange={this.handleDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
                         </Grid>
+                        {!rooms.length && (
+                            <div className="filterEmptyResult">
+                                <h2>No rooms founded</h2>
+                            </div>
+                        )}
                         <Grid container className="roomEvents" spacing={spacing} ref={this.roomEventsRef}>
-                        {this.state.data.map((room, index) => (
+                        {rooms.map((room, index) => (
                             <Grid key={room._id} item {...breakPoints}>
                                 <RoomEvents timeLine={this.timeLine} room={room}/>
                             </Grid>
@@ -209,6 +259,37 @@ export default class Events extends BaseComponent {
             <Container maxWidth="md" className={`events page ${String(this.state.renderState).toLowerCase()}`}>
                 {component}
             </Container>
+        );
+    }
+}
+
+class RoomFilter extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { value: props.value };
+        this.timeout = null;
+        this.applyFilter = props.applyFilter;
+    }
+
+    handleChange = (e) => {
+        this.setState({ value: e.target.value });
+        clearTimeout(this.timeout);
+        setTimeout(() => {
+            this.applyFilter(this.state.value);
+        }, 400);
+    };
+    render() {
+        const inputLabelProps = { shrink: true, };
+        const inputProps = {
+            type: 'text',
+        };
+        return (
+            <div className="roomsFilterWrapper">
+                <TextField label="Room" inputProps={inputProps} InputLabelProps={inputLabelProps} id="roomsFilter"
+                onChange={this.handleChange}
+                value={this.state.value} />
+            </div>
         );
     }
 }

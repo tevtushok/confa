@@ -117,7 +117,7 @@ export default class SaveEvent extends BaseComponent {
     handleStartDateTimeChange = (datetime) => {
         let errors = this.state.errors;
         const validate = this.validateDateStart(datetime);
-        true === validate ? delete errors.date_start: errors.date_start= validate;
+        true === validate ? delete errors.date_start: errors.date_start = validate;
         this.setState({event: { ...this.state.event, date_start: datetime }});
     };
 
@@ -145,8 +145,9 @@ export default class SaveEvent extends BaseComponent {
         this.setState({event: { ...this.state.event, description: e.target.value }});
     };
 
-    validateDateStart = (date_start = '') => {
-        const valid = isNaN(date_start);
+    validateDateStart = (dateStart = '') => {
+        const date = new Date(dateStart);
+        const valid = !isNaN(date.getTime());
         return valid ? true : { message: 'Invalid date' };
     }
 

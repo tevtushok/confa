@@ -12,7 +12,7 @@ export default class Offline extends React.Component {
 		return (
 			<div className="offline page">
 				<center>
-                    <div className="error">No internet connection</div>
+					<h2>No internet connection</h2>
 					<Button variant="contained" type="button" color="secondary" onClick={this.reloadWindow}>reload</Button>
 				</center>
 			</div>

@@ -302,7 +302,7 @@ class RoomEvents extends React.Component {
                     return (
                         <div className="pengindEvent">
                             <div>Event is comming soon</div>
-                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'HH:mm')}</div>
+                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
                             <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );
@@ -310,7 +310,7 @@ class RoomEvents extends React.Component {
                     return (
                         <div className="roomReserved">
                             <div>Room is reserved</div>
-                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'HH:mm')}</div>
+                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
                             <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );

@@ -81,7 +81,7 @@ class App extends React.Component {
                 page = <Bayan/>;
                 break;
             case RENDERED_PAGES.ERROR:
-                page = <ServerError message={appStore.getErrorMessage}/>;
+                page = <ServerError/>;
                 break;
             case RENDERED_PAGES.OFFLINE:
                 page = <Offline/>;

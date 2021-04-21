@@ -2,4 +2,20 @@
     .roomsList {
         margin:0;
     }
+    .filter {
+        margin-bottom: 1rem;
+    }
+    .roomsFilterWrapper {
+        display: flex;
+        justify-content: inherit;
+    }
+}
+
+@media (min-width: 960px) {
+    .events {
+        .roomsFilterWrapper {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
 }

@@ -23,14 +23,24 @@ module.exports.list = async (req, res) => {
 
 module.exports.roomsWithEventsOfDay = async (req, res) => {
     try {
-        const startDay = new Date(req.params.date);
+        let startDay = null;
+        const date = req.params.date;
+
+        // string has only integers, maybe its unix timestamp?
+        if (0 === date.search(/^\d+$/g)) {
+            startDay = new Date(Number(date));
+        }
+        else {
+            startDay = new Date(date);
+        }
         if (isNaN(startDay.getTime())) { // invalid date returns NaN
             return jsonResponse(req, res, 400, API.FAILURE, null, 'Invalid date');
         }
-        const nextDay = new Date(req.params.date);
+        const nextDay = new Date(startDay);
         startDay.setHours(0, 0, 0, 0);
         nextDay.setHours(0, 0, 0, 0);
         nextDay.setDate(nextDay.getDate() + 1);
+        console.log(startDay, nextDay);
         // console.log(startDay, ':', nextDay);
         Room.aggregate([
             {
