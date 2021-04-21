@@ -7,7 +7,7 @@ import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 import { Router } from 'react-router';
 
 import userStore from './stores/userStore';
-import commonStore from './stores/commonStore';
+import appStore from './stores/appStore';
 
 import './index.scss';
 import './App.scss'
@@ -19,10 +19,7 @@ import * as serviceWorker from './serviceWorker';
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
-const stores = {
-  userStore,
-  commonStore,
-};
+const stores = { userStore, appStore, };
 
 const history = syncHistoryWithStore(browserHistory, routingStore);
 

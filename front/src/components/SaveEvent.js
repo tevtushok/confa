@@ -35,7 +35,7 @@ export default class SaveEvent extends BaseComponent {
 
     }
 
-    async loadRoomList() {
+    async loadRoomList(setRoomState = true) {
         const result = await roomsApi.list();
         if (result.error) {
             if (result.error instanceof ApiDataTypeError) {
@@ -54,14 +54,14 @@ export default class SaveEvent extends BaseComponent {
             stateProps.serviceMessage = '';
             stateProps.roomsList = apiData.rooms;
             stateProps.renderState = RENDER_STATES.COMMON;
-            if (apiData.rooms.length) {
+            if (!apiData.rooms.length) {
+                stateProps.renderState = RENDER_STATES.NO_ROOMS;
+            }
+            else if (setRoomState) {
                 const _id = apiData.rooms[0]['_id'];
                 console.info('state.event', this.state.event);
                 stateProps.event = {...this.state.event, room: { _id: _id }};
                 console.info('stateProps', stateProps);
-            }
-            else {
-                stateProps.renderState = RENDER_STATES.NO_ROOMS;
             }
             return stateProps;
         }

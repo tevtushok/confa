@@ -9,11 +9,7 @@ import {
     ArrowRight as ArrowRightIcon,
 } from "@material-ui/icons";
 
-import {
-    Button,
-    IconButton,
-    ButtonGroup,
-} from '@material-ui/core';
+import { Button, } from '@material-ui/core';
 
 import { EventHelper } from '../../includes/modelsHelpers';
 
@@ -80,7 +76,6 @@ class RoomEvents extends React.Component {
     };
 
     setTimeLineLeft(buttonWidth = null) {
-        let index = this.firstVisibleTimeIndex;
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         let left = 0;
         let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
@@ -93,7 +88,6 @@ class RoomEvents extends React.Component {
     }
 
     resizeTimeButtons = () => {
-        const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         const buttonWidth = this.getTimeButtonWidth();
         this.timeLineRef.current.querySelectorAll('.timebtn').forEach(item => {
             item.style.minWidth = buttonWidth + 'px';
@@ -181,7 +175,6 @@ class RoomEvents extends React.Component {
         if (selected) {
             selected.classList.remove('selected');
         }
-        const index = e.currentTarget.dataset.index;
         const label = e.currentTarget.dataset.label;
         e.currentTarget.classList.add('selected');
         this.setTimeData(e.currentTarget);
@@ -302,7 +295,6 @@ class RoomEvents extends React.Component {
     EventDetails() {
         const room = this.room;
         let selectedTime = this.selectedTime;
-        const disabled = selectedTime.disabled;
         const status = selectedTime.status;
         const renderEventInfo = () => {
             switch(status) {
@@ -314,7 +306,6 @@ class RoomEvents extends React.Component {
                             <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );
-                    break;
                 case STATUSES.RESERVED:
                     return (
                         <div className="roomReserved">
@@ -323,7 +314,6 @@ class RoomEvents extends React.Component {
                             <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                         </div>
                     );
-                    break;
                 default:
                     return '';
             }
