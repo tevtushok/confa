@@ -92,11 +92,9 @@ class AddEvent extends SaveEvent {
 
     async componentDidMount() {
         this.setState({ isLoading: false, });
-        const newStateOpts = await this.loadRoomList();
-        this.setState({
-            isLoading: false,
-            ...newStateOpts,
-        });
+        const setRoomState = !('room' in this.state.event);
+        const newStateOpts = await this.loadRoomList(setRoomState);
+        this.setState({ ...newStateOpts, isLoading: false, });
     }
 
     async addEvent() {

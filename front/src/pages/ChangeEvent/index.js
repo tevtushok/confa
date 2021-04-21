@@ -39,16 +39,18 @@ class ChangeEvent extends SaveEvent {
 
     async componentDidMount() {
         this.setState({ isLoading: true, });
-        let roomState = await this.loadRoomList();
+        let roomState = await this.loadRoomList(false);
         if ('renderState' in roomState && roomState.renderState !== RENDER_STATES.COMMON) {
-            this.setState({ isLoading: false, ...roomState});
+            this.setState({...roomState, isLoading: false});
+            return;
         }
         let eventState = await this.loadEventDetails();
         if ('renderState' in eventState && eventState.renderState !== RENDER_STATES.COMMON) {
-            this.setState({ isLoading: false, ...eventState});
+            this.setState({...eventState, isLoading: false});
+            return;
         }
         else {
-            this.setState({ isLoading: false, ...roomState, ...eventState});
+            this.setState({...roomState, ...eventState, isLoading: false,});
         }
     }
 

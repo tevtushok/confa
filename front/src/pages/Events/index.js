@@ -1,8 +1,6 @@
 import React from 'react';
-import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
 import {
-    Button,
     Grid,
     Container,
 } from '@material-ui/core'
@@ -10,7 +8,6 @@ import {
 import {
     ToggleButtonGroup,
     ToggleButton,
-    Alert,
 } from '@material-ui/lab'
 
 import BaseComponent, { RENDER_STATES as BASE_RENDER_STATES } from '../../components/BaseComponent'
@@ -42,7 +39,8 @@ export default class Events extends BaseComponent {
 
     async componentDidMount() {
         this.setState({ isLoading: true });
-        const newStateOpts = this.loadRoomsWithEventsOfDay();
+        const newStateOpts = await this.loadRoomsWithEventsOfDay();
+        console.log(newStateOpts);
         this.setState({
             isLoading: false,
             ...newStateOpts,
@@ -59,8 +57,6 @@ export default class Events extends BaseComponent {
         const result = await roomsApi.getRoomsWithEventsOfDay(date);
         const apiCode = result.response.getApiCode();
         if (result.error || 0 !== apiCode) {
-            const apiData = result.response.getApiData();
-            const apiMessage = result.response.getApiMessage();
             if (CODES.ROOMS.INVALID_DATE === apiCode) {
                 console.log('Invalid date');
                 return this.getServerErrorState('Invalid date');
@@ -202,11 +198,6 @@ export default class Events extends BaseComponent {
                             </Grid>
                         ))}
                         </Grid>
-                        <div className="addEvent btnContainer">
-                            <Button component={Link} to="/events/add" variant="contained" color="secondary" fullWidth type="submit" disabled={this.state.isLoading}>
-                            Add event
-                            </Button>
-                        </div>
                     </>
                 );
                 break;
