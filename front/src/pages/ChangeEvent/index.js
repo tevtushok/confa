@@ -121,7 +121,11 @@ class ChangeEvent extends SaveEvent {
     }
 
     handleSubmit = async () => {
-        console.log('handleSubmit');
+        const validate = this.validate();
+        if (true !== validate) {
+            this.setState({ errors: validate });
+            return;
+        }
         this.setState({
             isLoading: true,
             errors: null,

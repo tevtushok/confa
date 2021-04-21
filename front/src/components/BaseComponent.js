@@ -9,7 +9,7 @@ export const RENDER_STATES = {
 export const COMPONENT_STATE = {
     renderState: RENDER_STATES.INIT,
     serviceMessage: null,
-    errors: null,
+    errors: {},
     isLoading: false,
 };
 

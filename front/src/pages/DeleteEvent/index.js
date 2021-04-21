@@ -67,7 +67,7 @@ class DeleteEvent extends SaveEvent {
     handleDeleteEvent = async() => {
         console.log('handleDeleteEvent');
         this.setState({ isLoading: true });
-        const newProps = this.deleteEvent();
+        const newProps = await this.deleteEvent();
         this.setState({ isLoading: false, ...newProps });
     };
 

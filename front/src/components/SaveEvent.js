@@ -20,10 +20,6 @@ export default class SaveEvent extends BaseComponent {
     getPostData() {
         const dateStart = EventHelper.dateFormat(this.state.event.date_start);
         const dateEnd = EventHelper.computeDateEnd(dateStart, this.state.event.duration);
-        console.info('event dates', dateStart, dateEnd);
-        console.log('dates', dateStart, dateEnd);
-        console.log('dates', this.state.event.date_start, this.state.event.duration);
-        console.log('event', this.state.event);
         const postData = {
             room: this.state.event.room._id,
             title: this.state.event.title,
@@ -119,10 +115,16 @@ export default class SaveEvent extends BaseComponent {
     }
 
     handleStartDateTimeChange = (datetime) => {
+        let errors = this.state.errors;
+        const validate = this.validateDateStart(datetime);
+        true === validate ? delete errors.date_start: errors.date_start= validate;
         this.setState({event: { ...this.state.event, date_start: datetime }});
     };
 
     handleDurationChange = (e) => {
+        let errors = this.state.errors;
+        const validate = this.validateDuration(e.target.value);
+        true === validate ? delete errors.duration: errors.duration= validate;
         this.setState({event: {...this.state.event, duration: e.target.value }});
     };
 
@@ -133,10 +135,44 @@ export default class SaveEvent extends BaseComponent {
     };
 
     handleTitleChange = (e) => {
-        this.setState({event: { ...this.state.event, title: e.target.value }});
+        let errors = this.state.errors;
+        const validate = this.validateTitle(e.target.value);
+        true === validate ? delete errors.title : errors.title = validate;
+        this.setState({event: { ...this.state.event, title: e.target.value, errors }});
     };
 
     handleDescriptionChange = (e) => {
         this.setState({event: { ...this.state.event, description: e.target.value }});
+    };
+
+    validateDateStart = (date_start = '') => {
+        const valid = isNaN(date_start);
+        return valid ? true : { message: 'Invalid date' };
+    }
+
+    validateDuration = (duration = 0) => {
+        const valid = Number.isInteger(duration) && duration > 0;
+        return valid ? true : { message: 'Allowed only integers' };
+    }
+
+    validateTitle = (title = '') => {
+        const valid = title.length > 2;
+        return valid ? true : { message: 'Less than 3 symbols' };
+    }
+
+    validate = () => {
+        let errors = {};
+        let validate = null;
+        if (true !== (validate = this.validateDateStart(this.state.event.date_start))) {
+            errors.date_start = validate;
+        }
+        if (true !== (validate = this.validateDuration(this.state.event.duration))) {
+            errors.duration = validate;
+        }
+        if (true !== (validate = this.validateTitle(this.state.event.title))) {
+            errors.title = validate;
+        }
+
+        return Object.keys(errors).length ? errors : true;
     };
 }

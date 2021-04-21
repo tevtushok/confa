@@ -37,34 +37,27 @@ class AddEvent extends SaveEvent {
     initEventState() {
         const defaultStartFrom = new Date();
         defaultStartFrom.setMinutes(5 * (Math.round(defaultStartFrom.getMinutes() / 5)));
-        let event = new Event({
+        let defaultEvent = new Event({
             date_start: EventHelper.dateFormat(defaultStartFrom),
             duration: 30,
         });
 
         if (this.props.match.params.roomId) {
-            const parsedEvent = this.getEventFromUrl();
-            console.log(parsedEvent);
-            console.log(event);
-            event = {
-                ...event,
-                ...parsedEvent,
-            };
-            console.log(event);
-            console.log('****************');
+            this.state.event = this.getEventFromUrl(defaultEvent);
         }
-
-        this.state.event = event;
+        else {
+            this.state.event = defaultEvent;
+        }
     }
 
-    getEventFromUrl() {
+    getEventFromUrl(event = {}) {
         const roomId = this.props.match.params.roomId;
         const timeFrom = this.props.match.params.from;
         const timeTo = this.props.match.params.to;
 
         const parsedEvent = new Event({
-            room: { _id: roomId, },
         });
+        event.room = { _id: roomId, };
 
         const dateStart = new Date();
         const dateEnd = new Date();
@@ -75,18 +68,18 @@ class AddEvent extends SaveEvent {
             dateStart.setHours(...timeFrom.split(':'));
             dateStart.setSeconds(0, 0);
 
-            parsedEvent.date_start = EventHelper.dateFormat(dateStart);
+            event.date_start = EventHelper.dateFormat(dateStart);
         }
 
         if (timeTo && 0 === timeTo.search(regHHMM)) {
             dateEnd.setHours(...timeTo.split(':'));
             dateEnd.setSeconds(0, 0);
 
-            parsedEvent.date_end = EventHelper.dateFormat(dateEnd);
-            parsedEvent.duration = EventHelper.computeDuration(dateStart, dateEnd);
+            event.date_end = EventHelper.dateFormat(dateEnd);
+            event.duration = EventHelper.computeDuration(dateStart, dateEnd);
         }
 
-        return parsedEvent;
+        return event;
     }
 
 
@@ -160,9 +153,14 @@ class AddEvent extends SaveEvent {
     }
 
     async handleAddEvent() {
+        let validate = this.validate();
+        if (true !== validate ) {
+            this.setState({ errors: validate });
+            return;
+        }
         this.setState({
             isLoading: true,
-            errors: null,
+            errors: {},
         });
         const newStateOpts = await this.addEvent();
         this.setState({
