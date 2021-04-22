@@ -24,8 +24,6 @@ import './index.scss';
 export default class EventForm extends React.Component {
     constructor(props) {
         super(props);
-        console.log('EEEEEEEEEEEEEEEEEEEEvent form');
-        console.log(this.props);
         this.submitBtnText = this.props.action;
     }
     render() {

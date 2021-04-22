@@ -128,7 +128,7 @@ class ChangeEvent extends SaveEvent {
         }
         this.setState({
             isLoading: true,
-            errors: null,
+            errors: {},
             changed: false,
             serviceMessage: '',
             renderState: RENDER_STATES.COMMON,

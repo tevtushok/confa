@@ -40,7 +40,6 @@ module.exports.roomsWithEventsOfDay = async (req, res) => {
         startDay.setHours(0, 0, 0, 0);
         nextDay.setHours(0, 0, 0, 0);
         nextDay.setDate(nextDay.getDate() + 1);
-        console.log(startDay, nextDay);
         // console.log(startDay, ':', nextDay);
         Room.aggregate([
             {

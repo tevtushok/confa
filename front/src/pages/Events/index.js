@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import memoize from "memoize-one";
 import {
     Grid,
     Container,
@@ -28,33 +29,54 @@ import './index.scss';
 
 const RENDER_STATES = { ...BASE_RENDER_STATES, NO_ROOMS: 'NO_ROOMS', };
 
+
 export default class Events extends BaseComponent {
     constructor(props) {
         super(props);
+
+        this.stepMinutes = 30;
+        this.timeLineLabelFormat = 'HH:mm';
+
         this.state = {
             ...this.state,
-            selectedDate: dayjs().format('YYYY-MM-DD'),
-            roomsFilter: '',
+            // selectedDate: dayjs().add('1', 'day').format('YYYY-MM-DD'),
+            selectedDate: dayjs(),
+            roomsFilterValue: '',
         };
+
+
         this.roomEventsRef = React.createRef();
     }
 
     async componentDidMount() {
         this.setState({ isLoading: true });
         const newStateOpts = await this.loadRoomsWithEventsOfDay();
-        console.log(newStateOpts);
         this.setState({
             isLoading: false,
             ...newStateOpts,
         });
     }
 
-    getDate() {
-        return dayjs().startOf('day').toISOString()
-    }
+    filter = memoize(
+        (list, filter) => {
+            let filteredField = 'title';
+            // check value is integer, n ^ 0 returns type number so we dont need strict equals
+            if (this.state.roomsFilterValue == (this.state.roomsFilterValue ^ 0)) {
+                filteredField = 'number';
+            }
+            return this.state.rooms.filter(room => {
+                const re = new RegExp(this.state.roomsFilterValue, 'i');
+                return -1 !== room[filteredField].toString().search(re);
+            });
+        }
+    )
 
-    applyRoomFilter = (value) => {
-        this.setState({ roomsFilter: value });
+    // getDate() {
+    //     return dayjs().startOf('day').toISOString()
+    // }
+
+    applyRoomFilterValue = (value) => {
+        this.setState({ roomsFilterValue: value });
     }
 
     async loadRoomsWithEventsOfDay(date = null) {
@@ -93,7 +115,7 @@ export default class Events extends BaseComponent {
     }
 
     handleRoomsFilterChange = (e) => {
-        this.setState({roomsFilter: e.target.value})
+        this.setState({roomsFilterValue: e.target.value})
     }
 
     /*
@@ -112,30 +134,39 @@ export default class Events extends BaseComponent {
     }
     */
     getTimeLine() {
-        const stepMinutes = 30;
-        const timeLineLen = (60 / stepMinutes) * 24;
-        const labelFormat = 'HH:mm';
+        const timeLineLen = (60 / this.stepMinutes) * 24;
+        let selectedDate = dayjs(this.state.selectedDate);
+        let now = dayjs();
+        let timeLineDate = dayjs(selectedDate).hour(now.hour()).minute(now.minute()).second(0).millisecond(0);
 
-        let now = dayjs().second(0).millisecond(0);
-        now = now.minute(stepMinutes * (Math.round(now.minute() / stepMinutes)));
-        // const now = dayjs('18 apr 2021 23:00').second(0).millisecond(0);
-        // for client last possible time button is 23:30;
-        if (now.hour() === 23 && now.minute() > 30) {
-            now.minute(30);
+        // for client last possible time button is 23:30
+        if (timeLineDate.hour() === 23 && timeLineDate.minute() > 30) {
+            timeLineDate = timeLineDate.minute(30);
         }
         else {
-            now.minute(stepMinutes * (Math.round(now.minute() / stepMinutes)));
+            timeLineDate = timeLineDate.minute(this.stepMinutes * (Math.round(timeLineDate.minute() / this.stepMinutes)));
         }
-        const nowLabel = now.format(labelFormat);
-        let nowIndex = null;
 
-        const startOfDay = dayjs().startOf('day');
+        let nowLabel = null;
+        let nowIndex = null;
+        nowLabel = timeLineDate.format(this.timeLineLabelFormat);
+
+        // if (now.format('YYYY-MM-DD') !== timeLineDate.format('YYYY-MM-DD')) {
+        //     // for now working day starts at 09.00, but maybe in future its will be config from use profile page :)
+        //     // nowLabel = dayjs(timeLineDate).hour(9).format(this.timeLineLabelFormat);
+        // }
+        // else {
+        //     nowLabel = timeLineDate.format(timeLineLabelFormat);
+        // }
+        // const now = dayjs('18 apr 2021 23:00').second(0).millisecond(0);
+
+        const startOfDay = dayjs(timeLineDate).startOf('day');
 
         let allItems = [];
 
         for(let i = 0; i < timeLineLen; i++) {
-            let date = startOfDay.add(i * stepMinutes, 'minute')
-            let label = date.format(labelFormat);
+            let date = startOfDay.add(i * this.stepMinutes, 'minute')
+            let label = date.format(this.timeLineLabelFormat);
 
             if (label === nowLabel) {
                 nowIndex = i;
@@ -160,11 +191,9 @@ export default class Events extends BaseComponent {
     handleDateChange = async(date) => {
         this.setState({ selectedDate: date, isLoading: true });
         const newStateOpts = await this.loadRoomsWithEventsOfDay(date);
-        console.warn(this.state.rooms);
-        console.warn(newStateOpts.rooms);
         this.setState({
-            ...this.state,
-            ...newStateOpts,
+            rooms: newStateOpts.rooms,
+            renderState: newStateOpts.renderState,
             isLoading: false,
         });
     }
@@ -183,20 +212,15 @@ export default class Events extends BaseComponent {
                 component = <NoRooms/>;
                     break;
             case RENDER_STATES.COMMON:
+                console.log('');
+                console.warn(this.state.rooms);
+                console.log(this.state.rooms);
+                console.log(this.state.rooms);
+                console.log('');
                 this.timeLine = this.getTimeLine();
                 let rooms = null;
-                let roomsFilter = this.state.roomsFilter;
-                if (roomsFilter.length) {
-                    let filteredField = 'title';
-                    // check value is integer, n ^ 0 returns type number so we dont need strict equals
-                    if (roomsFilter == (roomsFilter ^ 0)) {
-                        filteredField = 'number';
-                    }
-                    console.log(filteredField, roomsFilter);
-                    rooms = this.state.rooms.filter(room => {
-                        const re = new RegExp(roomsFilter, 'i');
-                        return -1 !== room[filteredField].toString().search(re);
-                    });
+                if (this.state.roomsFilterValue.length) {
+                    rooms = this.filter(this.state.rooms, this.state.roomsFilterValue);
                 }
                 else {
                     rooms = this.state.rooms;
@@ -212,20 +236,48 @@ export default class Events extends BaseComponent {
 
                 const inputLabelProps = { shrink: true, };
 
+                console.log('q');
+                console.log(rooms);
+                console.log(rooms);
+                console.log('q', rooms.constructor);
+
+                rooms.map(room => {
+                    switch(room.number) {
+                        case 400:
+                            console.log('case', room.number);
+                            console.log(JSON.stringify(room.events));
+                            break;
+                    }
+
+                });
+
+                const loopRooms = (rooms) => {
+                    const list = [];
+                    rooms.forEach(room => {
+                        list.push(
+                            <Grid key={room._id} item {...breakPoints}>
+                                <RoomEvents date={this.state.selectedDate} stepMinutes={this.stepMinutes} timeLine={this.timeLine} room={room}/>
+                            </Grid>
+                        );
+                    });
+                    return list;
+                };
+
+
                 component = (
                     <>
                         <Grid container className="filter" justify="center" spacing={4}>
                             <Grid item xs={6} >
-                                <RoomFilter applyFilter={this.applyRoomFilter}
+                                <RoomFilter applyFilter={this.applyRoomFilterValue}
                                     handleChange={this.handleRoomsFilterChange}
-                                value={this.state.roomsFilter}/>
+                                value={this.state.roomsFilterValue}/>
                             </Grid>
                             <Grid item xs={6}>
                                 <MuiPickersUtilsProvider utils={DateUtils}>
                                     <KeyboardDatePicker
                                         id="date-dialog"
                                         label="Date"
-                                        format="DD/MM/YYYY"
+                                        format="YYYY/MM/DD"
                                         InputLabelProps={inputLabelProps}
                                         value={this.state.selectedDate}
                                         onChange={this.handleDateChange}
@@ -242,11 +294,7 @@ export default class Events extends BaseComponent {
                             </div>
                         )}
                         <Grid container className="roomEvents" spacing={spacing} ref={this.roomEventsRef}>
-                        {rooms.map((room, index) => (
-                            <Grid key={room._id} item {...breakPoints}>
-                                <RoomEvents timeLine={this.timeLine} room={room}/>
-                            </Grid>
-                        ))}
+                            {loopRooms(rooms)}
                         </Grid>
                     </>
                 );
@@ -285,8 +333,8 @@ class RoomFilter extends React.Component {
             type: 'text',
         };
         return (
-            <div className="roomsFilterWrapper">
-                <TextField label="Room" inputProps={inputProps} InputLabelProps={inputLabelProps} id="roomsFilter"
+            <div className="roomsFilterValueWrapper">
+                <TextField label="Room" inputProps={inputProps} InputLabelProps={inputLabelProps} id="roomsFilterValue"
                 onChange={this.handleChange}
                 value={this.state.value} />
             </div>

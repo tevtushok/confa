@@ -99,6 +99,15 @@ $reservedColor: #CC3333;
             overflow: hidden;
             display: flex;
             flex: 1;
+            span {
+                color: inherit;
+                text-shadow: none;
+                transition: color .3s, text-shadow .3s;
+            }
+            &.loading span {
+                color: transparent;
+                text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            }
         }
         .timeButtons {
             display: flex;

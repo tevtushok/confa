@@ -27,42 +27,99 @@ class RoomEvents extends React.Component {
 
     constructor(props) {
         super(props);
-        this.room = this.props.room;
-        this.events = this.props.room.events;
-        this.roomHasEvents = Array.isArray(this.events) && this.events.length;
+
+        this.state = {
+            redirectToAdd: null,
+        };
+
+        this.room = props.room;
+        this.timeLineData = this.props.timeLine;
+
+        this.stepMinutes = this.props.stepMinutes;
+
+        this.date = this.props.date;
 
         this.timeLineRef = React.createRef();
-        this.timeLineData = this.props.timeLine;
 
         this.nowIndex = this.timeLineData.nowIndex;
         this.nowLabel = this.timeLineData.nowLabel;
 
-        this.timeLine = {};
-        this.prepTimeLine();
+        this.timeLine = this.prepTimeLine(this.room.events);
 
         // select current time
         this.selectedTime = this.timeLine[this.nowLabel];
         this.nowIndex -= 1;
         this.firstVisibleTimeIndex = this.nowIndex;
 
-        this.state = {
-            redirectToAdd: null,
-        }
+        this.initTimeData();
+    }
 
+    initTimeData() {
         this.timeData = {
             timeIndex1: NaN,
             timeIndex2: NaN,
         };
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        console.warn('shouldComponentUpdate', JSON.stringify(nextProps));
+        console.log(nextProps.room, this.props.room);
+        console.warn('');
+        if (this.props.room.events.length !== nextProps.room.events.length) {
+            let ids = this.props.room.events.map(event => event._id).join(',');
+            let newIds = nextProps.room.events.map(event => event._id).join(',');
+            const shouldUpdate = (ids !== newIds);
+            if (shouldUpdate) {
+                this.onDataChange(nextProps);
+            }
+            return shouldUpdate;
+        }
+        if (this.props.date !== nextProps.date) {
+            this.onDataChange(nextProps);
+            return true;
+        }
+        return false;
+    }
+
+    onDataChange = (nextProps) => {
+        this.date = nextProps.date;
+        this.timeLine = this.prepTimeLine(nextProps.room.events);
+        this.timeLineData = nextProps.timeLine;
+        this.selectedTime = this.timeLine[this.nowLabel];
+        this.initTimeData();
+        this.resetSelections();
+    }
+
+    resetSelections() {
+        this.setIntermediate();
+        const buttons = this.timeLineRef.current.querySelectorAll('.selected, .postData');
+        if (buttons) {
+            buttons.forEach(button => {
+                button.classList.remove('selected');
+                button.classList.remove('postData');
+            });
+        }
+    }
+
     componentDidMount() {
         this.resizeTimeButtons();
         this.setTimeLineLeft();
-        window.addEventListener('resize', this.resizeTimeButtons);
+
+        const timeButtons = this.timeLineRef.current.querySelector('.buttonsWrapper');
+        setTimeout(() => {
+            timeButtons.classList.remove('loading');
+        },0);
+
+        window.addEventListener('resize', this.onRezise);
     }
 
+    onRezise = () => {
+        this.resizeTimeButtons();
+        this.setTimeLineLeft();
+    };
+
     componentWillUnmount() {
-        window.removeEventListener('resize', this.resizeTimeButtons);
+        window.removeEventListener('resize', this.onRezise);
     }
 
     getTimeButtonWidth = () => {
@@ -94,7 +151,6 @@ class RoomEvents extends React.Component {
             item.style.maxWidth = buttonWidth + 'px';
             item.style.width = buttonWidth + 'px';
         });
-        this.setTimeLineLeft();
     };
 
     scroll = (toRight = true) => {
@@ -146,20 +202,20 @@ class RoomEvents extends React.Component {
         this.scroll(false);
     }
 
-    prepTimeLine() {
-        this.timeLine = {};
+    prepTimeLine(events = []) {
+        let timeLine = {};
         this.timeLineData.items.forEach(item => {
             let status = STATUSES.AVAILABLE;
             let crossedOrPengingEvent = null;
-            if (this.roomHasEvents) {
-                this.events.some(event => {
+            if (events.length) {
+                events.some(event => {
                     status = this.getStatus(item.date, event);
                     crossedOrPengingEvent = event;
                     return STATUSES.AVAILABLE !== status;
                 });
             }
             const selected = this.nowLabel === item.label;
-            this.timeLine[item.label] = {
+            timeLine[item.label] = {
                 label: item.label,
                 date: item.date,
                 event: crossedOrPengingEvent,
@@ -168,6 +224,7 @@ class RoomEvents extends React.Component {
                 disabled: status !== STATUSES.AVAILABLE,
             };
         });
+        return timeLine;
     }
 
     handleTimeClick = (e) => {
@@ -181,45 +238,42 @@ class RoomEvents extends React.Component {
         this.changeTime(label);
     };
 
+    setIntermediate = () => {
+        this.timeLineRef.current.querySelectorAll('.timebtn').forEach((btn, index) => {
+            if (this.timeData.timeIndex1 && index >= this.timeData.timeIndex1
+                && this.timeData.timeIndex2 && index <= this.timeData.timeIndex2) {
+                btn.classList.add('intermediate');
+            }
+            else {
+                btn.classList.remove('intermediate');
+            }
+        });
+    };
+
     setTimeData(clickedBtn) {
         let status = clickedBtn.dataset.status
         let index = clickedBtn.dataset.index;
-        console.log(status, index);
         if (status !== STATUSES.AVAILABLE) {
             return;
         }
-        const setIntermediate = () => {
-            this.timeLineRef.current.querySelectorAll('.timebtn').forEach((btn, index) => {
-                if (index >= this.timeData.timeIndex1 && index <= this.timeData.timeIndex2) {
-                    btn.classList.add('intermediate');
-                }
-                else {
-                    btn.classList.remove('intermediate');
-                }
-            });
-        };
 
         if (index === this.timeData.timeIndex1) {
-            console.log(1);
             this.timeData.timeIndex1 = NaN;
             clickedBtn.classList.remove('postData');
         }
         else if (index === this.timeData.time2) {
-            console.log(11);
             this.timeData.timeIndex2 = NaN;
             clickedBtn.classList.remove('postData');
         }
 
         else if(isNaN(this.timeData.timeIndex1)) {
-            console.log(111);
             this.timeData.timeIndex1 = index;
             clickedBtn.classList.add('postData');
         }
         else if (isNaN(this.timeData.timeIndex2)) {
-            console.log(1111);
             this.timeData.timeIndex2 = index;
             clickedBtn.classList.add('postData');
-            setIntermediate();
+            this.setIntermediate();
         }
 
         else {
@@ -234,10 +288,8 @@ class RoomEvents extends React.Component {
             }
             prevBtn.classList.remove('postData');
             clickedBtn.classList.add('postData');
-            setIntermediate();
+            this.setIntermediate();
         }
-        console.log(clickedBtn);
-        console.log(this.timeData);
     }
 
     changeTime = (label) => {
@@ -264,14 +316,13 @@ class RoomEvents extends React.Component {
         let timeToCompare = dayjs(time).second(0).millisecond(0);
         let dateStart = dayjs(event.date_start).second(0).millisecond(0);
         let dateEnd = dayjs(event.date_end).second(0).millisecond(0);
-        let pendingTime = timeToCompare.add(30, 'minute');
 
         let isCrossed = timeToCompare >= dateStart && timeToCompare < dateEnd
         if (isCrossed) {
             return STATUSES.RESERVED;
         }
 
-        let isPending = timeToCompare >= dateStart.subtract(30, 'minute') && pendingTime < dateEnd.add(30, 'minute');
+        let isPending = timeToCompare >= dateStart.subtract(this.stepMinutes - 1, 'minute') && timeToCompare < dateEnd;
         if(isPending) {
             return STATUSES.PENDING;
         }
@@ -279,6 +330,7 @@ class RoomEvents extends React.Component {
         return STATUSES.AVAILABLE
     }
     render() {
+        console.warn('render', this.props.room.number, this.props.room.events.length);
         if (this.state.redirectToAdd) {
             return <Redirect to={this.state.redirectToAdd}/>
         }
@@ -339,7 +391,7 @@ class RoomEvents extends React.Component {
     }
 
     TimeLine() {
-        const buttonProps = (index, item) => {
+        const buttonProps = (item, index) => {
             const label = item.label;
             const status = this.timeLine[label]['status'];
             const className = `timebtn ${status} ${this.timeLine[label].className}`;
@@ -357,15 +409,20 @@ class RoomEvents extends React.Component {
             };
         };
 
+        console.log('');
+        console.log('');
+        console.log(this.room.number);
+        console.log(this.timeLine);
+
         return(
             <div ref={this.timeLineRef} className="timeline">
                 <Button className="prev" onClick={this.scrollToLeft}>
                     <ArrowLeftIcon/>
                 </Button>
-                <div className="buttonsWrapper">
+                <div className="buttonsWrapper loading">
                     <div className="timeButtons">
                         {this.timeLineData.items.map((item, index) => (
-                            <Button {...buttonProps(index, item)}>{item.label}</Button>
+                            <Button {...buttonProps(item, index)}>{item.label}</Button>
                         ))}
                     </div>
                 </div>

@@ -19,7 +19,7 @@ export default class SaveEvent extends BaseComponent {
 
     getPostData() {
         const dateStart = EventHelper.dateFormat(this.state.event.date_start);
-        const dateEnd = EventHelper.computeDateEnd(dateStart, this.state.event.duration);
+        const dateEnd = EventHelper.computeDateEnd(dateStart, parseInt(this.state.event.duration));
         const postData = {
             room: this.state.event.room._id,
             title: this.state.event.title,
@@ -152,6 +152,7 @@ export default class SaveEvent extends BaseComponent {
     }
 
     validateDuration = (duration = 0) => {
+        duration = parseInt(duration);
         const valid = Number.isInteger(duration) && duration > 0;
         return valid ? true : { message: 'Allowed only integers' };
     }
