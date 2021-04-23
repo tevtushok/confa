@@ -137,7 +137,7 @@ export default class Events extends BaseComponent {
         const timeLineLen = (60 / this.stepMinutes) * 24;
         let selectedDate = dayjs(this.state.selectedDate);
         let now = dayjs();
-        // now = now.hour(22);
+        // now = now.hour(1).minute(1);
         let timeLineDate = dayjs(selectedDate).hour(now.hour()).minute(now.minute()).second(0).millisecond(0);
 
         // for client last possible time button is 23:30
@@ -145,7 +145,7 @@ export default class Events extends BaseComponent {
             timeLineDate = timeLineDate.minute(30);
         }
         else {
-            timeLineDate = timeLineDate.minute(this.stepMinutes * (Math.round(timeLineDate.minute() / this.stepMinutes)));
+            timeLineDate = timeLineDate.minute(this.stepMinutes * (Math.ceil(timeLineDate.minute() / this.stepMinutes)));
         }
 
         let nowLabel = null;
@@ -228,7 +228,6 @@ export default class Events extends BaseComponent {
                     spacing = 0;
                 }
 
-                const inputLabelProps = { shrink: true, };
 
                 const loopRooms = (rooms) => {
                     const list = [];
@@ -252,19 +251,7 @@ export default class Events extends BaseComponent {
                                 value={this.state.roomsFilterValue}/>
                             </Grid>
                             <Grid item xs={6}>
-                                <MuiPickersUtilsProvider utils={DateUtils}>
-                                    <KeyboardDatePicker
-                                        id="date-dialog"
-                                        label="Date"
-                                        format="YYYY/MM/DD"
-                                        InputLabelProps={inputLabelProps}
-                                        value={this.state.selectedDate}
-                                        onChange={this.handleDateChange}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
+                                <EventsDatePicker selectedDate={this.state.selectedDate} applyDate={this.handleDateChange}/>
                             </Grid>
                         </Grid>
                         {!rooms.length && (
@@ -317,6 +304,40 @@ class RoomFilter extends React.Component {
                 onChange={this.handleChange}
                 value={this.state.value} />
             </div>
+        );
+    }
+}
+
+class EventsDatePicker extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { selectedDate: props.selectedDate };
+        this.timeout = null;
+        this.applyDate = props.applyDate;
+    }
+    handleChange = (date) => {
+        this.setState({ selectedDate: date });
+        setTimeout(() => {
+            clearTimeout(this.timeout);
+            this.applyDate(this.state.selectedDate);
+        }, 500);
+    }
+    render() {
+        const inputLabelProps = { shrink: true, };
+        return(
+            <MuiPickersUtilsProvider utils={DateUtils}>
+            <KeyboardDatePicker
+            id="date-dialog"
+            label="Date"
+            format="YYYY/MM/DD"
+            InputLabelProps={inputLabelProps}
+            value={this.state.selectedDate}
+            onChange={this.handleChange}
+            KeyboardButtonProps={{
+                'aria-label': 'change date',
+            }}
+            />
+            </MuiPickersUtilsProvider>
         );
     }
 }

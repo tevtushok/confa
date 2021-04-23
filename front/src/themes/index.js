@@ -19,6 +19,10 @@ export const theme = createMuiTheme({
       main: colors.green[700],
       contrastText: contrastText,
     },
+    error: {
+      main: colors.red[300],
+      contrastText: contrastText,
+    },
   },
   overrides: {
     MuiTypography: {
@@ -38,3 +42,14 @@ export const theme = createMuiTheme({
     }
   }
 });
+
+
+// primary.main
+// secondary.main
+// error.main
+// warning.main
+// info.main
+// success.main
+// text.primary
+// text.secondary
+// text.disabled

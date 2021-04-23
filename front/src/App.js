@@ -75,7 +75,6 @@ class App extends React.Component {
         const isLoggedIn = userStore.loggedIn;
         const isAdmin = userStore.isAdmin;
         let page = null;
-        console.log(appStore.page);
         switch(appStore.page) {
             case RENDERED_PAGES.LOADER:
                 page = <Bayan/>;

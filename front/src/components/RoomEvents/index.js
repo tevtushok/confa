@@ -48,10 +48,19 @@ class RoomEvents extends React.Component {
         this.timeLine = this.prepTimeLine(this.room.events);
 
         this.initTimeData();
-        this.setFirstVisibleIndex(this.timeLineData.nowIndex - 1);
     }
 
-    setFirstVisibleIndex(index) {
+    setFirstVisibleIndex(index = false) {
+        if (!index) {
+            index = this.timeLineData.nowIndex - 1;
+        }
+        if (index < 0) {
+            index = 0;
+        }
+        const buttonsCount = this.getVibisleTimeButtonsCount();
+        if (index > this.timeLineData.items.length - buttonsCount) {
+            index = this.timeLineData.items.length - buttonsCount - 1;
+        }
         this.firstVisibleTimeIndex = index;
     }
 
@@ -73,7 +82,7 @@ class RoomEvents extends React.Component {
             return shouldUpdate;
         }
 
-        if (this.props.date !== nextProps.date) {
+        if (dayjs(nextProps.date).isValid() && this.props.date !== nextProps.date) {
             this.onDataChange(nextProps);
             return true;
         }
@@ -104,18 +113,8 @@ class RoomEvents extends React.Component {
     }
 
     componentDidMount() {
+        this.setFirstVisibleIndex();
         this.resizeTimeButtons();
-        const buttonsCount = this.getVibisleTimeButtonsCount();
-        console.log('123123');
-        console.log('123123');
-        console.log('123123');
-        console.log(this.firstVisibleTimeIndex, buttonsCount, this.timeLineData.items.length - buttonsCount);
-        if (this.firstVisibleTimeIndex > this.timeLineData.items.length - buttonsCount) {
-            this.firstVisibleTimeIndex = this.timeLineData.items.length - buttonsCount - 1;
-        console.log('123123');
-        console.log('123123');
-        console.log('123123');
-        }
         this.setTimeLineLeft();
 
         const timeButtons = this.timeLineRef.current.querySelector('.buttonsWrapper');
@@ -143,7 +142,6 @@ class RoomEvents extends React.Component {
 
     getTimeButtonWidth = () => {
         const timeButtonsWidth = this.timeLineRef.current.querySelector('.buttonsWrapper').offsetWidth;
-        let timeline = this.timeLineRef.current;
         const buttonsCount = this.getVibisleTimeButtonsCount();
         let width = parseFloat(timeButtonsWidth / buttonsCount);
         return width;
@@ -152,11 +150,13 @@ class RoomEvents extends React.Component {
     setTimeLineLeft() {
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         let left = 0;
-        let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
-        [].some.call(buttons, (button, btnIndex) => {
-            left += button.offsetWidth;
-            return this.firstVisibleTimeIndex === btnIndex;
-        });
+        if (this.firstVisibleTimeIndex > 0) {
+            let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
+            [].some.call(buttons, (button, btnIndex) => {
+                left += button.offsetWidth;
+                return this.firstVisibleTimeIndex <= btnIndex;
+            });
+        }
 
         timeButtons.style.left = -left + 'px';
     }

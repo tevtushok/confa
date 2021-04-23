@@ -8,21 +8,17 @@ export default class Response {
         for(let key in response) {
             this[key] = response[key];
         }
-        console.log(this);
     }
 
     getApiCode() {
-        console.log('getApiCode', this.getNestedPropertyValue(this, 'data.code'));
         return parseInt(this.getNestedPropertyValue(this, 'data.code'));
     }
 
     getApiMessage() {
-        console.log('getApiMessage', this.getNestedPropertyValue(this, 'data.message'));
         return this.getNestedPropertyValue(this, 'data.message');
     }
 
     getApiData() {
-        console.log('getApiData', this.getNestedPropertyValue(this, 'data.data'));
         return this.getNestedPropertyValue(this, 'data.data');
     }
 
