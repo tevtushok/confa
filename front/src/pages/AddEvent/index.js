@@ -62,7 +62,6 @@ class AddEvent extends SaveEvent {
         let dateEnd = new Date();
 
         if (dateFrom.isValid()) {
-            alert(dateFrom);
             dateStart = dateFrom;
             event.date_start = EventHelper.dateFormat(dateStart);
 
