@@ -9,6 +9,13 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
+const rfs = require('rotating-file-stream');
+const path = require('path');
+const jwt = require('express-jwt');
+const { public_routes, jwt_algorithms } = require('../configs/config');
+const { errorHandler } = require('../includes/utils');
+
 
 
 const port = process.env.PORT || 4000;
@@ -54,6 +61,29 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // use cookie parser for secure httpOnly cookie
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+
+// create a rotating write stream
+const accessLogStream = rfs.createStream('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, '../logs')
+});
+
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }))
+
+// jwt autorization stored in client cookies
+app.use(
+    jwt({
+        secret: process.env.JWT_SECRET,
+        algorithms: jwt_algorithms,
+        credentialsRequired: true,
+        getToken: req => req.signedCookies.token,
+    }).unless({path: public_routes})
+);
+
+// global error handler
+app.use(errorHandler);
 
 // Set up routes
 let routes = require('../routes');
