@@ -16,7 +16,7 @@ export const theme = createMuiTheme({
       contrastText: contrastText,
     },
     secondary: {
-      main: colors.pink[600],
+      main: colors.green[700],
       contrastText: contrastText,
     },
   },

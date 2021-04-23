@@ -137,6 +137,7 @@ export default class Events extends BaseComponent {
         const timeLineLen = (60 / this.stepMinutes) * 24;
         let selectedDate = dayjs(this.state.selectedDate);
         let now = dayjs();
+        // now = now.hour(22);
         let timeLineDate = dayjs(selectedDate).hour(now.hour()).minute(now.minute()).second(0).millisecond(0);
 
         // for client last possible time button is 23:30
@@ -199,7 +200,6 @@ export default class Events extends BaseComponent {
     }
 
     render() {
-        console.info('render events page', this.state.renderState);
         let component = null;
         switch(this.state.renderState) {
             case RENDER_STATES.FAILURE:
@@ -212,11 +212,6 @@ export default class Events extends BaseComponent {
                 component = <NoRooms/>;
                     break;
             case RENDER_STATES.COMMON:
-                console.log('');
-                console.warn(this.state.rooms);
-                console.log(this.state.rooms);
-                console.log(this.state.rooms);
-                console.log('');
                 this.timeLine = this.getTimeLine();
                 let rooms = null;
                 if (this.state.roomsFilterValue.length) {
@@ -225,7 +220,6 @@ export default class Events extends BaseComponent {
                 else {
                     rooms = this.state.rooms;
                 }
-                console.warn('render', rooms);
                 let breakPoints = { xs: 12, sm: 12, md: 6, lg: 6, xl: 6, };
                 let spacing = 4;
 
@@ -235,21 +229,6 @@ export default class Events extends BaseComponent {
                 }
 
                 const inputLabelProps = { shrink: true, };
-
-                console.log('q');
-                console.log(rooms);
-                console.log(rooms);
-                console.log('q', rooms.constructor);
-
-                rooms.map(room => {
-                    switch(room.number) {
-                        case 400:
-                            console.log('case', room.number);
-                            console.log(JSON.stringify(room.events));
-                            break;
-                    }
-
-                });
 
                 const loopRooms = (rooms) => {
                     const list = [];
@@ -293,7 +272,7 @@ export default class Events extends BaseComponent {
                                 <h2>No rooms founded</h2>
                             </div>
                         )}
-                        <Grid container className="roomEvents" spacing={spacing} ref={this.roomEventsRef}>
+                        <Grid container className={`roomEvents roomsLen${rooms.length}`} spacing={spacing} ref={this.roomEventsRef}>
                             {loopRooms(rooms)}
                         </Grid>
                     </>

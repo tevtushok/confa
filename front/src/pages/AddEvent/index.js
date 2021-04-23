@@ -1,4 +1,5 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import { withRouter } from "react-router";
 import { Link as routerLink } from 'react-router-dom';
 import { Container, Link } from '@material-ui/core';
@@ -52,31 +53,24 @@ class AddEvent extends SaveEvent {
 
     getEventFromUrl(event = {}) {
         const roomId = this.props.match.params.roomId;
-        const timeFrom = this.props.match.params.from;
-        const timeTo = this.props.match.params.to;
+        const dateFrom = dayjs(this.props.match.params.from);
+        const dateTo = dayjs(this.props.match.params.to);
 
-        const parsedEvent = new Event({
-        });
         event.room = { _id: roomId, };
 
-        const dateStart = new Date();
-        const dateEnd = new Date();
+        let dateStart = new Date();
+        let dateEnd = new Date();
 
-        const regHHMM = /^\d\d:\d\d/g;
-
-        if (timeFrom && 0 === timeFrom.search(regHHMM)) {
-            dateStart.setHours(...timeFrom.split(':'));
-            dateStart.setSeconds(0, 0);
-
+        if (dateFrom.isValid()) {
+            alert(dateFrom);
+            dateStart = dateFrom;
             event.date_start = EventHelper.dateFormat(dateStart);
-        }
 
-        if (timeTo && 0 === timeTo.search(regHHMM)) {
-            dateEnd.setHours(...timeTo.split(':'));
-            dateEnd.setSeconds(0, 0);
-
-            event.date_end = EventHelper.dateFormat(dateEnd);
-            event.duration = EventHelper.computeDuration(dateStart, dateEnd);
+            if (dateTo.isValid()) {
+                dateEnd = dateTo;
+                event.date_end = EventHelper.dateFormat(dateEnd);
+                event.duration = EventHelper.computeDuration(dateStart, dateEnd);
+            }
         }
 
         return event;

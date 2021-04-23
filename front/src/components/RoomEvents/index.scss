@@ -1,4 +1,4 @@
-$availableColor: #5C7829;
+$availableColor: #388e3c;
 $pendingColor: #B7B327;
 $reservedColor: #CC3333;
 
@@ -173,27 +173,18 @@ $reservedColor: #CC3333;
         flex-direction: column;
         flex:1;
     }
-}
-
-
-.timeline .timebtn {
-    min-width: 72px;
-    width: 72px;
-    max-width: 72px;
-}
-
-@media (max-width: 960px) {
-    .timeline .timebtn {
-        width: auto;
-        max-width: none;
-        min-width: 27vh;
+    .addEventWrapper {
+        display: flex;
+        align-items: flex-end;
+        flex: 1;
     }
-}
 
-@media (max-width: 600px) {
     .timeline .timebtn {
         min-width: 72px;
         width: 72px;
         max-width: 72px;
     }
+
 }
+
+

@@ -5,17 +5,17 @@
     .filter {
         margin-bottom: 1rem;
     }
-    .roomsFilterWrapper {
+    .roomsFilterValueWrapper {
         display: flex;
-        justify-content: inherit;
+        justify-content: flex-end;
     }
-}
-
-@media (min-width: 960px) {
-    .events {
-        .roomsFilterWrapper {
-            display: flex;
-            justify-content: flex-end;
+    .roomEvents.roomsLen1 {
+        width: 100%;
+        margin: 0; 
+        .MuiGrid-item {
+            flex: 1;
+            padding: 0;
+            width: 100%;
         }
     }
 }

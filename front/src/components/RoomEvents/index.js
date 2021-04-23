@@ -27,31 +27,32 @@ class RoomEvents extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            redirectToAdd: null,
-        };
-
-        this.room = props.room;
-        this.timeLineData = this.props.timeLine;
+        this.timeLineRef = React.createRef();
 
         this.stepMinutes = this.props.stepMinutes;
 
-        this.date = this.props.date;
+        this.initDinamycProps(this.props);
 
-        this.timeLineRef = React.createRef();
+        this.state = {
+            redirectToAdd: null,
+            selectedTime: this.timeLine[this.nowLabel],
+        };
+    }
 
-        this.nowIndex = this.timeLineData.nowIndex;
+    initDinamycProps(props) {
+        this.date = props.date;
+        this.room = props.room;
+
+        this.timeLineData = props.timeLine;
         this.nowLabel = this.timeLineData.nowLabel;
-
         this.timeLine = this.prepTimeLine(this.room.events);
 
-        // select current time
-        this.selectedTime = this.timeLine[this.nowLabel];
-        this.nowIndex -= 1;
-        this.firstVisibleTimeIndex = this.nowIndex;
-
         this.initTimeData();
+        this.setFirstVisibleIndex(this.timeLineData.nowIndex - 1);
+    }
+
+    setFirstVisibleIndex(index) {
+        this.firstVisibleTimeIndex = index;
     }
 
     initTimeData() {
@@ -62,9 +63,6 @@ class RoomEvents extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.warn('shouldComponentUpdate', JSON.stringify(nextProps));
-        console.log(nextProps.room, this.props.room);
-        console.warn('');
         if (this.props.room.events.length !== nextProps.room.events.length) {
             let ids = this.props.room.events.map(event => event._id).join(',');
             let newIds = nextProps.room.events.map(event => event._id).join(',');
@@ -74,20 +72,24 @@ class RoomEvents extends React.Component {
             }
             return shouldUpdate;
         }
+
         if (this.props.date !== nextProps.date) {
             this.onDataChange(nextProps);
             return true;
         }
-        return false;
+
+        if (this.state.selectedTime.label !== nextState.selectedTime.label) {
+            return true;
+        }
+
+        return true;
     }
 
     onDataChange = (nextProps) => {
-        this.date = nextProps.date;
-        this.timeLine = this.prepTimeLine(nextProps.room.events);
-        this.timeLineData = nextProps.timeLine;
-        this.selectedTime = this.timeLine[this.nowLabel];
-        this.initTimeData();
-        this.resetSelections();
+        this.initDinamycProps(nextProps);
+        this.setState({ selectedTime: this.timeLine[this.nowLabel] });
+        this.resetSelections();// reset current selections
+        this.setTimeLineLeft();
     }
 
     resetSelections() {
@@ -103,6 +105,17 @@ class RoomEvents extends React.Component {
 
     componentDidMount() {
         this.resizeTimeButtons();
+        const buttonsCount = this.getVibisleTimeButtonsCount();
+        console.log('123123');
+        console.log('123123');
+        console.log('123123');
+        console.log(this.firstVisibleTimeIndex, buttonsCount, this.timeLineData.items.length - buttonsCount);
+        if (this.firstVisibleTimeIndex > this.timeLineData.items.length - buttonsCount) {
+            this.firstVisibleTimeIndex = this.timeLineData.items.length - buttonsCount - 1;
+        console.log('123123');
+        console.log('123123');
+        console.log('123123');
+        }
         this.setTimeLineLeft();
 
         const timeButtons = this.timeLineRef.current.querySelector('.buttonsWrapper');
@@ -122,17 +135,21 @@ class RoomEvents extends React.Component {
         window.removeEventListener('resize', this.onRezise);
     }
 
+    getVibisleTimeButtonsCount() {
+        const timeButtonsWidth = this.timeLineRef.current.querySelector('.buttonsWrapper').offsetWidth;
+        const count = 1 + parseInt(timeButtonsWidth / 100);
+        return count;
+    }
+
     getTimeButtonWidth = () => {
+        const timeButtonsWidth = this.timeLineRef.current.querySelector('.buttonsWrapper').offsetWidth;
         let timeline = this.timeLineRef.current;
-        let timeButtonsWidth = timeline.querySelector('.buttonsWrapper').offsetWidth;
-
-        const buttonsCount = 1 + parseInt(timeButtonsWidth / 100);
-
+        const buttonsCount = this.getVibisleTimeButtonsCount();
         let width = parseFloat(timeButtonsWidth / buttonsCount);
         return width;
     };
 
-    setTimeLineLeft(buttonWidth = null) {
+    setTimeLineLeft() {
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         let left = 0;
         let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
@@ -154,7 +171,7 @@ class RoomEvents extends React.Component {
     };
 
     scroll = (toRight = true) => {
-        const fromTime = this.selectedTime.label;
+        const fromTime = this.state.selectedTime.label;
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         const buttonsWrapper = this.timeLineRef.current.querySelector('.buttonsWrapper');
         const prevBtn = this.timeLineRef.current.querySelector('.prev');
@@ -228,12 +245,8 @@ class RoomEvents extends React.Component {
     }
 
     handleTimeClick = (e) => {
-        const selected = this.timeLineRef.current.querySelector('.selected');
-        if (selected) {
-            selected.classList.remove('selected');
-        }
+        e.currentTarget.classList.toggle('selected');
         const label = e.currentTarget.dataset.label;
-        e.currentTarget.classList.add('selected');
         this.setTimeData(e.currentTarget);
         this.changeTime(label);
     };
@@ -259,10 +272,12 @@ class RoomEvents extends React.Component {
 
         if (index === this.timeData.timeIndex1) {
             this.timeData.timeIndex1 = NaN;
+            console.log('index === index1');
             clickedBtn.classList.remove('postData');
         }
-        else if (index === this.timeData.time2) {
+        else if (index === this.timeData.timeIndex2) {
             this.timeData.timeIndex2 = NaN;
+            console.log('index === index2');
             clickedBtn.classList.remove('postData');
         }
 
@@ -273,7 +288,6 @@ class RoomEvents extends React.Component {
         else if (isNaN(this.timeData.timeIndex2)) {
             this.timeData.timeIndex2 = index;
             clickedBtn.classList.add('postData');
-            this.setIntermediate();
         }
 
         else {
@@ -288,13 +302,12 @@ class RoomEvents extends React.Component {
             }
             prevBtn.classList.remove('postData');
             clickedBtn.classList.add('postData');
-            this.setIntermediate();
         }
+        this.setIntermediate();
     }
 
     changeTime = (label) => {
-        this.selectedTime = this.timeLine[label];
-        this.setState({ selectedTime: this.selectedTime });
+        this.setState({ selectedTime: this.timeLine[label] });
     }
 
     isReservedByMe(event) {
@@ -306,7 +319,9 @@ class RoomEvents extends React.Component {
         let args = [ this.room._id];
         const timeIndexes = Object.values(this.timeData).filter(time => time);
         timeIndexes.forEach(index => {
-            args.push(this.timeLineData.items[index].label);
+            args.push(
+                dayjs(`${dayjs(this.date).format('YYYY-MM-DD')} ${this.timeLineData.items[index].label}`).format('YYYY-MM-DDTHH:mm')
+            );
         });
         const link = '/events/add/' + args.join('/');
         this.setState({ redirectToAdd: link });
@@ -330,65 +345,19 @@ class RoomEvents extends React.Component {
         return STATUSES.AVAILABLE
     }
     render() {
-        console.warn('render', this.props.room.number, this.props.room.events.length);
         if (this.state.redirectToAdd) {
             return <Redirect to={this.state.redirectToAdd}/>
         }
         return (
             <div className={`roomEvents mdc-theme--primary-bg`}>
                 <div className="baseWrapper">
-                    {this.EventDetails()}
+                    <EventDetails onSubmit={this.handleAddEvent} room={this.room} selectedTime={this.state.selectedTime} />
                     {this.TimeLine()}
                 </div>
             </div>
         );
     }
 
-    EventDetails() {
-        const room = this.room;
-        let selectedTime = this.selectedTime;
-        const status = selectedTime.status;
-        const renderEventInfo = () => {
-            switch(status) {
-                case STATUSES.PENDING:
-                    return (
-                        <div className="pengindEvent">
-                            <div>Event is comming soon</div>
-                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
-                            <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
-                        </div>
-                    );
-                case STATUSES.RESERVED:
-                    return (
-                        <div className="roomReserved">
-                            <div>Room is reserved</div>
-                            <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
-                            <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
-                        </div>
-                    );
-                default:
-                    return '';
-            }
-        };
-        return(
-            <div className="infoWrapper">
-                <div className={`statusBar ${status}`}></div>
-                <div className="detailsWrapper">
-                    <div className="details">
-                        <div className="number">Number: <strong>{room.number}</strong></div>
-                        <div className="title">Title: <strong>{room.title}</strong></div>
-                        <div className="status">Status: {status}</div>
-                    </div>
-                    {renderEventInfo()}
-                    {status === STATUSES.AVAILABLE && (
-                    <div className="addEventWrapper">
-                        <Button onClick={this.handleAddEvent} variant="contained" color="primary" fullWidth type="submit" className="addEvent">Add event</Button>
-                    </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
 
     TimeLine() {
         const buttonProps = (item, index) => {
@@ -409,11 +378,6 @@ class RoomEvents extends React.Component {
             };
         };
 
-        console.log('');
-        console.log('');
-        console.log(this.room.number);
-        console.log(this.timeLine);
-
         return(
             <div ref={this.timeLineRef} className="timeline">
                 <Button className="prev" onClick={this.scrollToLeft}>
@@ -433,4 +397,54 @@ class RoomEvents extends React.Component {
         );
     }
 }
+
+function EventDetails(props) {
+    console.log('EventDetails render');
+    const room = props.room;
+    const selectedTime = props.selectedTime;
+
+    const status = selectedTime.status;
+
+    const renderEventInfo = () => {
+        switch(status) {
+            case STATUSES.PENDING:
+                return (
+                    <div className="pengindEvent">
+                    <div>Event is comming soon</div>
+                    <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
+                    <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
+                    </div>
+                );
+            case STATUSES.RESERVED:
+                return (
+                    <div className="roomReserved">
+                    <div>Room is reserved</div>
+                    <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
+                    <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
+                    </div>
+                );
+            default:
+                return '';
+        }
+    };
+    return(
+        <div className="infoWrapper">
+            <div className={`statusBar ${status}`}></div>
+            <div className="detailsWrapper">
+            <div className="details">
+            <div className="number">Number: <strong>{room.number}</strong></div>
+            <div className="title">Title: <strong>{room.title}</strong></div>
+            <div className="status">Status: {status}</div>
+            </div>
+            {renderEventInfo()}
+            {status === STATUSES.AVAILABLE && (
+                <div className="addEventWrapper">
+                <Button onClick={props.onSubmit} variant="contained" color="secondary" size="medium" fullWidth type="submit" className="addEvent">Add event</Button>
+                </div>
+            )}
+            </div>
+        </div>
+    );
+}
+
 export default RoomEvents;
