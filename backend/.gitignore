@@ -11,6 +11,7 @@
 # logs 
 /logs
 
+
 # temp files
 temp*
 
@@ -25,6 +26,8 @@ temp*
 # misc
 .DS_Store
 .env.local
+.env
+.env.test
 .env.development.local
 .env.test.local
 .env.production.local
