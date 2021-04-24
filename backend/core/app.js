@@ -16,21 +16,9 @@ const jwt = require('express-jwt');
 const { public_routes, jwt_algorithms } = require('../configs/config');
 const { errorHandler } = require('../includes/utils');
 
-
-
 const port = process.env.PORT || 4000;
 const host = process.env.HOST || 'localhost';
 const app = express();
-
-
-const info = [
-    `Platform: ${process.platform}`,
-    `Node version: ${process.version}`,
-];
-require('child_process').exec('npm -v mongoose', function(err, stdout, stderr) {
-    info.push('Mongoose version:', stdout.trim());
-    console.log(info.join('; '));
-});
 
 //mongoose.Promise = global.Promise;
 mongoose.connect(
@@ -43,14 +31,17 @@ mongoose.connect(
         }
         const admin = new mongoose.mongo.Admin(mongoose.connection.db);
         admin.buildInfo(function (err, info) {
-            console.log('connected to mongodb ' + info.version);
+            console.log('Connected to mongodb server ' + info.version);
         });
     });
 
 // enable CORS
 app.use(cors({
-    origin: process.env.CORS_ORIGIN, // front-end url
-    credentials: true, // for secure httpOnly cookie
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
 }));
 
 // parse application/json
@@ -62,6 +53,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 // use cookie parser for secure httpOnly cookie
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
+
+// app.all('*', (req, res, next) => {
+//     console.log(req.headers);
+//     next();
+// });
 
 // create a rotating write stream
 const accessLogStream = rfs.createStream('access.log', {
@@ -78,7 +74,7 @@ app.use(
         secret: process.env.JWT_SECRET,
         algorithms: jwt_algorithms,
         credentialsRequired: true,
-        getToken: req => req.signedCookies.token,
+        getToken: req => req.headers.token,
     }).unless({path: public_routes})
 );
 
@@ -89,9 +85,17 @@ app.use(errorHandler);
 let routes = require('../routes');
 routes.init(app);
 
-app.listen(port, function () {
-    console.log('Express server listening on - http://' +
-        host + ':' + port);
+app.listen(port, async function () {
+    const mongoV = await require('child_process').exec('npm -v mongoose')
+    require('child_process').exec('npm -v mongoose', function(err, stdout, stderr) {
+        const info = [
+            `Express server listening on - http://${host}:${port}`,
+            `Platform: ${process.platform}`,
+            `Node version: ${process.version}`,
+        ];
+        info.push('mongoose v' + stdout.trim());
+        console.log(info.join(' '));
+    });
 });
 
 module.exports = app;

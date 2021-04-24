@@ -53,14 +53,16 @@ module.exports.login = (req, res, next) => {
             isAdmin: user.isAdmin
 		};
 		const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
-		// save token to client cookies
-		res.cookie('token', token, cookie_options);
+
+		// // save token to client cookies
+		// res.cookie('token', token, cookie_options);
 
         const ret = {'user': {
             id: user.id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
+            token: token,
         }};
 
 		return jsonResponse(req, res, 201, SUCCESS, ret, 'Logged in');
