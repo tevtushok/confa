@@ -25,6 +25,7 @@ temp*
 
 # .env 
 *.env
+.env.test
 
 npm-debug.log*
 yarn-debug.log*
