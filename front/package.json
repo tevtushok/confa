@@ -2,7 +2,6 @@
   "name": "front",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:4000",
   "homepage": "./",
   "dependencies": {
     "@babel/core": "7.9.0",
@@ -47,7 +46,7 @@
     "jest-environment-jsdom-fourteen": "1.0.1",
     "jest-resolve": "24.9.0",
     "jest-watch-typeahead": "0.4.2",
-    "memoize-one": "^5.1.1",
+    "memoize-one": "^5.2.1",
     "mini-css-extract-plugin": "0.9.0",
     "mobx": "^5.15.6",
     "mobx-persist": "^0.4.1",

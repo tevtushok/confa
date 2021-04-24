@@ -29,8 +29,6 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { theme } from './themes/';
 
-
-
 import './App.scss'
 
 
@@ -42,6 +40,7 @@ class App extends React.Component {
         const appStore = this.props.appStore;
         const userStore = this.props.userStore;
         if (!appStore.isOnLine()) {
+            console.log(111);
             appStore.setPage(RENDERED_PAGES.OFFLINE);
             return;
         }
@@ -49,6 +48,8 @@ class App extends React.Component {
         const auth = await authApi.verify();
         const apiData = auth.response.getApiData();
         if (auth.error) {
+            console.log(auth.error);
+            console.log(222);
             if (auth.response.status !== 403) {
                 appStore.setErrorMessage('Server error')
                 appStore.setPage(RENDERED_PAGES.ERROR);
@@ -57,18 +58,25 @@ class App extends React.Component {
             }
         }
         else {
+            console.log(333);
             if (!apiData.user) {
+                console.log(33344);
                 appStore.setErrorMessage('Server error')
                 appStore.setPage(RENDERED_PAGES.ERROR);
                 console.log('invalid response');
                 return;
             }
-            userStore.setUser(apiData.user);
+            else {
+                userStore.setLoggedIn(true);
+                console.log(44411111);
+            }
         }
+            console.log(444);
         appStore.setPage(RENDERED_PAGES.COMMON);
     }
 
     render() {
+        console.info('App render', this.props.appStore.page);
         const appStore = this.props.appStore;
         const userStore = this.props.userStore;
 
