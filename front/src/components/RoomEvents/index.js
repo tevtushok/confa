@@ -348,6 +348,7 @@ class RoomEvents extends React.Component {
         if (this.state.redirectToAdd) {
             return <Redirect to={this.state.redirectToAdd}/>
         }
+        console.info('  render RoomEvents room:', this.room.number);
         return (
             <div className={`roomEvents mdc-theme--primary-bg`}>
                 <div className="baseWrapper">

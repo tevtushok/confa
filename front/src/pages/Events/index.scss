@@ -1,7 +1,11 @@
-.events {
-    .roomsList {
-        margin:0;
+.events.update {
+    .roomEvents {
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
     }
+}
+.events {
     .filter {
         margin-bottom: 1rem;
     }

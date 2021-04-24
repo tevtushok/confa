@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import memoize from "memoize-one";
+import memoize from 'memoize-one';
 import {
     Grid,
     Container,
@@ -27,7 +27,7 @@ import roomsApi from '../../services/roomsApi'
 
 import './index.scss';
 
-const RENDER_STATES = { ...BASE_RENDER_STATES, NO_ROOMS: 'NO_ROOMS', };
+const RENDER_STATES = { ...BASE_RENDER_STATES, NO_ROOMS: 'NO_ROOMS', UPDATE: 'UPDATE' };
 
 
 export default class Events extends BaseComponent {
@@ -44,6 +44,7 @@ export default class Events extends BaseComponent {
             roomsFilterValue: '',
         };
 
+        this.prevRoomList = null;
 
         this.roomEventsRef = React.createRef();
     }
@@ -190,7 +191,7 @@ export default class Events extends BaseComponent {
     }
 
     handleDateChange = async(date) => {
-        this.setState({ selectedDate: date, isLoading: true });
+        this.setState({ selectedDate: date, isLoading: true, renderState: RENDER_STATES.UPDATE});
         const newStateOpts = await this.loadRoomsWithEventsOfDay(date);
         this.setState({
             rooms: newStateOpts.rooms,
@@ -200,6 +201,7 @@ export default class Events extends BaseComponent {
     }
 
     render() {
+        console.info(' Events page render', this.state.renderState);
         let component = null;
         switch(this.state.renderState) {
             case RENDER_STATES.FAILURE:
@@ -207,6 +209,9 @@ export default class Events extends BaseComponent {
                 break;
             case RENDER_STATES.INIT:
                 component = <Bayan/>;
+                break;
+            case RENDER_STATES.UPDATE:
+                component = this.prevRoomList;
                 break;
             case RENDER_STATES.NO_ROOMS:
                 component = <NoRooms/>;
@@ -241,7 +246,6 @@ export default class Events extends BaseComponent {
                     return list;
                 };
 
-
                 component = (
                     <>
                         <Grid container className="filter" justify="center" spacing={4}>
@@ -264,6 +268,7 @@ export default class Events extends BaseComponent {
                         </Grid>
                     </>
                 );
+                this.prevRoomList = component;
                 break;
             default:
                 component = <AppError/>;
