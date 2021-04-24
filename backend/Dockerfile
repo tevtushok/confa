@@ -1,4 +1,4 @@
-FROM node:14
+FROM nodejs
 
 # Create app directory
 WORKDIR /usr/src/app
