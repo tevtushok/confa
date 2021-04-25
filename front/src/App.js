@@ -32,7 +32,7 @@ import { theme } from './themes/';
 import './App.scss'
 
 
-@inject("userStore", "appStore")
+@inject('userStore', 'appStore')
 @withRouter
 @observer
 class App extends React.Component {
@@ -48,8 +48,6 @@ class App extends React.Component {
         const auth = await authApi.verify();
         const apiData = auth.response.getApiData();
         if (auth.error) {
-            console.log(auth.error);
-            console.log(222);
             if (auth.response.status !== 403) {
                 appStore.setErrorMessage('Server error')
                 appStore.setPage(RENDERED_PAGES.ERROR);
@@ -71,19 +69,18 @@ class App extends React.Component {
                 console.log(44411111);
             }
         }
-            console.log(444);
-        appStore.setPage(RENDERED_PAGES.COMMON);
+        console.log(444);
+        this.props.appStore.setPage(RENDERED_PAGES.COMMON);
     }
 
     render() {
         console.info('App render', this.props.appStore.page);
-        const appStore = this.props.appStore;
         const userStore = this.props.userStore;
 
         const isLoggedIn = userStore.loggedIn;
         const isAdmin = userStore.isAdmin;
         let page = null;
-        switch(appStore.page) {
+        switch(this.props.appStore.page) {
             case RENDERED_PAGES.LOADER:
                 page = <Bayan/>;
                 break;
@@ -96,8 +93,8 @@ class App extends React.Component {
             case RENDERED_PAGES.COMMON:
                 page = (
                     <Switch>
-                    <Route path="/login" component={Login} exact/>
-                    <Route path="/register" component={Register} exact/>
+                    <Route path="/login" component={Login}/>
+                    <Route path="/register" component={Register}/>
 
                     <PrivateRoute path="/events" exact component={Events} isLoggedIn={userStore.isLoggedIn}/>
                     <PrivateRoute path="/events/add/:roomId?/:from?/:to?" component={AddEvent} isLoggedIn={userStore.isLoggedIn}/>

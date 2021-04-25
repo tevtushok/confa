@@ -1,9 +1,12 @@
-import { observable, action } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 
 import { RENDERED_PAGES } from '../includes/app';
 
 
 class AppStore {
+    constructor() {
+        makeObservable(this);
+    }
     @observable appLoaded = false;
     @action setAppLoaded(flag = true) {
         this.appLoaded = flag;

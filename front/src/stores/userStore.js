@@ -1,10 +1,9 @@
-import { observable, action } from 'mobx';
+import { makeObservable, observable, action } from 'mobx';
 
 class UserStore {
     constructor() {
         this._user = this.parseLocalStorage();
-        console.log(this._user);
-        console.log(this._user);
+        makeObservable(this);
     }
 
     parseLocalStorage() {
