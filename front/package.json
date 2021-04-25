@@ -12,7 +12,6 @@
     "axios": "^0.21.1",
     "dayjs": "^1.10.4",
     "dotenv": "8.2.0",
-    "history": "^5.0.0",
     "memoize-one": "^5.2.1",
     "mobx": "^6.3.0",
     "mobx-react": "^7.1.0",
