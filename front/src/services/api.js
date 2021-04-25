@@ -24,20 +24,15 @@ axiosInstance.interceptors.response.use(
 function successHandler(res) {
     const response = new Response(res);
     if (!response.hasValidApiResponse()) {
-        throw new ApiDataTypeError('Invalid response from server.');
+        const error = ApiDataTypeError('Invalid response from server');
+        return Promise.reject( { error: error, response: response, });
     }
-    return {
-        error: false,
-        response: response,
-    };
+    return Promise.resolve({ error: false, response: response, });
 }
 
 function errorHandler(error) {
     const response = new Response(error.response);
-    return {
-        error: error,
-        response: response,
-    }
+    return Promise.reject( { error: error, response: response, });
 }
 
 class Api {

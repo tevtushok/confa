@@ -13,6 +13,7 @@ const emailRegExp = RegExp(
 )
 
 @inject('userStore')
+@inject('appStore')
 class Login extends React.Component {
 	constructor(props) {
 		super(props);
@@ -27,34 +28,34 @@ class Login extends React.Component {
 
 	onSubmit = async (e) => {
 		e.preventDefault();
+        console.log('onSubmit', 123);
 		this.setState({serviceMsg: ''});
 		this.validateEmail(this.state.email);
 		this.validatePassword(this.state.password);
 		if (!Object.keys(this.state.errors).length) {
 			this.setState({isLoading: true});
             authApi.login(this.state.email, this.state.password)
-                .then((auth) => {
-                    this.setState({isLoading: false});
-                    const apiMessage = auth.response.getApiMessage();
-                    const apiData = auth.response.getApiData();
-                    const apiCode = auth.response.getApiCode();
+                .then(({ response }) => {
+                    const apiData = response.getApiData();
+                    this.props.userStore.setUser(apiData.user);
+                    this.props.appStore.setToken(apiData.user.token);
+                })
+                .catch(({ error, response }) => {
+                    const apiMessage = response.getApiMessage();
+                    const apiData = response.getApiData();
+                    const apiCode = response.getApiCode();
                     switch(apiCode) {
-                        case 0:
-                            this.props.userStore.pullUser(apiData.user);
-                            break;
                         case CODES.AUTH.INVALID_CREDENTIALS:
                         case CODES.AUTH.EMPTY_CREDENTIALS:
                             this.setState({serviceMsg: 'Invalid credentials'})
                             break;
                         default:
-                            console.log('default case', auth.response.statusText, apiMessage);
-                            const message = apiMessage ? apiMessage : auth.response.statusText;
+                            console.log('default case', response.statusText, apiMessage);
+                            const message = apiMessage ? apiMessage : response.statusText;
                             this.setState({serviceMsg: message})
                     }
-                })
-                .catch(err => {
-                    console.log('catch error', err.response.getApiMessage(), err.response.statusText);
-                    this.setState({serviceMsg: 'Server error'});
+                }).finally(() => {
+                    this.setState({isLoading: false});
                 });
 		}
 	};
@@ -98,10 +99,11 @@ class Login extends React.Component {
 	}
 
 	render() {
+        console.log('Login page render', 'isLoading', this.props.userStore.isLoggedIn);
 		if (this.props.userStore.isLoggedIn) {
-			return (
-				<Redirect to="/"/>
-			);
+            return (
+                <Redirect to="/"/>
+            );
 		}
 		const { errors } = this.state;
 		const { serviceMsg } = this.state;

@@ -1,20 +1,41 @@
 import { makeObservable, observable, action } from 'mobx';
 
-import { RENDERED_PAGES } from '../includes/app';
+export const RENDER_STATES = {
+    'LOADER': 'LOADER',
+    'OFFLINE': 'OFFLINE',
+    'ERROR': 'ERROR',
+    'COMMON': 'COMMON',
+};
 
 
 class AppStore {
     constructor() {
+        window.addEventListener('online', () => {
+            console.log('this.isOnline: true');
+            this.isOnline = true;
+        });
+        window.addEventListener('offline', () => {
+            console.log('this.isOnline: false');
+            this.isOnline = false;
+        });
         makeObservable(this);
     }
-    @observable appLoaded = false;
-    @action setAppLoaded(flag = true) {
-        this.appLoaded = flag;
+    @observable isOnline = window.navigator.onLine
+
+    @observable token = window.localStorage.getItem('token');
+    @action setToken(token) {
+        this.token = token;
+        window.localStorage.setItem('token', token);
     }
 
-    @observable page = RENDERED_PAGES.LOADER;
-    @action setPage(pageCode) {
-        this.page = pageCode;
+    @action unsetToken() {
+        this.token = undefined;
+        window.localStorage.removeItem('token');
+    }
+
+    @observable renderState = RENDER_STATES.LOADER;
+    @action setRenderState(value) {
+        this.renderState = value;
     }
 
     @observable errorMessage = '';
@@ -23,15 +44,6 @@ class AppStore {
     }
     getErrorMessage() {
         return this.errorMessage;
-    }
-
-    isOnLine() {
-        return window.navigator.onLine;
-    }
-
-    @observable counter = 0;
-    @action increment() {
-        this.counter += 1;
     }
 }
 

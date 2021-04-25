@@ -87,7 +87,6 @@ class DeleteEvent extends SaveEvent {
                 component = <EventDeleted/>;
                 break;
             case RENDER_STATES.COMMON:
-                console.info('MIKE OLLDFIELLD');
                 console.log(this.state.event);
                 component = <DeleteComfirm handleDeleteEvent={this.handleDeleteEvent} isLoading={this.state.isLoading} event={this.state.event}/>;
                 break;

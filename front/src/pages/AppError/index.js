@@ -12,7 +12,7 @@ export default class AppError extends React.Component {
 		return (
 			<div className="appError page">
 				<center>
-                    <div className="error">{this.props.message}</div>
+                    <h2 className="error">Something went wrong.</h2>
 					<Button variant="contained" type="button" color="secondary" onClick={this.reloadWindow}>reload</Button>
 				</center>
 			</div>

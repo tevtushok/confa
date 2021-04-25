@@ -18,7 +18,7 @@ import Page404 from './pages/Page404';
 import ServerError from './pages/ServerError';
 import AppError from './pages/AppError';
 import Offline from './pages/Offline';
-import { RENDERED_PAGES } from './includes/app';
+import { RENDER_STATES } from './stores/appStore';
 
 import adminRooms from './pages/admin/Rooms';
 
@@ -38,58 +38,55 @@ class App extends React.Component {
     async componentDidMount() {
         const appStore = this.props.appStore;
         const userStore = this.props.userStore;
-        if (!appStore.isOnLine()) {
-            console.log(111);
-            appStore.setPage(RENDERED_PAGES.OFFLINE);
+        if (!appStore.isOnline) {
+            appStore.setRenderState(RENDER_STATES.OFFLINE);
             return;
         }
 
-        const auth = await authApi.verify();
-        const apiData = auth.response.getApiData();
-        if (auth.error) {
-            if (auth.response.status !== 403) {
-                appStore.setErrorMessage('Server error')
-                appStore.setPage(RENDERED_PAGES.ERROR);
-                console.log(auth.response.message);
-                return;
-            }
-        }
-        else {
-            console.log(333);
-            if (!apiData.user) {
-                console.log(33344);
-                appStore.setErrorMessage('Server error')
-                appStore.setPage(RENDERED_PAGES.ERROR);
-                console.log('invalid response');
-                return;
-            }
-            else {
-                userStore.setLoggedIn(true);
-                console.log(44411111);
-            }
-        }
-        console.log(444);
-        this.props.appStore.setPage(RENDERED_PAGES.COMMON);
+        authApi.verify()
+            .then(({ response }) => {
+                const apiData = response.getApiData();
+                if (!apiData.user) {
+                    appStore.setErrorMessage('Server error')
+                    appStore.setRenderState(RENDER_STATES.ERROR);
+                    console.log('invalid response', apiData);
+                }
+
+                userStore.setUser(apiData.user);
+                this.props.appStore.setRenderState(RENDER_STATES.COMMON);
+            })
+            .catch(({ error, response }) => {
+                if (error.response.status !== 403) {
+                    appStore.setErrorMessage('Server error')
+                    appStore.setRenderState(RENDER_STATES.ERROR);
+                    console.log(response.message);
+                    return;
+                }
+
+                this.props.appStore.setRenderState(RENDER_STATES.COMMON);
+
+            });
+
     }
 
     render() {
-        console.info('App render', this.props.appStore.page);
+        console.info('App render', this.props.appStore.renderState);
         const userStore = this.props.userStore;
 
         const isLoggedIn = userStore.loggedIn;
         const isAdmin = userStore.isAdmin;
         let page = null;
-        switch(this.props.appStore.page) {
-            case RENDERED_PAGES.LOADER:
+        switch(this.props.appStore.renderState) {
+            case RENDER_STATES.LOADER:
                 page = <Bayan/>;
                 break;
-            case RENDERED_PAGES.ERROR:
+            case RENDER_STATES.ERROR:
                 page = <ServerError/>;
                 break;
-            case RENDERED_PAGES.OFFLINE:
+            case RENDER_STATES.OFFLINE:
                 page = <Offline/>;
                 break;
-            case RENDERED_PAGES.COMMON:
+            case RENDER_STATES.COMMON:
                 page = (
                     <Switch>
                     <Route path="/login" component={Login}/>
@@ -109,7 +106,7 @@ class App extends React.Component {
                 );
                 break;
             default:
-                page = <AppError message="Something weng wrong"/>
+                page = <AppError/>
         }
         return (
             <ThemeProvider theme={theme}>

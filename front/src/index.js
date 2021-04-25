@@ -5,24 +5,25 @@ import { HashRouter } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import userStore from './stores/userStore';
 import appStore from './stores/appStore';
+import profileStore from './stores/profileStore';
 import App from './App';
 import './index.scss';
 
 
-const stores = { userStore, appStore, };
+const stores = { userStore, appStore, profileStore };
 
 // <React.StrictMode>
 //   <App />
 // </React.StrictMode>
 ReactDOM.render(
-  <Provider {...stores}>
-    <HashRouter>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-    </HashRouter>
-  </Provider>,
-  document.getElementById('root')
+    <Provider {...stores}>
+        <HashRouter>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        </HashRouter>
+    </Provider>,
+    document.getElementById('root')
 );
 
 

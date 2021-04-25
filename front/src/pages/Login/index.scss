@@ -11,13 +11,16 @@
 }
 
 .login__serviceContainer {
-	min-height: 1rem;
+	min-height: 1.2rem;
 }
 
 .login__serviceContainer p {
 	text-align: center;
 }
 
+.login__serviceContainer .bayan {
+    top: -2px;
+}
 .login__serviceContainer .bayan + div {
 	display: none;
 }
