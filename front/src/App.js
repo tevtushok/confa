@@ -4,7 +4,6 @@ import { Switch, withRouter, Route } from "react-router-dom";
 
 import authApi from './services/authApi';
 import PrivateRoute from './routes/PrivateRoute'
-import Loader from './components/Loader';
 import Bayan from './components/Bayan';
 import Header from './components/Header';
 import Footer from './components/Footer';
