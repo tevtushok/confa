@@ -1,0 +1,4 @@
+- Implement Mobx States functionality
+    https://github.com/gothinkster/react-mobx-realworld-example-app is example
+
+- Lets use promises in axios successHandler && errorHandler
