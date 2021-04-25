@@ -28,6 +28,11 @@ class AppStore {
     isOnLine() {
         return window.navigator.onLine;
     }
+
+    @observable counter = 0;
+    @action increment() {
+        this.counter += 1;
+    }
 }
 
 export default new AppStore();

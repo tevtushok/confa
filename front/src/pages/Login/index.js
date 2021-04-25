@@ -40,7 +40,7 @@ class Login extends React.Component {
                     const apiCode = auth.response.getApiCode();
                     switch(apiCode) {
                         case 0:
-                            this.props.userStore.setUser(apiData.user);
+                            this.props.userStore.pullUser(apiData.user);
                             break;
                         case CODES.AUTH.INVALID_CREDENTIALS:
                         case CODES.AUTH.EMPTY_CREDENTIALS:

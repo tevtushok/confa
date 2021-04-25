@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(function (config) {
-    const token = userStore.token;
+    const token = window.localStorage.getItem('token')
     config.headers.token = token;
     return config;
 });

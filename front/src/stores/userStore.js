@@ -2,24 +2,31 @@ import { makeObservable, observable, action } from 'mobx';
 
 class UserStore {
     constructor() {
-        this._user = this.parseLocalStorage();
         makeObservable(this);
     }
 
-    parseLocalStorage() {
-        return JSON.parse(window.localStorage.getItem('user'));
-    }
-
-    @observable user = this._user;
+    @observable user = window.localStorage.getItem('user');
 	@observable isLoggedIn = false;
+    @observable token = window.localStorage.getItem('token');
 
 	@action setLoggedIn(state = true) {
 		this.isLoggedIn = state;
 	}
 
-	@action setUser(u) {
+    @action setToken(token) {
+        this.token = token;
+    }
+
+    @action unsetToken() {
+        window.localStorage.removeItem('token');
+    }
+
+	@action pullUser(u) {
 		this.user = u;
         window.localStorage.setItem('user', JSON.stringify(u));
+        if ('token' in u) {
+            window.localStorage.setItem('token', u.token);
+        }
 		this.isLoggedIn = true;
 	}
 
@@ -35,10 +42,6 @@ class UserStore {
 
     get user() {
         return this.user;
-    }
-
-    get token() {
-        return this.user?.token;
     }
 
 	get isAdmin() {
