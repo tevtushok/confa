@@ -28,7 +28,23 @@ module.exports.register = async (req, res, next) => {
             if (err) {
                 return jsonResponse(req, res, 500, API.AUTH.FAILURE, err, 'Database error');
             }
-            return jsonResponse(req, res, 201, SUCCESS, null, 'User added');
+
+            const jwtData = {
+                id: user.id,
+                email: user.email,
+                password: user.password,
+                isAdmin: user.isAdmin
+            };
+            const token = jsonwebtoken.sign(jwtData, process.env.JWT_SECRET);
+
+            const ret = {'user': {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                token: token,
+            }};
+            return jsonResponse(req, res, 201, SUCCESS, ret, 'User added');
         });
     });
 }

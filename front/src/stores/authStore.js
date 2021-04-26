@@ -3,7 +3,7 @@ import appStore from './appStore';
 import userStore from './userStore';
 import authApi from '../services/authApi';
 import CODES from '../services/codes'
-import { validateEmail, validatePassword } from '../includes/validators';
+import { validateEmail, validateName, validatePassword } from '../includes/validators';
 
 
 export const RENDER_STATES = {
@@ -19,13 +19,24 @@ class authStore{
     @observable values = {
         email: 'a5q@uskr.nex',
         password: 'test123',
+        name: '',
+        password_confirm: '',
     }
 
     @action reset() {
+        this.values.name = '';
         this.values.email = '';
         this.values.password = '';
+        this.values.password_confirm = '';
         this.serviceMessage = '';
         this.errors = {}
+    }
+
+    @action setName(name) {
+        this.values.name = name;
+        const validate = validateName(name);
+        console.log('name', validate);
+        true === validate ? delete this.errors.name: this.errors.name = validate;
     }
 
     @action setEmail(email) {
@@ -38,6 +49,14 @@ class authStore{
         this.values.password = password;
         const validate = validatePassword(password);
         true === validate ? delete this.errors.password: this.errors.password = validate;
+    }
+
+    @action setPasswordConfirm(password_confirm) {
+        this.values.password_confirm = password_confirm;
+        console.log(this.values.password, this.values.password_confirm);
+        const validate = this.values.password === this.values.password_confirm;
+        true === validate ?  delete this.errors.password_confirm
+            : this.errors.password_confirm = { message: 'Passwords dismatched' };
     }
 
     @observable renderState = RENDER_STATES.COMMON;
@@ -54,7 +73,7 @@ class authStore{
                 userStore.setUser(apiData.user);
                 appStore.setToken(apiData.user.token);
             }))
-            .catch(action(({ errors, response }) => {
+            .catch(action(({ error, response }) => {
                 const apiMessage = response.getApiMessage();
                 const apiCode = response.getApiCode();
                 this.renderState = RENDER_STATES.FAILURE;
@@ -72,6 +91,40 @@ class authStore{
                 this.inProgress = false;
             }));
     }
-}
 
+    @action register() {
+        this.inProgress = false;
+        const data = {
+            name: this.values.name,
+            email: this.values.email,
+            password: this.values.password,
+        }
+        return authApi.register(data)
+            .then(action(({ response }) => {
+                const apiData = response.getApiData();
+                userStore.setUser(apiData.user);
+                appStore.setToken(apiData.user.token);
+            }))
+            .catch(action(({ error, response }) => {
+                const apiMessage = response.getApiMessage();
+                const apiCode = response.getApiCode();
+                const apiData = response.getApiData();
+                console.log('register catch', apiCode, apiMessage);
+                switch(apiCode) {
+                    case CODES.AUTH.VALIDATION:
+                        this.errors = apiData.errors;
+                        break;
+                    case CODES.AUTH.EMAIL_EXISTS:
+                        this.errors = {email: { message: 'Email exists' }};
+                        break;
+                    default:
+                        this.serviceMessage = 'Server error';
+                }
+                throw error;
+            }))
+            .finally(action(() => {
+                this.inProgress = false;
+            }));
+    }
+}
 export default new authStore();
