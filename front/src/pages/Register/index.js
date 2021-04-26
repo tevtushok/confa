@@ -8,6 +8,10 @@ import './index.scss';
 @inject('authStore')
 @observer
 class Register extends React.Component {
+    componentWillUnmount() {
+        this.props.authStore.reset();
+    }
+
     handleSubmit = e => {
         e.preventDefault();
         this.props.authStore.register()
