@@ -48,7 +48,7 @@ class authStore{
     @action login() {
         this.inProgress = true;
         this.serviceMessage = '';
-        authApi.login(this.values.email, this.values.password)
+        return authApi.login(this.values.email, this.values.password)
             .then(action(({ response }) => {
                 const apiData = response.getApiData();
                 userStore.setUser(apiData.user);

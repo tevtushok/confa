@@ -2,7 +2,6 @@ import React from 'react';
 import { Link as LinkRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import Bayan from '../../components/Bayan';
-import { RENDER_STATES }from '../../stores/authStore';
 import { Container, FormControl, TextField, Button, Link, FormHelperText } from '@material-ui/core'
 
 import './index.scss';
@@ -17,7 +16,7 @@ class Login extends React.Component {
 
 	handleSubmit = e => {
         e.preventDefault();
-        this.props.authStore.login();
+        this.props.authStore.login().then(() => this.props.history.replace("/"));
 	};
 
 	handleEmailChange = e => {

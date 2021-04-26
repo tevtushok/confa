@@ -1,35 +1,32 @@
-#root,
-.app,
-.app
-{
-	height: 100%;
-}
+#root, .app { height: 100%; }
 .app {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-}
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    main {
+        padding: 3rem 0 2rem 0;
+        flex: 1;
+    }
+    .page {
+        &.loading {
+            align-content: center;
+            justify-content: center;
+        }
+        h2 {
+            margin-bottom: 1em;
+            text-align: center;
+        }
+        .btnContainer {
+            display: flex;
+        }
+        .bayanNearButton {
+            padding: 8px 0;
+            position: relative;
+            min-height: 1rem;
+        }
+    }
 
-.app main {
-	padding: 3rem 0 2rem 0;
-	flex: 1;
-}
-
-.page {
-    &.loading {
-        align-content: center;
-        justify-content: center;
-    }
-    h2 {
-        margin-bottom: 1em;
-        text-align: center;
-    }
-    .btnContainer {
-        display: flex;
-    }
-    .bayanNearButton {
-        padding: 8px 0;
-        position: relative;
-        min-height: 1rem;
+    .MuiOutlinedInput-input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 100px #282828 inset;
     }
 }
