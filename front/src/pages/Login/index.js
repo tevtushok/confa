@@ -36,6 +36,7 @@ class Login extends React.Component {
 			this.setState({isLoading: true});
             authApi.login(this.state.email, this.state.password)
                 .then(({ response }) => {
+                    this.setState({isLoading: false});
                     const apiData = response.getApiData();
                     this.props.userStore.setUser(apiData.user);
                     this.props.appStore.setToken(apiData.user.token);
@@ -47,16 +48,13 @@ class Login extends React.Component {
                     switch(apiCode) {
                         case CODES.AUTH.INVALID_CREDENTIALS:
                         case CODES.AUTH.EMPTY_CREDENTIALS:
-                            this.setState({serviceMsg: 'Invalid credentials'})
+                            this.setState({isLoading: false, serviceMsg: 'Invalid credentials'});
                             break;
                         default:
                             console.log('default case', response.statusText, apiMessage);
                             const message = apiMessage ? apiMessage : response.statusText;
-                            this.setState({serviceMsg: message})
-                    }
-                }).finally(() => {
-                    this.setState({isLoading: false});
-                });
+                            this.setState({serviceMsg: message, isLoading: false});
+                    }});
 		}
 	};
 
@@ -99,12 +97,11 @@ class Login extends React.Component {
 	}
 
 	render() {
+        if (this.props.userStore.user) {
+            console.log('Login page render', 'redirect to home page');
+            return <Redirect to="/"/>
+        }
         console.log('Login page render', 'isLoading', this.props.userStore.isLoggedIn);
-		if (this.props.userStore.isLoggedIn) {
-            return (
-                <Redirect to="/"/>
-            );
-		}
 		const { errors } = this.state;
 		const { serviceMsg } = this.state;
 		return (
