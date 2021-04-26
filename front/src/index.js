@@ -6,11 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import userStore from './stores/userStore';
 import appStore from './stores/appStore';
 import profileStore from './stores/profileStore';
+import authStore from './stores/authStore';
 import App from './App';
 import './index.scss';
 
 
-const stores = { userStore, appStore, profileStore };
+const stores = { userStore, appStore, profileStore, authStore };
 
 // <React.StrictMode>
 //   <App />
