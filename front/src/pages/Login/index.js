@@ -43,7 +43,6 @@ class Login extends React.Component {
                 })
                 .catch(({ error, response }) => {
                     const apiMessage = response.getApiMessage();
-                    const apiData = response.getApiData();
                     const apiCode = response.getApiCode();
                     switch(apiCode) {
                         case CODES.AUTH.INVALID_CREDENTIALS:

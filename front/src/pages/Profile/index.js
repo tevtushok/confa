@@ -2,7 +2,6 @@ import React from 'react';
 import { Link as routerLink } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import {
-    Button,
     Grid,
     Container,
     Link,
@@ -11,7 +10,7 @@ import { EventHelper } from '../../includes/modelsHelpers';
 import ServerError from '../../components/ServerError';
 import AppError from '../../components/AppError';
 import Bayan from '../../components/Bayan';
-import profileStore, { RENDER_STATES } from '../../stores/profileStore';
+import { RENDER_STATES } from '../../stores/profileStore';
 
 import './index.scss';
 
@@ -22,35 +21,7 @@ class Profile extends React.PureComponent {
     prevRender = '';
     async componentDidMount() {
         this.props.profileStore.loadProfile();
-        // this.setState({ isLoading: true, });
-        // const state = await this.loadMyEvents();
-        // this.setState({ ...state, isLoading: false });
     }
-
-    // async loadMyEvents() {
-    //     const result = await eventsApi.getMyEvents();
-    //     const apiCode = result.response.getApiCode();
-    //     const apiData = result.response.getApiData();
-    //     if (result.error) {
-    //         return {
-    //             events: [],
-    //             renderState: RENDER_STATES.FAILURE,
-    //         }
-    //     }
-    //     if (apiData) {
-    //         return {
-    //             events: apiData.events,
-    //             renderState: RENDER_STATES.COMMON,
-    //         };
-    //     }
-    //     else {
-    //         return {
-    //             events: [],
-    //             renderState: RENDER_STATES.FAILURE,
-    //         }
-
-    //     }
-    // }
 
     render() {
         console.info('render profile page', this.props.profileStore.renderState)

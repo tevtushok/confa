@@ -53,7 +53,6 @@ export default class EventForm extends React.Component {
                     <FormHelperText>Start time</FormHelperText>
                         <DateTimePicker
                             value={this.props.event.date_start}
-                            disablePast
                             ampm={false}
                             minutesStep={5}
                             onChange={this.props.handleDateStartChange} />
@@ -65,7 +64,7 @@ export default class EventForm extends React.Component {
                         <KeyboardTimePicker
                             value={this.props.event.date_end}
                             onChange={this.props.handleDateEndChange}
-                            minutesStep={10}
+                            minutesStep={5}
                             ampm={false}
                         />
                     </FormControl>
@@ -83,15 +82,15 @@ export default class EventForm extends React.Component {
                         <TextField multiline fullWidth value={this.props.event.description} onChange={this.props.handleDescriptionChange}/>
                     </FormControl>
                 </Grid>
-                <Grid item xs={12}>
                 {this.props.alert &&(
+                <Grid item xs={12}>
                         <Alert severity={this.props.alert.severity}>
                             {this.props.alert.message}
                         </Alert>
-                )}
                 </Grid>
+                )}
                 {this.props.serviceMessage &&(
-                    <Grid item xs={12}>
+                    <Grid item className="qq" xs={12}>
                         <Alert severity="error">
                             <div>{this.props.serviceMessage}</div>
                                 {Array.isArray(this.props.crossedEvents) && this.props.crossedEvents.map((event, index) => (
@@ -104,12 +103,14 @@ export default class EventForm extends React.Component {
                         </Alert>
                     </Grid>
                 )}
+                <Grid item xs={12} className="bayanNearButton">
+                    {this.props.isLoading && <Bayan/>}
+                </Grid>
                 <Grid item xs={12} className="btnContainer">
                     <Button disabled={this.props.isLoading} className="submit" variant="contained" fullWidth
                         type="button" color="secondary" onClick={this.props.handleSubmit}>{this.props.action}
                     </Button>
                 </Grid>
-            {this.props.isLoading && <Bayan/>}
             </Grid>
         );
     }

@@ -99,15 +99,14 @@ export default class Events extends BaseComponent {
                 resultState = state;
             })
             .catch(({ error, response }) => {
-                 const apiCode = response.getApiCode();
-                 switch(true) {
-                     case apiCode === CODES.ROOMS.INVALID_DATE:
-                         console.log('Invalid date');
-                         resultState = this.getServerErrorState('Invalid date');
-                     default:
-                         console.log('Invalid data from server');
-                         resultState = this.getServerErrorState('Invalid data from server');
-
+                const apiCode = response.getApiCode();
+                if (apiCode === CODES.ROOMS.INVALID_DATE) {
+                    console.log('Invalid date');
+                    resultState = this.getServerErrorState('Invalid date');
+                }
+                else {
+                    console.log('Invalid data from server');
+                    resultState = this.getServerErrorState('Invalid data from server');
                 }
             })
             .finally(() => {
@@ -210,7 +209,7 @@ export default class Events extends BaseComponent {
                 break;
             case RENDER_STATES.NO_ROOMS:
                 component = <NoRooms/>;
-                    break;
+                break;
             case RENDER_STATES.COMMON:
                 this.timeLine = this.getTimeLine();
                 let rooms = null;
@@ -247,7 +246,7 @@ export default class Events extends BaseComponent {
                             <Grid item xs={6} >
                                 <RoomFilter applyFilter={this.applyRoomFilterValue}
                                     handleChange={this.handleRoomsFilterChange}
-                                value={this.state.roomsFilterValue}/>
+                                    value={this.state.roomsFilterValue}/>
                             </Grid>
                             <Grid item xs={6}>
                                 <EventsDatePicker selectedDate={this.state.selectedDate} applyDate={this.handleDateChange}/>
@@ -301,8 +300,8 @@ class RoomFilter extends React.Component {
         return (
             <div className="roomsFilterValueWrapper">
                 <TextField label="Room" inputProps={inputProps} InputLabelProps={inputLabelProps} id="roomsFilterValue"
-                onChange={this.handleChange}
-                value={this.state.value} />
+                    onChange={this.handleChange}
+                    value={this.state.value} />
             </div>
         );
     }
@@ -326,17 +325,17 @@ class EventsDatePicker extends React.Component {
         const inputLabelProps = { shrink: true, };
         return(
             <MuiPickersUtilsProvider utils={DateUtils}>
-            <KeyboardDatePicker
-            id="date-dialog"
-            label="Date"
-            format="YYYY/MM/DD"
-            InputLabelProps={inputLabelProps}
-            value={this.state.selectedDate}
-            onChange={this.handleChange}
-            KeyboardButtonProps={{
-                'aria-label': 'change date',
-            }}
-            />
+                <KeyboardDatePicker
+                    id="date-dialog"
+                    label="Date"
+                    format="YYYY/MM/DD"
+                    InputLabelProps={inputLabelProps}
+                    value={this.state.selectedDate}
+                    onChange={this.handleChange}
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                />
             </MuiPickersUtilsProvider>
         );
     }

@@ -25,7 +25,11 @@
         text-align: center;
     }
     .btnContainer {
-        margin-top: 1rem;
         display: flex;
+    }
+    .bayanNearButton {
+        padding: 8px 0;
+        position: relative;
+        min-height: 1rem;
     }
 }
