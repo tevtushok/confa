@@ -22,7 +22,6 @@ import AppError from '../../components/AppError';
 
 
 import CODES from '../../services/codes';
-import ApiDataTypeError from '../../services/error';
 import roomsApi from '../../services/roomsApi'
 
 import './index.scss';
@@ -50,18 +49,14 @@ export default class Events extends BaseComponent {
     }
 
     async componentDidMount() {
-        this.setState({ isLoading: true });
-        const newStateOpts = await this.loadRoomsWithEventsOfDay();
-        this.setState({
-            isLoading: false,
-            ...newStateOpts,
-        });
+        this.loadRoomsWithEventsOfDay();
     }
 
     filter = memoize(
         (list, filter) => {
             let filteredField = 'title';
             // check value is integer, n ^ 0 returns type number so we dont need strict equals
+            // and i dont need strict compare
             if (this.state.roomsFilterValue == (this.state.roomsFilterValue ^ 0)) {
                 filteredField = 'number';
             }
@@ -81,38 +76,43 @@ export default class Events extends BaseComponent {
     }
 
     async loadRoomsWithEventsOfDay(date = null) {
+        this.setState({ isLoading: true });
         const datePost = date || this.state.selectedDate;
-        const result = await roomsApi.getRoomsWithEventsOfDay(datePost);
-        const apiCode = result.response.getApiCode();
-        if (result.error || 0 !== apiCode) {
-            if (CODES.ROOMS.INVALID_DATE === apiCode) {
-                console.log('Invalid date');
-                return this.getServerErrorState('Invalid date');
-            }
-            if (result.error instanceof ApiDataTypeError) {
-                console.error('loadRoomsWithEvents ApiDataTypeError');
-                return this.getServerErrorState('Invalid data type from server');
-            }
-            return this.getServerErrorState('Invalid data from server');
-        }
-        else {
-            const apiData = result.response.getApiData();
-            if (null === apiData.data || 'object' !== typeof apiData.data) {
-                console.log('loadRoomsWithEvents->Invalid rooms data. Expected data object');
-                return this.getServerErrorState('Invalid data from server');
-            }
-            if (!apiData.data.length) {
-                return {
-                    renderState: RENDER_STATES.NO_ROOMS,
+        let resultState = {};
+        roomsApi.getRoomsWithEventsOfDay(datePost)
+            .then(({ response }) => {
+                const apiData = response.getApiData();
+                if (null === apiData.data || 'object' !== typeof apiData.data) {
+                    console.log('loadRoomsWithEvents->Invalid rooms data. Expected data object');
+                    return this.getServerErrorState('Invalid data from server');
+                }
+                if (!apiData.data.length) {
+                    return {
+                        renderState: RENDER_STATES.NO_ROOMS,
+                    };
+                }
+                // apiData.data.length = 1; // !!!!!!!!! for debug
+                const state = {
+                    rooms: apiData.data,
+                    renderState: RENDER_STATES.COMMON,
                 };
-            }
-            // apiData.data.length = 1; // !!!!!!!!! for debug
-            const state = {
-                rooms: apiData.data,
-                renderState: RENDER_STATES.COMMON,
-            };
-            return state;
-        }
+                resultState = state;
+            })
+            .catch(({ error, response }) => {
+                 const apiCode = response.getApiCode();
+                 switch(true) {
+                     case apiCode === CODES.ROOMS.INVALID_DATE:
+                         console.log('Invalid date');
+                         resultState = this.getServerErrorState('Invalid date');
+                     default:
+                         console.log('Invalid data from server');
+                         resultState = this.getServerErrorState('Invalid data from server');
+
+                }
+            })
+            .finally(() => {
+                this.setState({ isLoading: false, ...resultState});
+            });
     }
 
     handleRoomsFilterChange = (e) => {
@@ -191,13 +191,8 @@ export default class Events extends BaseComponent {
     }
 
     handleDateChange = async(date) => {
-        this.setState({ selectedDate: date, isLoading: true, renderState: RENDER_STATES.UPDATE});
-        const newStateOpts = await this.loadRoomsWithEventsOfDay(date);
-        this.setState({
-            rooms: newStateOpts.rooms,
-            renderState: newStateOpts.renderState,
-            isLoading: false,
-        });
+        this.setState({ selectedDate: date, renderState: RENDER_STATES.UPDATE });
+        this.loadRoomsWithEventsOfDay(date);
     }
 
     render() {

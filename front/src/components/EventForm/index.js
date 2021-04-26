@@ -15,6 +15,7 @@ import {
 import { Alert } from '@material-ui/lab';
 import {
     DateTimePicker,
+    KeyboardTimePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import Bayan from '../../components/Bayan'
@@ -46,27 +47,30 @@ export default class EventForm extends React.Component {
                     </Select>
                     </FormControl>
                 </Grid>
+                <MuiPickersUtilsProvider utils={DateUtils}>
                 <Grid item xs={4}>
                 <FormControl error={!!this.props.errors && !!this.props.errors.date_start}>
-                    <FormHelperText>Start Date time</FormHelperText>
-                    <MuiPickersUtilsProvider utils={DateUtils}>
+                    <FormHelperText>Start time</FormHelperText>
                         <DateTimePicker
                             value={this.props.event.date_start}
                             disablePast
                             ampm={false}
                             minutesStep={5}
-                            onChange={this.props.handleStartDateTimeChange} />
-                    </MuiPickersUtilsProvider>
+                            onChange={this.props.handleDateStartChange} />
                 </FormControl>
                 </Grid>
                 <Grid item xs={4}>
                     <FormControl error={!!this.props.errors && !!this.props.errors.date_end}>
-                        <FormHelperText>Duration in minutes</FormHelperText>
-                        <TextField inputProps={{ min: "10", step: "10" }}
-                            type="number" value={this.props.event.duration}
-                            onChange={this.props.handleDurationChange}/>
+                        <FormHelperText>Time end</FormHelperText>
+                        <KeyboardTimePicker
+                            value={this.props.event.date_end}
+                            onChange={this.props.handleDateEndChange}
+                            minutesStep={10}
+                            ampm={false}
+                        />
                     </FormControl>
                 </Grid>
+                </MuiPickersUtilsProvider>
                 <Grid item xs={4}>
                     <FormControl error={!!this.props.errors && !!this.props.errors.title}>
                         <FormHelperText>Title</FormHelperText>

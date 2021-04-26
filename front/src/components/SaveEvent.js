@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 import { EventHelper } from '../includes/modelsHelpers';
 
 import ApiDataTypeError from '../services/error';
@@ -19,7 +17,7 @@ export default class SaveEvent extends BaseComponent {
 
     getPostData() {
         const dateStart = EventHelper.dateFormat(this.state.event.date_start);
-        const dateEnd = EventHelper.computeDateEnd(dateStart, parseInt(this.state.event.duration));
+        const dateEnd = EventHelper.dateFormat(this.state.event.date_end);
         const postData = {
             room: this.state.event.room._id,
             title: this.state.event.title,
@@ -100,32 +98,28 @@ export default class SaveEvent extends BaseComponent {
                 return this.getServerErrorState('Permission denined!');
             }
             else {
-                const dateStart = dayjs(apiData.event.date_start);
-                const dateEnd = dayjs(apiData.event.date_end);
-                const duration = dateEnd.diff(dateStart, 'minute');
-
                 const state = {
                     serviceMessage: '',
                     renderState: RENDER_STATES.COMMON,
-                    event: { ...apiData.event, duration: duration },
+                    event: apiData.event,
                 };
                 return state;
             }
         }
     }
 
-    handleStartDateTimeChange = (datetime) => {
+    handleDateStartChange = (datetime) => {
         let errors = this.state.errors;
         const validate = this.validateDateStart(datetime);
-        true === validate ? delete errors.date_start: errors.date_start = validate;
+        true === validate ? delete errors.date_start : errors.date_start = validate;
         this.setState({event: { ...this.state.event, date_start: datetime }});
     };
 
-    handleDurationChange = (e) => {
+    handleDateEndChange = (datetime) => {
         let errors = this.state.errors;
-        const validate = this.validateDuration(e.target.value);
-        true === validate ? delete errors.duration: errors.duration= validate;
-        this.setState({event: {...this.state.event, duration: e.target.value }});
+        const validate = this.validateDateEnd(datetime);
+        true === validate ? delete errors.date_end : errors.date_end = validate;
+        this.setState({event: {...this.state.event, date_end: datetime}});
     };
 
     handleRoomChange = (e) => {
@@ -151,10 +145,18 @@ export default class SaveEvent extends BaseComponent {
         return valid ? true : { message: 'Invalid date' };
     }
 
-    validateDuration = (duration = 0) => {
-        duration = parseInt(duration);
-        const valid = Number.isInteger(duration) && duration > 0;
-        return valid ? true : { message: 'Allowed only integers' };
+    validateDateEnd = (date) => {
+        const dateStart = new Date(this.state.event.date_start);
+        const dateEnd = new Date(date);
+        console.log('validateDateEnd');
+        console.log(dateStart, dateEnd);
+        if (isNaN(dateEnd.getTime())) {
+            return { message: 'Invalid date' };
+        }
+        if (dateStart >= dateEnd) {
+            return { message: 'should be future' };
+        }
+        return true;
     }
 
     validateTitle = (title = '') => {
@@ -168,8 +170,8 @@ export default class SaveEvent extends BaseComponent {
         if (true !== (validate = this.validateDateStart(this.state.event.date_start))) {
             errors.date_start = validate;
         }
-        if (true !== (validate = this.validateDuration(this.state.event.duration))) {
-            errors.duration = validate;
+        if (true !== (validate = this.validateDateEnd(this.state.event.date_end))) {
+            errors.date_end = validate;
         }
         if (true !== (validate = this.validateTitle(this.state.event.title))) {
             errors.title = validate;

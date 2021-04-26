@@ -110,7 +110,7 @@ function DeleteComfirm(props) {
                 <p><b>Title:</b> {props.event.title}</p>
                 <p><b>Description:</b> {props.event.description}</p>
                 <p><b>Date start:</b> {dayjs(props.event.date_start).format('DD-MM-YYYY HH:mm')}</p>
-                <p><b>Duration: </b> {props.event.duration}</p>
+                <p><b>Date end:</b> {dayjs(props.event.date_end).format('DD-MM-YYYY HH:mm')}</p>
             </Grid>
             <Grid container className="btnContainer">
                 <Button disabled={props.isLoading} className="btnAddEvent" variant="contained" fullWidth

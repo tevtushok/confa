@@ -2,7 +2,7 @@ import axios from "axios";
 import ApiDataTypeError from './error';
 import Response from './response';
 
-import userStore from '../stores/userStore';
+import appStore from '../stores/appStore';
 
 
 const axiosInstance = axios.create({
@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(function (config) {
-    const token = window.localStorage.getItem('token')
+    const token = appStore.token;
     config.headers.token = token;
     return config;
 });
@@ -25,9 +25,9 @@ function successHandler(res) {
     const response = new Response(res);
     if (!response.hasValidApiResponse()) {
         const error = ApiDataTypeError('Invalid response from server');
-        return Promise.reject( { error: error, response: response, });
+        return Promise.reject({ error: error, response: response, });
     }
-    return Promise.resolve({ error: false, response: response, });
+    return Promise.resolve({ error: false, response: response });
 }
 
 function errorHandler(error) {

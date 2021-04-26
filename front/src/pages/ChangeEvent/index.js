@@ -26,7 +26,6 @@ class ChangeEvent extends SaveEvent {
         const eventId = this.props.match.params.id;
         const eventModel = new Event({
             _id: eventId,
-            duration: 30,
         });
         this.state = {
             ...this.state,
@@ -179,7 +178,7 @@ class ChangeEvent extends SaveEvent {
 
                         handleRoomChange={this.handleRoomChange}
                         handleStartDateTimeChange={this.handleStartDateTimeChange}
-                        handleDurationChange={this.handleDurationChange}
+                        handleDateEndChange={this.handleDateEndChange}
                         handleTitleChange={this.handleTitleChange}
                         handleDescriptionChange={this.handleDescriptionChange}
                         handleSubmit={this.handleSubmit} />

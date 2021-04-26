@@ -36,8 +36,6 @@ export class Event extends Model {
         this.date_start = '';
         this.date_end = '';
 
-        this.duration = ''; // duration does not exists in database. This is virtual field only for client side
-
         this.assignProps(event);
     }
 }

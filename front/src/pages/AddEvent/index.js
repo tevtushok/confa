@@ -39,8 +39,8 @@ class AddEvent extends SaveEvent {
         const defaultStartFrom = new Date();
         defaultStartFrom.setMinutes(5 * (Math.round(defaultStartFrom.getMinutes() / 5)));
         let defaultEvent = new Event({
-            date_start: EventHelper.dateFormat(defaultStartFrom),
-            duration: 30,
+            date_start: defaultStartFrom,
+            date_end: dayjs(defaultStartFrom).add(30, 'minute'),
         });
 
         if (this.props.match.params.roomId) {
@@ -53,23 +53,14 @@ class AddEvent extends SaveEvent {
 
     getEventFromUrl(event = {}) {
         const roomId = this.props.match.params.roomId;
-        const dateFrom = dayjs(this.props.match.params.from);
-        const dateTo = dayjs(this.props.match.params.to);
+        const dateFrom = this.props.match.params?.from ? dayjs(this.props.match.params.from) : undefined;
+        const dateTo = this.props.match.params?.to? dayjs(this.props.match.params.to) : undefined;
 
         event.room = { _id: roomId, };
 
-        let dateStart = new Date();
-        let dateEnd = new Date();
-
-        if (dateFrom.isValid()) {
-            dateStart = dateFrom;
-            event.date_start = EventHelper.dateFormat(dateStart);
-
-            if (dateTo.isValid()) {
-                dateEnd = dateTo;
-                event.date_end = EventHelper.dateFormat(dateEnd);
-                event.duration = EventHelper.computeDuration(dateStart, dateEnd);
-            }
+        if (dateFrom && dateFrom.isValid()) {
+            event.date_start = dateFrom;
+            event.date_end = dateTo && dateTo.isValid() ? dateTo : dateFrom.add(30, 'minute');
         }
 
         return event;
@@ -195,8 +186,8 @@ class AddEvent extends SaveEvent {
                             event={this.state.event}
 
                             handleRoomChange={this.handleRoomChange}
-                            handleStartDateTimeChange={this.handleStartDateTimeChange}
-                            handleDurationChange={this.handleDurationChange}
+                            handleDateStartChange={this.handleDateStartChange}
+                            handleDateEndChange={this.handleDateEndChange}
                             handleTitleChange={this.handleTitleChange}
                             handleDescriptionChange={this.handleDescriptionChange}
                             handleSubmit={this.handleAddEvent}
@@ -220,8 +211,8 @@ function EventCreated(props) {
     return (
         <div className="created text-center">
             <h2>Event created successfuly in room #{props.event.room.number}.</h2>
-            <p>Start in: {EventHelper.dateFormat(props.event.date_start, 'DD-MM-YYYY HH:mm')}</p>
-            <p>Duration: {EventHelper.computeDuration(props.event.date_start, props.event.date_end)} minutes</p>
+            <p>Start at: {EventHelper.dateFormat(props.event.date_start, 'DD-MM-YYYY HH:mm')}</p>
+            <p>End at: {EventHelper.dateFormat(props.event.date_end, 'DD-MM-YYYY HH:mm')}</p>
             <p>
                 You can <Link component={routerLink} variant="inherit" to={`/events/change/${props.event._id}`}>change</Link>&nbsp;or&nbsp;
                 <Link component={routerLink} variant="inherit" to={`/events/delete/${props.event._id}`}>delete</Link>
