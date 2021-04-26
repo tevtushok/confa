@@ -24,6 +24,7 @@ class authStore{
     @action reset() {
         this.values.email = '';
         this.values.password = '';
+        this.serviceMessage = '';
         this.errors = {}
     }
 
