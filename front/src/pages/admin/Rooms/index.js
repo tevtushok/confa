@@ -10,12 +10,19 @@ import {
 
 import Alert from '@material-ui/lab/Alert';
 
-import {
-	Delete as DeleteIcon,
-	LockOutlined as LockIcon,
-	LockOpenOutlined as LockOpenIcon,
-	Refresh as RefreshIcon
-} from '@material-ui/icons';
+// import {
+// 	Delete as DeleteIcon,
+// 	LockOutlined as LockIcon,
+// 	LockOpenOutlined as LockOpenIcon,
+// 	Refresh as RefreshIcon
+// } from '@material-ui/icons';
+//
+
+const DeleteIcon = () => 'D';
+const LockIcon = () => 'L';
+const LockOpenIcon = () => 'LO';
+const RefreshIcon = () => 'R';
+
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -140,7 +147,7 @@ class adminRooms extends React.Component {
 				console.error('toggleStatusHandler->createNewRoom', err)
 				this.setErrorMessage(err.message)
 			}
-			
+
 		}
 		else {
 			try{
@@ -153,7 +160,7 @@ class adminRooms extends React.Component {
 		}
 		this.setState({roomList: {rooms: rooms}})
 	}
-	
+
 	async updateRoomHandler(e, roomId) {
 		const fieldName = e.target.name;
 		if (!['number', 'title'].includes(fieldName)) {
@@ -181,7 +188,7 @@ class adminRooms extends React.Component {
 				}
 			}
 			else {
-				
+
 				try{
 					await this.updateRoom(room, data);
 				}
@@ -191,9 +198,9 @@ class adminRooms extends React.Component {
 				}
 			}
 			this.setState({roomList: {rooms: rooms}})
-			
+
 		}, this.inputSavingDelay);
-		
+
 	}
 
 	async addRoomHandler() {
@@ -280,7 +287,7 @@ class adminRooms extends React.Component {
 			else {
 				throw new Error('Missed room id from server response')
 			}
-			
+
 		}
 		return room;
 	}
@@ -398,8 +405,8 @@ class adminRooms extends React.Component {
 					)}
 				</div>
 				</TableCell>
-				<TableCell align="right">													
-				<IconButton disabled={this.state.isLoading} 
+				<TableCell align="right">
+				<IconButton disabled={this.state.isLoading}
 					onClick={() => this.removeRoomHandler(room._id)} edge="end" aria-label="delete">
 					<DeleteIcon />
 				</IconButton>
