@@ -17,8 +17,8 @@ class authStore{
     }
 
     @observable values = {
-        email: 'a5q@uskr.nex',
-        password: 'test123',
+        email: '',
+        password: '',
         name: '',
         password_confirm: '',
     }
