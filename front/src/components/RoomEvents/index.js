@@ -46,6 +46,7 @@ class RoomEvents extends React.Component {
         };
         this.mouseDownOnScrollInterval = false;
         this.isMouseHoldedOnScroll = false;
+        this.prevWindowWidth = null;
     }
 
     initDinamycProps(props) {
@@ -130,13 +131,16 @@ class RoomEvents extends React.Component {
         setTimeout(() => {
             timeButtons.classList.remove('loading');
         },0);
-
+        this.prevWindowWidth = window.innerWidth;
         window.addEventListener('resize', this.onRezise);
     }
 
     onRezise = () => {
-        this.resizeTimeButtons();
-        this.setTimeLineLeft();
+        if (this.prevWindowWidth !== window.innerWidth) {
+            this.resizeTimeButtons();
+            this.setTimeLineLeft();
+            this.prevWindowWidth = window.innerWidth;
+        }
     };
 
     componentWillUnmount() {
@@ -236,6 +240,7 @@ class RoomEvents extends React.Component {
     }
 
     handleScrollMouseDown = (e, direction) => {
+        if (e.button !== 0) return;
         e.stopPropagation();
         console.log('handleScrollMouseDown', direction);
         if (direction) {
@@ -248,6 +253,7 @@ class RoomEvents extends React.Component {
     }
 
     handleScrollMouseUp = (e, direction) => {
+        if (e.button !== 0) return;
         e.stopPropagation();
         if (!this.isMouseHoldedOnScroll) {
             this.scrollSwitch(direction);
