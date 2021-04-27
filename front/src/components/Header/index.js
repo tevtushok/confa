@@ -14,7 +14,7 @@ import './index.scss';
 class Header extends React.Component {
 	render() {
 		const userStore = this.props.userStore;
-		if (userStore.isLoggedIn) {
+		if (userStore.user) {
 			let admin_links = '';
 			if (userStore.isAdmin) {
 				admin_links = <Link component={RouterLink} to="/rooms">Rooms</Link>
@@ -24,7 +24,6 @@ class Header extends React.Component {
 					<Toolbar>
 						<LogoutLink/>
 						{admin_links}
-						<Link component={RouterLink} to="/register">Register</Link>
 						<Link component={RouterLink} to="/events">Events</Link>
 						<Link component={RouterLink} to={`/@${userStore.user.name}`}>Profile</Link>
 					</Toolbar>
