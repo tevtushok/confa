@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(function (config) {
     const token = appStore.token;
-    config.headers: { Authorization: `Bearer ${token}` }
+    config.headers = { Authorization: `Bearer ${token}` }
     return config;
 });
 
