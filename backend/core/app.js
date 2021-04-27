@@ -74,7 +74,13 @@ app.use(
         secret: process.env.JWT_SECRET,
         algorithms: jwt_algorithms,
         credentialsRequired: true,
-        getToken: req => req.headers.token,
+        getToken: req => {
+            if (req.headers && req.headers.authorization) {
+                const [type, token] = req.headers.authorization.split(' ', 2);
+                if ('Bearer' === type) return token;
+            }
+            return null;
+        }
     }).unless({path: public_routes})
 );
 
