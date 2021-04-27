@@ -228,6 +228,7 @@ describe('controllers/auth', () => {
         const logoutUser = await agent.post('/api/v1/auth/logout')
             .send()
             .set('Accept', 'application/json')
+            .set('Authorization', 'Bearer ' + loginUser.body.data.user.token + ' q')
             .expect('Content-Type', /json/);
 
         assert.equal(201, logoutUser.status);
@@ -269,6 +270,7 @@ describe('controllers/auth', () => {
 
         const verifyUser = await agent.get('/api/v1/auth/verify')
             .send()
+            .set('Authorization', 'Bearer ' + loginUser.body.data.user.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
 
@@ -297,6 +299,7 @@ describe('controllers/auth', () => {
 
         const verifyUser = await agent.get('/api/v1/auth/verify')
             .send()
+            .set('Authorization', 'Bearer ' + loginUser.body.data.user.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
 

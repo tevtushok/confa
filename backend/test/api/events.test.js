@@ -29,6 +29,7 @@ describe('controllers/events', async () => {
     it('add, title is required', (done) => {
         agent.post('/api/v1/events/event')
             .send({})
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -42,7 +43,9 @@ describe('controllers/events', async () => {
     });
 
     it('add, title len < 3', (done) => {
-        agent.post('/api/v1/events/event') .send({title: 'tq'})
+        agent.post('/api/v1/events/event')
+            .send({title: 'tq'})
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -55,24 +58,10 @@ describe('controllers/events', async () => {
             });
     });
 
-    it('add, description is required', (done) => {
-        agent.post('/api/v1/events/event')
-            .send({})
-            .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .end((err, res) => {
-                if(err) return done(err);
-                assert.equal(400, res.status);
-                assert.nestedProperty(res, 'body.data.errors.description');
-                assert.nestedPropertyVal(res, 'body.code', 1101);
-                assert.nestedPropertyVal(res, 'body.message', 'Validation error');
-                return done();
-            });
-    });
-
     it('add, room is invalid', (done) => {
         agent.post('/api/v1/events/event')
             .send({room: 'id1'})
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -90,6 +79,7 @@ describe('controllers/events', async () => {
         eventData.room = mongoose.Types.ObjectId();
         agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -106,6 +96,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomInActive.id;
         agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -124,6 +115,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = '02 2021 12:25';
         agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -143,6 +135,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = eventData['date_start'];
         agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -163,6 +156,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = date_end;
         agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .end((err, res) => {
@@ -187,6 +181,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
@@ -197,6 +192,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 12:00');
         const event2 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event2.status);
@@ -205,6 +201,7 @@ describe('controllers/events', async () => {
         // 12:00-12:00 crossed with above event3
         const event3 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, event3.status);
@@ -215,6 +212,7 @@ describe('controllers/events', async () => {
         eventData['title'] = 'event4';
         const event4 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event4.status);
@@ -224,6 +222,7 @@ describe('controllers/events', async () => {
         eventData['title'] = 'event4';
         const event5 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, event5.status);
@@ -238,6 +237,7 @@ describe('controllers/events', async () => {
         eventData['title'] = 'event6';
         const event6 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, event6.status);
@@ -263,6 +263,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
@@ -273,6 +274,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 17:50');
         const event2 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event2.status);
@@ -289,6 +291,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
@@ -303,6 +306,7 @@ describe('controllers/events', async () => {
         };
         const event2 = await agent.post('/api/v1/events/event')
             .send(room2EventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event2.status);
@@ -323,6 +327,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 10:00');
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
@@ -334,6 +339,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event2 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event2.status);
@@ -344,6 +350,7 @@ describe('controllers/events', async () => {
         eventData['date_end'] = new Date('2021 12:00');
         const event3 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event3.status);
@@ -359,11 +366,11 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const reqFieldsErr = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, reqFieldsErr.status);
         assert.nestedProperty(reqFieldsErr, 'body.data.errors.title');
-        assert.nestedProperty(reqFieldsErr, 'body.data.errors.description');
         assert.nestedPropertyVal(reqFieldsErr, 'body.code', 1101);
         assert.nestedPropertyVal(reqFieldsErr, 'body.message', 'Validation error');
 
@@ -371,6 +378,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const shortTitleErr = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, shortTitleErr.status);
@@ -386,6 +394,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const eventIdErr = await agent.put('/api/v1/events/event/123')
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, eventIdErr.status);
@@ -399,6 +408,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const eventIdErrOk = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(200, eventIdErrOk.status);
@@ -410,6 +420,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const ok1 = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(200, ok1.status);
@@ -422,6 +433,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const crossed1 = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, crossed1.status);
@@ -434,6 +446,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const crossed2 = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, crossed2.status);
@@ -447,6 +460,7 @@ describe('controllers/events', async () => {
         // eventData['date_end'] = new Date('2021 10:00');
         const crossed3 = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(400, crossed3.status);
@@ -459,6 +473,7 @@ describe('controllers/events', async () => {
         eventId = event3.body.data.event._id;
         const crossed4 = await agent.put('/api/v1/events/event/' + eventId)
             .send(changeData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(200, crossed4.status);
@@ -476,12 +491,14 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
 
         const delete1 = await agent.delete('/api/v1/events/event/' + event1.body.data.event._id)
             .send()
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(200, delete1.status);
@@ -498,6 +515,7 @@ describe('controllers/events', async () => {
         eventData.room = globalRoomActive.id;
         const event1 = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event1.status);
@@ -506,6 +524,7 @@ describe('controllers/events', async () => {
 
         const delete1 = await agent.delete('/api/v1/events/event/' + event1.body.data.event._id)
             .send()
+            .set('Authorization', 'Bearer ' + user2.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.nestedPropertyVal(delete1, 'body.code', 1106);
@@ -517,6 +536,7 @@ describe('controllers/events', async () => {
         await Event.deleteMany({});
         const event = await agent.get('/api/v1/events/event/11q')
             .send()
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
 
@@ -531,12 +551,14 @@ describe('controllers/events', async () => {
         const eventData = generateValidEventData(globalRoomActive.id);
         const event = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event.status);
         const eventId = globalRoomActive.id;
         const details = await agent.get('/api/v1/events/event/' + eventId)
             .send()
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(404, details.status);
@@ -548,12 +570,14 @@ describe('controllers/events', async () => {
         const eventData = generateValidEventData(globalRoomActive.id);
         const event = await agent.post('/api/v1/events/event')
             .send(eventData)
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(201, event.status);
 
         const details = await agent.get('/api/v1/events/event/' + event.body.data.event._id)
             .send()
+            .set('Authorization', 'Bearer ' + globalUser.token)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/);
         assert.equal(200, details.status);

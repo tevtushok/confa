@@ -40,5 +40,9 @@ module.exports.createAndLoginUser = async(agent) => {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201);
-    return userData;
+
+    const ret = loginUser.body.data.user;
+    ret.password = userData.password;
+
+    return ret;
 };
