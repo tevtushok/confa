@@ -154,20 +154,6 @@ describe('models/event', () => {
         return done();
     });
 
-    it('check description field', (done) => {
-        let err = new Event({}).validateSync();
-        assert.nestedPropertyVal(err, 'errors.description.message', 'description is required');
-
-        err = new Event({description: ''}).validateSync();
-        assert.equal(err.errors.description.message, 'description is required');
-
-        err = new Event({description: '1'}).validateSync();
-        if (err) {
-            assert.notNestedProperty(err, 'errors.description');
-        }
-        return done();
-    });
-
     it('check status field', (done) => {
         let event = new Event({});
         // status should have default value
