@@ -86,6 +86,7 @@ class authStore{
                         console.log('authStore login default case', apiMessage);
                         this.serviceMessage = 'Server error';
                 }
+                throw new Error('Server error');
             }))
             .finally(action(() => {
                 this.inProgress = false;

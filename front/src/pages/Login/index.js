@@ -16,7 +16,9 @@ class Login extends React.Component {
 
 	handleSubmit = e => {
         e.preventDefault();
-        this.props.authStore.login().then(() => this.props.history.replace("/"));
+        this.props.authStore.login().then(() => this.props.history.replace("/")).catch((e) => {
+            console.log(e);
+        });
 	};
 
 	handleEmailChange = e => {
