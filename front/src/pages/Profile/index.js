@@ -25,7 +25,7 @@ class Profile extends React.PureComponent {
         let spacing = 4;
         let events = '';
         if (!this.props.profileStore.events.length) {
-            events = <h3>You dont have any events</h3>;
+            events = <p>You dont have any events</p>;
             spacing = 0;
         }
         else {
@@ -46,9 +46,12 @@ class Profile extends React.PureComponent {
             );
         }
         return (
-            <Grid container className="events" spacing={spacing}>
-                {events}
-            </Grid>
+            <div className="events">
+                <h3>Events</h3>
+                <Grid container className="eventsList" spacing={spacing}>
+                    {events}
+                </Grid>
+            </div>
         );
     }
     render() {
