@@ -1,9 +1,17 @@
 const path = require('path');
+const webpack = require('webpack');
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const fs = require('fs');
 
 const smp = new SpeedMeasurePlugin({
-    outputFormat: "humanVerbose",
+    outputFormat: "human",
+    disable: !process.env.MEASURE,
 });
+
+const handlerProgress = (percentage, message, ...args) => {
+    fs.appendFile('progress.log', [percentage, message, ...args].join('|') + "\n", (err) => { });
+};
+
 
 module.exports = {
     babel: {
@@ -16,7 +24,9 @@ module.exports = {
     },
     webpack: {
         plugins: {
-            add: [smp],
+            add: [
+                smp,
+            ],
         },
     },
 };
