@@ -18,11 +18,39 @@ import './index.scss';
 @inject('profileStore')
 @observer
 class Profile extends React.PureComponent {
-    prevRender = '';
     async componentDidMount() {
         this.props.profileStore.loadProfile();
     }
-
+    renderEventList = () => {
+        let spacing = 4;
+        let events = '';
+        if (!this.props.profileStore.events.length) {
+            events = <h3>You dont have any events</h3>;
+            spacing = 0;
+        }
+        else {
+            events = (
+                this.props.profileStore.events.map((event, index) => (
+                    <Grid key={event._id} item sm={4} className="event">
+                        <div>Room: {event.room.number}</div>
+                        <div>Title: {event.title}</div>
+                        <div>Date start: {EventHelper.dateFormatClient(event.date_start)}</div>
+                        <div>Date start: {EventHelper.dateFormatClient(event.date_end)}</div>
+                        <div>
+                            <div>Status: {event.status}</div>
+                            <Link component={routerLink} variant="inherit" to={`/events/change/${event._id}`}>change</Link>&nbsp;|&nbsp;
+                            <Link component={routerLink} variant="inherit" to={`/events/delete/${event._id}`}>delete</Link>
+                        </div>
+                    </Grid>
+                ))
+            );
+        }
+        return (
+            <Grid container className="events" spacing={spacing}>
+                {events}
+            </Grid>
+        );
+    }
     render() {
         console.info('render profile page', this.props.profileStore.renderState)
         let component = null;
@@ -31,24 +59,7 @@ class Profile extends React.PureComponent {
                 component = <Bayan/>;
                     break;
             case RENDER_STATES.COMMON:
-                component = (
-                    <Grid container className="events" spacing={4}>
-                    {this.props.profileStore.events.map((event, index) => (
-                        <Grid key={event._id} item sm={4} className="event">
-                            <div>Room: {event.room.number}</div>
-                            <div>Title: {event.title}</div>
-                            <div>Date start: {EventHelper.dateFormatClient(event.date_start)}</div>
-                            <div>Date start: {EventHelper.dateFormatClient(event.date_end)}</div>
-                            <div>
-                                <div>Status: {event.status}</div>
-                                <Link component={routerLink} variant="inherit" to={`/events/change/${event._id}`}>change</Link>&nbsp;|&nbsp;
-                                <Link component={routerLink} variant="inherit" to={`/events/delete/${event._id}`}>delete</Link>
-                            </div>
-                        </Grid>
-                    ))}
-                    </Grid>
-                );
-                this.prevRender = component;
+                component = this.renderEventList();
                 break;
             case RENDER_STATES.FAILURE:
                 component = <ServerError data="Server error"/>;
