@@ -4,10 +4,14 @@ import { Redirect } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import dayjs from 'dayjs';
 
-import {
-    ArrowLeft as ArrowLeftIcon,
-    ArrowRight as ArrowRightIcon,
-} from "@material-ui/icons";
+import { ReactComponent as ArrowLeftIcon } from './left-arrow.svg';
+
+// import {
+//     ArrowLeft as ArrowLeftIcon,
+//     ArrowRight as ArrowRightIcon,
+// } from "@material-ui/icons";
+//
+//
 
 import { Button, } from '@material-ui/core';
 
@@ -20,6 +24,9 @@ const STATUSES = {
     RESERVED: 'reserved',
     PENDING: 'pending',
 };
+
+const ArrowRightIcon = () => '>';
+// const ArrowLeftIcon = () => '<';
 
 
 @inject('userStore')
@@ -435,7 +442,7 @@ class RoomEvents extends React.Component {
                     onMouseUp={e => {
                         this.handleScrollMouseUp(e, 'right');
                     }}>
-                    <ArrowRightIcon/>
+                    <ArrowLeftIcon/>
                 </Button>
             </div>
         );
