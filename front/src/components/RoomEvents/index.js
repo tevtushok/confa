@@ -37,6 +37,8 @@ class RoomEvents extends React.Component {
             redirectToAdd: null,
             selectedTime: this.timeLine[this.nowLabel],
         };
+        this.mouseDownOnScrollInterval = false;
+        this.isMouseHoldedOnScroll = false;
     }
 
     initDinamycProps(props) {
@@ -207,16 +209,44 @@ class RoomEvents extends React.Component {
 
     };
 
-    scrollToRight = (e) => {
-        e.stopPropagation();
+    scrollToRight = () => {
         this.firstVisibleTimeIndex++;
         this.scroll();
     }
 
-    scrollToLeft = (e) => {
-        e.stopPropagation();
+    scrollToLeft = () => {
         this.firstVisibleTimeIndex--;
         this.scroll(false);
+    }
+
+    scrollSwitch = (direction) => {
+        if (direction === 'left') {
+            this.scrollToLeft();
+        }
+        else if (direction === 'right') {
+            this.scrollToRight();
+        }
+    }
+
+    handleScrollMouseDown = (e, direction) => {
+        e.stopPropagation();
+        console.log('handleScrollMouseDown', direction);
+        if (direction) {
+            this.mouseDownOnScrollInterval = setInterval(() => {
+                this.isMouseHoldedOnScroll = true;
+                console.log('handleScrollMouseDown timer', direction);
+                this.scrollSwitch(direction);
+            }, 300);
+        }
+    }
+
+    handleScrollMouseUp = (e, direction) => {
+        e.stopPropagation();
+        if (!this.isMouseHoldedOnScroll) {
+            this.scrollSwitch(direction);
+        }
+        this.isMouseHoldedOnScroll = false;
+        clearInterval(this.mouseDownOnScrollInterval);
     }
 
     prepTimeLine(events = []) {
@@ -250,6 +280,7 @@ class RoomEvents extends React.Component {
         this.setTimeData(e.currentTarget);
         this.changeTime(label);
     };
+
 
     setIntermediate = () => {
         this.timeLineRef.current.querySelectorAll('.timebtn').forEach((btn, index) => {
@@ -381,7 +412,13 @@ class RoomEvents extends React.Component {
 
         return(
             <div ref={this.timeLineRef} className="timeline">
-                <Button className="prev" onClick={this.scrollToLeft}>
+                <Button data-direction="left" className="prev"
+                    onMouseDown={e => {
+                        this.handleScrollMouseDown(e, 'left');
+                    }}
+                    onMouseUp={e => {
+                        this.handleScrollMouseUp(e, 'left');
+                    }}>
                     <ArrowLeftIcon/>
                 </Button>
                 <div className="buttonsWrapper loading">
@@ -391,7 +428,13 @@ class RoomEvents extends React.Component {
                         ))}
                     </div>
                 </div>
-                <Button className="next" onClick={this.scrollToRight}>
+                <Button data-direction="right" className="next"
+                    onMouseDown={e => {
+                        this.handleScrollMouseDown(e, 'right');
+                    }}
+                    onMouseUp={e => {
+                        this.handleScrollMouseUp(e, 'right');
+                    }}>
                     <ArrowRightIcon/>
                 </Button>
             </div>
