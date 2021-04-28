@@ -4,18 +4,16 @@ import { Redirect } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import dayjs from 'dayjs';
 
+import { Button, } from '@material-ui/core';
 import {
     ArrowLeft as ArrowLeftIcon,
     ArrowRight as ArrowRightIcon,
 } from "@material-ui/icons";
 
-
-
-import { Button, } from '@material-ui/core';
-
 import { EventHelper } from '../../includes/modelsHelpers';
 
 import './index.scss';
+
 
 const STATUSES = {
     AVAILABLE: 'available',
@@ -55,16 +53,22 @@ class RoomEvents extends React.Component {
     }
 
     setFirstVisibleIndex(index = false) {
+        console.log('index:', index);
         if (!index) {
-            index = this.timeLineData.nowIndex - 1;
+            index = this.timeLineData.nowIndex;
+            console.log(' 1 index:', index);
         }
         if (index < 0) {
             index = 0;
+            console.log(' 2 index:', index);
         }
         const buttonsCount = this.getVibisleTimeButtonsCount();
         if (index > this.timeLineData.items.length - buttonsCount) {
-            index = this.timeLineData.items.length - buttonsCount - 1;
+            index = this.timeLineData.items.length - buttonsCount;
+            console.log(' 3 index:', index);
         }
+        console.log('nowIndex:', this.timeLineData.nowIndex,
+            'buttonsCount', buttonsCount);
         this.firstVisibleTimeIndex = index;
     }
 
@@ -156,14 +160,30 @@ class RoomEvents extends React.Component {
 
     setTimeLineLeft() {
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
+        const timeButtonsWidth = this.timeLineRef.current.querySelector('.buttonsWrapper').offsetWidth;
         let left = 0;
-        if (this.firstVisibleTimeIndex > 0) {
+        let rightPosLimit = timeButtons.offsetWidth - timeButtonsWidth;
+        const buttonsCount = this.getVibisleTimeButtonsCount();
+        console.log('buttonsCount', buttonsCount, 'firstVisibleTimeIndex', this.firstVisibleTimeIndex);
+        // if last button is visible stick to right
+        if (buttonsCount >= this.timeLineData.items.length - this.firstVisibleTimeIndex) {
+            left = rightPosLimit;
+            this.firstVisibleTimeIndex = this.timeLineData.items.length - buttonsCount;
+            const firstVisibleButton = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.firstVisibleTimeIndex}"]`);
+            firstVisibleButton.style.color = 'yellow';
+            const nextBtn = this.timeLineRef.current.querySelector('.next');
+            nextBtn.setAttribute('disabled', true);
+            console.log('disable last');
+        }
+        else if (this.firstVisibleTimeIndex > 0) {
             let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
             [].some.call(buttons, (button, btnIndex) => {
                 left += button.offsetWidth;
                 return this.firstVisibleTimeIndex <= btnIndex;
             });
         }
+
+        console.log(this.firstVisibleTimeIndex);
 
         timeButtons.style.left = -left + 'px';
     }
@@ -390,7 +410,9 @@ class RoomEvents extends React.Component {
         return (
             <div className={`roomEvents mdc-theme--primary-bg`}>
                 <div className="baseWrapper">
-                    <EventDetails onSubmit={this.handleAddEvent} room={this.room} selectedTime={this.state.selectedTime} />
+                    <EventDetails onSubmit={this.handleAddEvent}
+                        timeData={this.timeData} timeLineData={this.timeLineData}
+                        room={this.room} selectedTime={this.state.selectedTime} />
                     {this.TimeLine()}
                 </div>
             </div>
@@ -442,7 +464,7 @@ class RoomEvents extends React.Component {
                     onMouseUp={e => {
                         this.handleScrollMouseUp(e, 'right');
                     }}>
-                    <ArrowLeftIcon/>
+                    <ArrowRightIcon/>
                 </Button>
             </div>
         );
@@ -461,17 +483,17 @@ function EventDetails(props) {
             case STATUSES.PENDING:
                 return (
                     <div className="pengindEvent">
-                    <div>Event is comming soon</div>
-                    <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
-                    <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
+                        <div>Event is comming soon</div>
+                        <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
+                        <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                     </div>
                 );
             case STATUSES.RESERVED:
                 return (
                     <div className="roomReserved">
-                    <div>Room is reserved</div>
-                    <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
-                    <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
+                        <div>Room is reserved</div>
+                        <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
+                        <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                     </div>
                 );
             default:
@@ -482,17 +504,18 @@ function EventDetails(props) {
         <div className="infoWrapper">
             <div className={`statusBar ${status}`}></div>
             <div className="detailsWrapper">
-            <div className="details">
-            <div className="number">Number: <strong>{room.number}</strong></div>
-            <div className="title">Title: <strong>{room.title}</strong></div>
-            <div className="status">Status: {status}</div>
-            </div>
-            {renderEventInfo()}
-            {status === STATUSES.AVAILABLE && (
-                <div className="addEventWrapper">
-                <Button onClick={props.onSubmit} variant="contained" color="secondary" size="medium" fullWidth type="submit" className="addEvent">Add event</Button>
+                <div className="details">
+                    <div className="number">Number: <strong>{room.number}</strong></div>
+                    <div className="title">Title: <strong>{room.title}</strong></div>
+                    <div className="status">Status: {status}</div>
                 </div>
-            )}
+                {renderEventInfo()}
+                {status === STATUSES.AVAILABLE && (
+                    <div className="addEventWrapper">
+                        <Button onClick={props.onSubmit} variant="contained" color="secondary"
+                        size="medium" fullWidth type="submit" className="addEvent">Add event</Button>
+                    </div>
+                )}
             </div>
         </div>
     );

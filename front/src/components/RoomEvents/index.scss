@@ -88,13 +88,6 @@ $reservedColor: #CC3333;
             background-color: #333;
             border-radius: 0;
         }
-        .next svg, .prev svg {
-            fill: #fff;
-            height: 1rem;
-        }
-        .next svg {
-            transform: rotate(180deg);
-        }
         .prev:disabled, .next:disabled {
             cursor: default;
             svg {
@@ -105,6 +98,7 @@ $reservedColor: #CC3333;
             position: relative;
             overflow: hidden;
             display: flex;
+            background-color: #333;
             flex: 1;
             span {
                 color: inherit;
