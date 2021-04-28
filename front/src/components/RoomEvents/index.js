@@ -4,14 +4,12 @@ import { Redirect } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import dayjs from 'dayjs';
 
-import { ReactComponent as ArrowLeftIcon } from './left-arrow.svg';
+import {
+    ArrowLeft as ArrowLeftIcon,
+    ArrowRight as ArrowRightIcon,
+} from "@material-ui/icons";
 
-// import {
-//     ArrowLeft as ArrowLeftIcon,
-//     ArrowRight as ArrowRightIcon,
-// } from "@material-ui/icons";
-//
-//
+
 
 import { Button, } from '@material-ui/core';
 
