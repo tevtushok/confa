@@ -8,7 +8,7 @@ const { whenProd } = require('@craco/craco');
 const fs = require('fs');
 
 const smp = new SpeedMeasurePlugin({
-    outputFormat: "json",
+    outputFormat: "humanVerbose",
     disable: !process.env.MEASURE,
 });
 
@@ -21,11 +21,8 @@ module.exports = {
     babel: {
         plugins: [
             ["@babel/plugin-proposal-decorators", { "legacy": true }],
-            ...whenProd(() => ["transform-remove-console"]),
-        ]
-    },
-    eslint: {
-        enable: false,
+            ...whenProd(() => ["transform-remove-console"], []),
+        ],
     },
     webpack: {
         plugins: {
