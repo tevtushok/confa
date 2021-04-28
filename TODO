@@ -1,4 +1,7 @@
-- Implement Mobx States functionality
-    https://github.com/gothinkster/react-mobx-realworld-example-app is example
+- implement reset/refresh token on client/server
+- disable console.log on production
 
-- Lets use promises in axios successHandler && errorHandler
+/events page
+    - Implement Mobx state
+    - double check RoomEvents component button behaviour onResize
+    - change select time range behaviour in RoomEvents component
