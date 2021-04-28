@@ -1,6 +1,6 @@
 #!/bin/bash
 imageName=confa-img
-containerName=confa-rest
+containerName=confa-api
 
 docker build -t $imageName -f Dockerfile  .
 
