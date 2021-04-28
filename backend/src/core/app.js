@@ -62,7 +62,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 // create a rotating write stream
 const accessLogStream = rfs.createStream('access.log', {
     interval: '1d', // rotate daily
-    path: path.join(__dirname, '../../logs')
+    path: path.join(path.dirname(require.main.filename), '../logs'),
 });
 
 // setup the logger

@@ -4,11 +4,11 @@ containerName=confa-api
 
 docker build -t $imageName -f Dockerfile  .
 
-docker ps -aq -f name={$containerName}
+psRes=$(docker ps -aq -f name="$containerName")
 
-if [ $? -eq 0 ];
+if [[ ! -z "$psRes" ]];
 then
-    echo "delete old conteiner..."
+    echo "delete old conteiner ${containerName} ..."
     docker rm -fv $containerName
 fi
 
