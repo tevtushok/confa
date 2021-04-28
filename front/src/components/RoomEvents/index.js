@@ -25,10 +25,6 @@ const STATUSES = {
     PENDING: 'pending',
 };
 
-const ArrowRightIcon = () => '>';
-// const ArrowLeftIcon = () => '<';
-
-
 @inject('userStore')
 class RoomEvents extends React.Component {
 
