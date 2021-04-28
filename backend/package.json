@@ -4,10 +4,10 @@
     "description": "confa api",
     "main": "server.js",
     "scripts": {
-        "test-models": "NODE_ENV=test mocha --file ./test/models/setup.js ./test/models/**/*.test.js",
-        "test-api": "NODE_ENV=test mocha ./test/api/**/*.test.js",
+        "test-models": "NODE_ENV=test mocha --file ./src/test/models/setup.js ./test/models/**/*.test.js",
+        "test-api": "NODE_ENV=test mocha ./src/test/api/**/*.test.js",
         "test": "npm run test-models && npm run test-api",
-        "dev": "nodemon server.js",
+        "dev": "nodemon ./src/server.js",
         "start": "npm run dev"
     },
     "author": "",
