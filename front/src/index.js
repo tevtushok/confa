@@ -13,9 +13,6 @@ import './index.scss';
 
 const stores = { userStore, appStore, profileStore, authStore };
 
-if (process.env.NODE_ENV !== "development")
-    console.log = () => {};
-
 // <React.StrictMode>
 //   <App />
 // </React.StrictMode>
