@@ -10,13 +10,13 @@ import {
 
 import Alert from '@material-ui/lab/Alert';
 
-// import {
-// 	Delete as DeleteIcon,
-// 	LockOutlined as LockIcon,
-// 	LockOpenOutlined as LockOpenIcon,
-// 	Refresh as RefreshIcon
-// } from '@material-ui/icons';
-//
+import {
+    Delete as DeleteIcon,
+    LockOutlined as LockIcon,
+    LockOpenOutlined as LockOpenIcon,
+    Refresh as RefreshIcon
+} from '@material-ui/icons';
+
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -35,11 +35,6 @@ import {
 
 import './index.scss';
 
-
-const DeleteIcon = () => 'D';
-const LockIcon = () => 'L';
-const LockOpenIcon = () => 'LO';
-const RefreshIcon = () => 'R';
 
 class adminRooms extends React.Component {
 	constructor(props) {
