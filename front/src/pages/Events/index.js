@@ -57,6 +57,7 @@ export default class Events extends BaseComponent {
             let filteredField = 'title';
             // check value is integer, n ^ 0 returns type number so we dont need strict equals
             // and i dont need strict compare
+            // eslint-disable-next-line
             if (this.state.roomsFilterValue == (this.state.roomsFilterValue ^ 0)) {
                 filteredField = 'number';
             }
