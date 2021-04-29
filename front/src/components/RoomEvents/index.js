@@ -53,6 +53,7 @@ class RoomEvents extends React.Component {
     }
 
     setFirstVisibleIndex(index = false) {
+        console.log('setFirstVisibleIndex start');
         console.log('index:', index);
         if (!index) {
             index = this.timeLineData.nowIndex;
@@ -69,7 +70,9 @@ class RoomEvents extends React.Component {
         }
         console.log('nowIndex:', this.timeLineData.nowIndex,
             'buttonsCount', buttonsCount);
+        console.log('set this.firstVisibleTimeIndex', index);
         this.firstVisibleTimeIndex = index;
+        console.log('setFirstVisibleIndex end');
     }
 
     initTimeData() {
@@ -161,6 +164,8 @@ class RoomEvents extends React.Component {
     setTimeLineLeft() {
         const timeButtons = this.timeLineRef.current.querySelector('.timeButtons');
         const timeButtonsWidth = this.timeLineRef.current.querySelector('.buttonsWrapper').offsetWidth;
+        const nextBtn = this.timeLineRef.current.querySelector('.next');
+        const prevBtn = this.timeLineRef.current.querySelector('.prev');
         let left = 0;
         let rightPosLimit = timeButtons.offsetWidth - timeButtonsWidth;
         const buttonsCount = this.getVibisleTimeButtonsCount();
@@ -169,18 +174,20 @@ class RoomEvents extends React.Component {
         if (buttonsCount >= this.timeLineData.items.length - this.firstVisibleTimeIndex) {
             left = rightPosLimit;
             this.firstVisibleTimeIndex = this.timeLineData.items.length - buttonsCount;
-            const firstVisibleButton = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.firstVisibleTimeIndex}"]`);
-            firstVisibleButton.style.color = 'yellow';
-            const nextBtn = this.timeLineRef.current.querySelector('.next');
             nextBtn.setAttribute('disabled', true);
             console.log('disable last');
         }
         else if (this.firstVisibleTimeIndex > 0) {
+            nextBtn.removeAttribute('disabled');
             let buttons = this.timeLineRef.current.querySelectorAll('.timebtn');
             [].some.call(buttons, (button, btnIndex) => {
                 left += button.offsetWidth;
-                return this.firstVisibleTimeIndex <= btnIndex;
+                return this.firstVisibleTimeIndex <= btnIndex + 1;
             });
+        }
+
+        else if (this.firstVisibleTimeIndex < 1) {
+            prevBtn.setAttribute('disabled', true);
         }
 
         console.log(this.firstVisibleTimeIndex);
