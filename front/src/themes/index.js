@@ -1,4 +1,5 @@
-import { createMuiTheme, colors } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { colors } from '@material-ui/core/'
 
 const textColor = '#fff';
 const contrastText = '#fff';
