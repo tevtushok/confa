@@ -3,7 +3,7 @@ import appStore from './appStore';
 import userStore from './userStore';
 import authApi from '../services/authApi';
 import CODES from '../services/codes'
-import { validateEmail, validateName, validatePassword } from '../includes/validators';
+import { validateEmail, validateUserName, validatePassword } from '../includes/validators';
 
 
 export const RENDER_STATES = {
@@ -34,7 +34,7 @@ class authStore{
 
     @action setName(name) {
         this.values.name = name;
-        const validate = validateName(name);
+        const validate = validateUserName(name);
         console.log('name', validate);
         true === validate ? delete this.errors.name: this.errors.name = validate;
     }

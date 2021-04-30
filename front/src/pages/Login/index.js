@@ -44,7 +44,7 @@ class Login extends React.Component {
 								name="email"
 								label="Email:"
 								value={this.props.authStore.values.email}
-								fullWidth={true}
+								fullWidth
 								variant="outlined"
 								type="text"
 								onChange={this.handleEmailChange}
@@ -55,7 +55,7 @@ class Login extends React.Component {
 								name="password"
 								label="Password:"
 								value={this.props.authStore.values.password}
-								fullWidth={true}
+								fullWidth
 								variant="outlined"
 								type="password"
 								onChange={this.handlePasswordChange}

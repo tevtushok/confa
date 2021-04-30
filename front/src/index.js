@@ -6,11 +6,15 @@ import userStore from './stores/userStore';
 import appStore from './stores/appStore';
 import profileStore from './stores/profileStore';
 import authStore from './stores/authStore';
+import adminRoomsStore from './stores/admin/roomsStore';
 import App from './App';
 import './index.scss';
 
 
-const stores = { userStore, appStore, profileStore, authStore };
+const stores = {
+    userStore, appStore, profileStore, authStore,
+    adminRoomsStore,
+};
 
 // <React.StrictMode>
 //   <App />

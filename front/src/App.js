@@ -56,7 +56,7 @@ class App extends React.Component {
                 this.props.appStore.setRenderState(RENDER_STATES.COMMON);
             })
             .catch(({ error, response }) => {
-                if (error.response?.status !== 403) {
+                if (error && error.response?.status !== 403) {
                     appStore.setErrorMessage('Server error')
                     appStore.setRenderState(RENDER_STATES.ERROR);
                     console.log(response.message);
