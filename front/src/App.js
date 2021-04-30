@@ -99,7 +99,7 @@ class App extends React.Component {
                     <PrivateRoute path="/" exact component={Events} isLoggedIn={userStore.isLoggedIn}/>
                     <PrivateRoute path="/@:username" component={Profile} isLoggedIn={userStore.isLoggedIn}/>
 
-                    <Route path="/rooms" component={adminRooms} isAdmin={isAdmin} isLoggedIn={isLoggedIn}/>
+                    <PrivateRoute path="/rooms" component={adminRooms} isAdmin={isAdmin} isLoggedIn={isLoggedIn}/>
 
                     <Route component={Page404} />
                     </Switch>
