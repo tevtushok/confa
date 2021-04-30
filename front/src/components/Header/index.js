@@ -16,7 +16,7 @@ class Header extends React.Component {
 		const userStore = this.props.userStore;
 		if (userStore.user) {
 			let admin_links = '';
-			if (userStore.isAdmin) {
+			if (userStore.user.isAdmin) {
 				admin_links = <Link component={RouterLink} to="/rooms">Rooms</Link>
 			}
 			return (
