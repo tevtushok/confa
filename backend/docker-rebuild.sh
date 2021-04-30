@@ -1,4 +1,5 @@
 #!/bin/bash
+
 imageName=confa-img
 containerName=confa-api
 
