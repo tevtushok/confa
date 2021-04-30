@@ -16,7 +16,7 @@ const init = (app) => {
     });
 
     app.use('/api', apiRoute);
-    app.use('/api', adminApiRoute);
+    app.use('/api/admin', adminApiRoute);
 
 }
 module.exports = {

@@ -3,7 +3,7 @@ const { jsonResponse, validateRoomTitle, validateRoomNumber } = require('../../i
 const { SUCCESS, FAILURE, ADMIN } = require('../../includes/codes');
 
 
-const listRooms = async (req, res) => {
+module.exports.roomsList = async (req, res) => {
 	try {
 		await Room.find({}, (err, rooms) => {
 			const ret = {rooms: rooms};
@@ -18,7 +18,7 @@ const listRooms = async (req, res) => {
 	}
 };
 
-const saveRooms = async (req, res) => {
+module.exports.saveRooms = async (req, res) => {
     const reqRoom = req.body.rooms;
     // single item to save
     if (Object !== reqRoom.constructor || !Object.keys(reqRoom).length) {
@@ -97,7 +97,7 @@ const saveRooms = async (req, res) => {
     }
 }
 
-const deleteRoom = async (req, res) => {
+module.exports.deleteRoom = async (req, res) => {
     id = req.params.id || false;
     if (!id) {
         return jsonResponse(req, res, 400, ADMIN.ROOMS.DELETING_ROOMS,
@@ -136,11 +136,4 @@ function validateInputFields(fields, data = false) {
 
         return Object.keys(errors).length ? errors : true;
     }
-}
-
-module.exports = {
-	listRooms: listRooms,
-    saveRooms: saveRooms,
-    deleteRoom: deleteRoom,
-
 }
