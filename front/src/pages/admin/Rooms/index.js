@@ -86,7 +86,6 @@ class adminRooms extends React.Component {
     }
 
     render() {
-        const rooms = this.props.adminRoomsStore.rooms;
         const isLoading = this.props.adminRoomsStore.isLoading;
         const errorMessage = this.props.adminRoomsStore.errorMessage;
         return (

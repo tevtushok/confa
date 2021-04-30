@@ -306,6 +306,7 @@ export const validateInputFields = (fields, data  = []) => {
                 case 'number':
                     validateFunc = validateRoomNumber;
                     break;
+                default: validateFunc = undefined;
             }
             if (validateFunc) {
                 const value = fieldNames.length === 1 ? String(data) : data[field];
