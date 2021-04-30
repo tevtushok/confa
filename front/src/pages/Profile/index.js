@@ -16,6 +16,7 @@ import './index.scss';
 
 
 @inject('profileStore')
+@inject('userStore')
 @observer
 class Profile extends React.PureComponent {
     async componentDidMount() {
@@ -47,6 +48,15 @@ class Profile extends React.PureComponent {
         }
         return (
             <div className="events">
+                <h3>Info</h3>
+                <Grid container className="userInfo" spacing={2}>
+                    <Grid item>
+                        <p>Name: {this.props.userStore.user.name}</p>
+                    </Grid>
+                    <Grid item>
+                        <p>Email: {this.props.userStore.user.email}</p>
+                    </Grid>
+                </Grid>
                 <h3>Events</h3>
                 <Grid container className="eventsList" spacing={spacing}>
                     {events}

@@ -4,6 +4,7 @@ import { Switch, withRouter, Route } from "react-router-dom";
 
 import authApi from './services/authApi';
 import PrivateRoute from './routes/PrivateRoute'
+import AdminRoute from './routes/AdminRoute'
 import Bayan from './components/Bayan';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -99,7 +100,7 @@ class App extends React.Component {
                     <PrivateRoute path="/" exact component={Events} isLoggedIn={userStore.isLoggedIn}/>
                     <PrivateRoute path="/@:username" component={Profile} isLoggedIn={userStore.isLoggedIn}/>
 
-                    <PrivateRoute path="/rooms" component={adminRooms} isAdmin={isAdmin} isLoggedIn={isLoggedIn}/>
+                    <AdminRoute path="/rooms" component={adminRooms} isAdmin={isAdmin} isLoggedIn={isLoggedIn}/>
 
                     <Route component={Page404} />
                     </Switch>
