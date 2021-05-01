@@ -11,7 +11,6 @@ const public_routes = [
 	'/api/',
 	'/api/v1',
 	'/api/v1/auth/login',
-	'/api/v1/auth/verify',
 	'/api/v1/auth/register',
 ];
 

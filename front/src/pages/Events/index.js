@@ -88,7 +88,7 @@ export default class Events extends BaseComponent {
                     return this.getServerErrorState('Invalid data from server');
                 }
                 if (!apiData.data.length) {
-                    return {
+                    resultState = {
                         renderState: RENDER_STATES.NO_ROOMS,
                     };
                 }

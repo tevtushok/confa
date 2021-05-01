@@ -16,6 +16,8 @@ const stores = {
     adminRoomsStore,
 };
 
+window.___XSTORES = stores;
+
 // <React.StrictMode>
 //   <App />
 // </React.StrictMode>

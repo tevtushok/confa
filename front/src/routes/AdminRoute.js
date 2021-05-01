@@ -1,18 +1,19 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import Page403 from '../pages/Page403';
 
-const PrivateRoute = ({component: Component, ...rest}) => {
+const AdminRoute = ({component: Component, ...rest}) => {
     return (
 
         // Show the component only when the user is logged in
-        // Otherwise, redirect the user to home page
+        // Otherwise, load 403 page
 
         <Route {...rest} render={props => (
             rest.isLoggedIn && rest.isAdmin ?
                 <Component {...props} />
-            : <Redirect to="/" />
+                : <Page403 {...props} />
         )} />
     );
 };
 
-export default PrivateRoute;
+export default AdminRoute;

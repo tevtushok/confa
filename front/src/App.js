@@ -73,9 +73,6 @@ class App extends React.Component {
     render() {
         console.info('App render', this.props.appStore.renderState);
         const userStore = this.props.userStore;
-
-        const isLoggedIn = userStore.loggedIn;
-        const isAdmin = userStore.isAdmin;
         let page = null;
         switch(this.props.appStore.renderState) {
             case RENDER_STATES.LOADER:
@@ -100,7 +97,7 @@ class App extends React.Component {
                     <PrivateRoute path="/" exact component={Events} isLoggedIn={userStore.isLoggedIn}/>
                     <PrivateRoute path="/@:username" component={Profile} isLoggedIn={userStore.isLoggedIn}/>
 
-                    <AdminRoute path="/rooms" component={adminRooms} isAdmin={isAdmin} isLoggedIn={isLoggedIn}/>
+                    <AdminRoute path="/rooms" exact component={adminRooms} isAdmin={userStore.isAdmin} isLoggedIn={userStore.isLoggedIn}/>
 
                     <Route component={Page404} />
                     </Switch>

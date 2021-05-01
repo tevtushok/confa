@@ -8,7 +8,6 @@ router.get('/v1', (req, res, next) => {
 });
 
 function adminMiddleware (req, res, next) {
-    console.log(req.user);
 	if (!req.user || !req.user.isAdmin) {
 		return jsonResponse(req, res, 403, null, null, 'Access restricted');
 	}

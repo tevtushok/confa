@@ -108,6 +108,6 @@ module.exports.verify = (req, res) => {
 		return jsonResponse(req, res, 200, SUCCESS, ret, 'Token verified');
 	})
 	.catch(err => {
-		return jsonResponse(req, res, 400, API.AUTH.INVALID_USER, null, 'Invalid user');
+		return jsonResponse(req, res, 403, API.AUTH.INVALID_USER, null, 'Invalid user');
 	});
 }
