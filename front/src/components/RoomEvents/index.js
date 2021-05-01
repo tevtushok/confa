@@ -39,6 +39,7 @@ class RoomEvents extends React.Component {
         this.mouseDownOnScrollInterval = false;
         this.isMouseHoldedOnScroll = false;
         this.prevWindowWidth = null;
+        this.prevClickedButton = undefined;
     }
 
     initDinamycProps(props) {
@@ -310,9 +311,13 @@ class RoomEvents extends React.Component {
 
     handleTimeClick = (e) => {
         e.currentTarget.classList.toggle('selected');
+        if (this.prevClickedButton && e.currentTarget !== this.prevClickedButton) {
+            this.prevClickedButton.classList.remove('selected');
+        }
         const label = e.currentTarget.dataset.label;
         this.setTimeData(e.currentTarget);
         this.changeTime(label);
+        this.prevClickedButton = e.currentTarget;
     };
 
 
@@ -324,6 +329,7 @@ class RoomEvents extends React.Component {
             }
             else {
                 btn.classList.remove('intermediate');
+                btn.classList.remove('selected');
             }
         });
     };
