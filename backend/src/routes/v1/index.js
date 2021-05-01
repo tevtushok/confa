@@ -1,9 +1,20 @@
 const express = require('express');
-const v1Api = require('./v1');
-let router = express.Router();
-router.get('/v1', (req, res, next) => {
+const router = express.Router();
+
+router.get('/', (req, res, next) => {
 	res.sendFile(__dirname + '/index.html');
 });
-router.use('/v1', v1Api);
+
+const authController = require('../../controllers/auth');
+const usersController = require('../../controllers/users')
+const eventsController = require('../../controllers/events')
+const roomsController = require('../../controllers/rooms')
+
+router.use('/auth', authController);
+router.use('/events', eventsController);
+
+router.use('/users', usersController);
+router.use('/rooms', roomsController);
+
 
 module.exports = router;

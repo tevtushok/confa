@@ -15,8 +15,8 @@ const init = (app) => {
         return next();
     });
 
-    app.use('/api', apiRoute);
-    app.use('/api/admin', adminApiRoute);
+    app.use('/api/v1', apiRoute);
+    app.use('/api/v1/admin', adminApiRoute);
 
 }
 module.exports = {

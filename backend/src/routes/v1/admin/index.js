@@ -1,9 +1,9 @@
 const express = require('express');
-const v1Api = require('./v1.js');
 const router = express.Router();
+
 const { jsonResponse } = require('../../../includes/utils');
 
-router.get('/v1', (req, res, next) => {
+router.get('/', (req, res, next) => {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -13,8 +13,12 @@ function adminMiddleware (req, res, next) {
 	}
 	next();
 }
+
 router.use(adminMiddleware);
 
-router.use('/v1', v1Api);
+const adminRoomController = require('../../../controllers/admin/rooms')
+
+router.use('/rooms/', adminRoomController)
+
 
 module.exports = router;
