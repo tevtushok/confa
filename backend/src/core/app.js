@@ -49,9 +49,6 @@ app.use(bodyParser.json());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
 
-// use cookie parser for secure httpOnly cookie
-app.use(cookieParser(process.env.COOKIE_SECRET));
-
 
 // app.all('*', (req, res, next) => {
 //     console.log(req.headers);
