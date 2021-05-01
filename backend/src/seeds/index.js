@@ -2,7 +2,7 @@ const faker = require('faker');
 const Room = require('../models/room.js');
 const mongoose = require('mongoose');
 const path = require('path')
-const parentDir = path.resolve(__dirname, '..');
+const parentDir = path.resolve(__dirname, '../../')
 require('dotenv').config({
     path: path.resolve(parentDir, '.env'),
 })

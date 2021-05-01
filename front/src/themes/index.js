@@ -31,11 +31,6 @@ export const theme = createMuiTheme({
                 color: textColor
             }
         },
-        MuiPaper: {
-            root: {
-                backgroundColor: 'rgb(51 51 51 / 30%)',
-            },
-        },
         MuiCssBaseline: {
             '@global': {
                 html: {

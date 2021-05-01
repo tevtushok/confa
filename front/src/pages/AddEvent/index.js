@@ -77,46 +77,8 @@ class AddEvent extends SaveEvent {
     async addEvent() {
         const postData = this.getPostData();
         console.info('addEvent with:', postData);
-        const result = await eventsApi.addEvent(postData);
-        if (result.error) {
-            const apiCode = result.response.getApiCode();
-            const apiData = result.response.getApiData();
-            const apiMessage = result.response.getApiMessage();
-            if (apiCode === CODES.EVENTS.VALIDATION) {
-                const errorFields = result.response.getErrorFields();
-                console.log('AddEvent->Validation error', errorFields);
-                return this.getValidationErrorState('Validation error', errorFields);
-            }
-            else if (apiCode === CODES.EVENTS.CROSS_DATES) {
-                const dbEvents = apiData.events;
-                if (false === Array.isArray(dbEvents)) {
-                    console.log('Expected array of events from database', apiMessage);
-                    return this.getServerErrorState('Invalid data from server');
-                }
-                const errorFields = {date_start: true, date_end: true};
-                const serviceMessage = 'Date is crossed with enother events';
-                console.log('AddEvent->Validation error', errorFields);
-                return this.getValidationErrorState(serviceMessage, errorFields, {crossedEvents:dbEvents});
-            }
-            else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
-                const serviceMessage = 'Room does not exist. Please try another room';
-                console.log('Room does not exists', apiMessage);
-                return this.getValidationErrorState(serviceMessage);
-            }
-            else if (apiCode === CODES.EVENTS.ROOM_NOT_ACTIVE) {
-                const serviceMessage = 'Room is closed. Please try another room';
-                console.log('Room not active', apiMessage);
-                return this.getValidationErrorState(serviceMessage);
-            }
-            else {
-                if (result.error instanceof ApiDataTypeError) {
-                    console.error('addEvent->ApiDataTypeError');
-                }
-                console.log('AddEvent->Invalid data from server', result.error);
-                return this.getServerErrorState('Invalid data from server');
-            }
-        }
-        else {
+        try {
+            const result = await eventsApi.addEvent(postData);
             const apiData = result.response.getApiData();
             if (null === apiData.event || 'object' !== typeof apiData.event) {
                 console.log('addEvent>Invalid rooms data. Expected event object');
@@ -133,6 +95,46 @@ class AddEvent extends SaveEvent {
                 createdEvent: apiData.event,
             };
             return state;
+        }
+        catch ({ response, error }) {
+            if (response) {
+                const apiCode = response.getApiCode();
+                const apiData = response.getApiData();
+                const apiMessage = response.getApiMessage();
+                if (apiCode === CODES.EVENTS.VALIDATION) {
+                    const errorFields = response.getErrorFields();
+                    console.log('AddEvent->Validation error', errorFields);
+                    return this.getValidationErrorState('Validation error', errorFields);
+                }
+                else if (apiCode === CODES.EVENTS.CROSS_DATES) {
+                    const dbEvents = apiData.events;
+                    if (false === Array.isArray(dbEvents)) {
+                        console.log('Expected array of events from database', apiMessage);
+                        return this.getServerErrorState('Invalid data from server');
+                    }
+                    const errorFields = {date_start: true, date_end: true};
+                    const serviceMessage = 'Date is crossed with enother events';
+                    console.log('AddEvent->Validation error', errorFields);
+                    return this.getValidationErrorState(serviceMessage, errorFields, {crossedEvents:dbEvents});
+                }
+                else if (apiCode === CODES.EVENTS.ROOM_NOT_EXISTS) {
+                    const serviceMessage = 'Room does not exist. Please try another room';
+                    console.log('Room does not exists', apiMessage);
+                    return this.getValidationErrorState(serviceMessage);
+                }
+                else if (apiCode === CODES.EVENTS.ROOM_NOT_ACTIVE) {
+                    const serviceMessage = 'Room is closed. Please try another room';
+                    console.log('Room not active', apiMessage);
+                    return this.getValidationErrorState(serviceMessage);
+                }
+            }
+            else {
+                if (error instanceof ApiDataTypeError) {
+                    console.error('addEvent->ApiDataTypeError');
+                }
+                console.log('AddEvent->Invalid data from server');
+                return this.getServerErrorState('Invalid data from server');
+            }
         }
     }
 
