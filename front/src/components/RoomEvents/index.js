@@ -334,6 +334,9 @@ class RoomEvents extends React.Component {
         });
     };
 
+    getTimeData() {
+        return Object.values(this.timeData).filter(timeIndex => timeIndex).sort();
+    }
     setTimeData(clickedBtn) {
         let status = clickedBtn.dataset.status
         let index = clickedBtn.dataset.index;
@@ -388,7 +391,7 @@ class RoomEvents extends React.Component {
 
     handleAddEvent = () => {
         let args = [ this.room._id];
-        const timeIndexes = Object.values(this.timeData).filter(time => time);
+        const timeIndexes = this.getTimeData();
         timeIndexes.forEach(index => {
             args.push(
                 dayjs(`${dayjs(this.date).format('YYYY-MM-DD')} ${this.timeLineData.items[index].label}`).format('YYYY-MM-DDTHH:mm')
