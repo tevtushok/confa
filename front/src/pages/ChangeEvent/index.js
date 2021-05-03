@@ -164,24 +164,24 @@ class ChangeEvent extends SaveEvent {
                     <>
                         <h2 className="text-center">Change event</h2>
                         <EventForm
-                        isLoading={this.state.isLoading}
-                        errors={this.state.errors}
-                        serviceMessage={this.state.serviceMessage}
-                        roomsList={this.state.roomsList}
-                        crossedEvents={this.state.crossedEvents}
+                            isLoading={this.state.isLoading}
+                            errors={this.state.errors}
+                            serviceMessage={this.state.serviceMessage}
+                            roomsList={this.state.roomsList}
+                            crossedEvents={this.state.crossedEvents}
 
-                        action="change"
-                        componentStatus={this.state.componentStatus}
+                            action="change"
+                            renderState={this.state.renderState}
 
-                        event={this.state.event}
-                        alert={alert}
+                            event={this.state.event}
+                            alert={alert}
 
-                        handleRoomChange={this.handleRoomChange}
-                        handleStartDateTimeChange={this.handleStartDateTimeChange}
-                        handleDateEndChange={this.handleDateEndChange}
-                        handleTitleChange={this.handleTitleChange}
-                        handleDescriptionChange={this.handleDescriptionChange}
-                        handleSubmit={this.handleSubmit} />
+                            handleRoomChange={this.handleRoomChange}
+                            handleDateStartChange={this.handleDateStartChange}
+                            handleDateEndChange={this.handleDateEndChange}
+                            handleTitleChange={this.handleTitleChange}
+                            handleDescriptionChange={this.handleDescriptionChange}
+                            handleSubmit={this.handleSubmit} />
                     </>
                 );
                 break;
