@@ -39,8 +39,8 @@ class Profile extends React.PureComponent {
                         <div>Date start: {EventHelper.dateFormatClient(event.date_end)}</div>
                         <div>
                             <div>Status: {event.status}</div>
-                            <Link component={routerLink} variant="inherit" to={`/events/change/${event._id}`}>change</Link>&nbsp;|&nbsp;
-                            <Link component={routerLink} variant="inherit" to={`/events/delete/${event._id}`}>delete</Link>
+                            <Link component={routerLink} color="secondary" to={`/events/change/${event._id}`}>change</Link>&nbsp;|&nbsp;
+                            <Link component={routerLink} color="secondary" to={`/events/delete/${event._id}`}>delete</Link>
                         </div>
                     </Grid>
                 ))

@@ -182,7 +182,9 @@ class adminRooms extends React.Component {
                         </Table>
                     </TableContainer>
                     <FormControl>
-                        <Button onClick={this.addRoomHandler} variant="contained" size="large" color="secondary" fullWidth type="button" disabled={isLoading}>New room</Button>
+                        <Button onClick={this.addRoomHandler}
+                            variant="contained" size="large" color="primary"
+                            fullWidth type="button" disabled={isLoading}>New room</Button>
                     </FormControl>
                 </div>
             </Container>

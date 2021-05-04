@@ -8,9 +8,9 @@ class Footer extends React.Component {
 	render() {
 		return (
 			<footer>
-				<Toolbar className="footer">
+				<Toolbar className="footer" color="default">
 					<div>
-                        Based on <Link href="https://reactjs.org">React</Link>{React.version}
+                        Based on <Link href="https://reactjs.org">React</Link><span> {React.version} </span>
                     </div>
 				</Toolbar>
 			</footer>

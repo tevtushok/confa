@@ -14,10 +14,14 @@ export const theme = createMuiTheme({
         primary: {
             textColor: textColor,
             main: colors.green[700],
+            dark: colors.green[900],
+            light: colors.green[700],
             contrastText: contrastText,
         },
         secondary: {
-            main: '#282828',
+            main: colors.indigo[500],
+            light: colors.indigo[400],
+            dark: colors.indigo[900],
             contrastText: contrastText,
         },
         error: {
@@ -31,16 +35,6 @@ export const theme = createMuiTheme({
                 color: textColor
             }
         },
-        MuiCssBaseline: {
-            '@global': {
-                html: {
-                    fontFamily: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
-                        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue','sans-serif'].join(', '),
-                    WebkitFontSmoothing: 'antialiased',
-                    fontSize: 16,
-                }
-            }
-        }
     }
 });
 
