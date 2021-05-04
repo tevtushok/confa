@@ -292,7 +292,6 @@ class RoomEvents extends React.Component {
                     return STATUSES.AVAILABLE !== status;
                 });
             }
-            const selected = this.nowLabel === item.label;
             timeLine[item.label] = {
                 label: item.label,
                 date: item.date,
