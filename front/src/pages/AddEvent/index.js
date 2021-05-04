@@ -193,7 +193,6 @@ class AddEvent extends SaveEvent {
                             handleTitleChange={this.handleTitleChange}
                             handleDescriptionChange={this.handleDescriptionChange}
                             handleSubmit={this.handleSubmit} />
-                        />
                     </>
                 );
                 break;
