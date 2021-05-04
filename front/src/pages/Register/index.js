@@ -53,51 +53,55 @@ class Register extends React.Component {
                     <h2 className="text-center">Register new user</h2>
 
                     <form onSubmit={this.handleSubmit}>
-                        <FormControl error={!!errors.name}>
+                        <FormControl>
                             <TextField
                                 name="name"
                                 onChange={this.handleChangeName}
+								error={!!errors?.name}
                                 id="name"
                                 label="Name:"
                                 fullWidth
                                 variant="outlined"
                             />
-                            {!!errors.name && <FormHelperText className="errorHelper">{helperTextName}</FormHelperText> }
+                            {!!errors.name && <FormHelperText error={true} className="errorHelper">{helperTextName}</FormHelperText> }
                         </FormControl>
 
-                        <FormControl error={!!errors.email}>
+                        <FormControl>
                             <TextField
                                 onChange={this.handleChangeEmail}
                                 name="email"
+								error={!!errors?.email}
                                 fullWidth
                                 label="Email:"
                                 variant="outlined"
                             />
-                            {!!errors.email && <FormHelperText className="errorHelper">{helperTextEmail}</FormHelperText> }
+                            {!!errors.email && <FormHelperText error={true} className="errorHelper">{helperTextEmail}</FormHelperText> }
                         </FormControl>
 
-                        <FormControl error={!!errors.password}>
+                        <FormControl>
                             <TextField
                                 onChange={this.handlePasswordChange}
+                                error={!!errors?.password}
                                 name="password"
                                 fullWidth
                                 label="Password:"
                                 variant="outlined"
                                 type="password"
                             />
-                            {!!errors.password && <FormHelperText id="password-error">{helperTextPassword}</FormHelperText>}
+                            {!!errors.password && <FormHelperText error={true} id="password-error">{helperTextPassword}</FormHelperText>}
                         </FormControl>
 
-                        <FormControl error={!!errors.password_confirm}>
+                        <FormControl>
                             <TextField
                                 onChange={this.handlePasswordConfirmChange}
+                                error={!!errors?.password_confirm}
                                 name="password_confirm"
                                 fullWidth
                                 label="Password confirm:"
                                 variant="outlined"
                                 type="password"
                             />
-                            {!!errors.password_confirm && <FormHelperText>{helperTextPasswordConfirmation}</FormHelperText>}
+                            {!!errors.password_confirm && <FormHelperText error={true} >{helperTextPasswordConfirmation}</FormHelperText>}
                         </FormControl>
 
                         <FormControl error={!!serviceMessage.length} className="serviceMessage">
@@ -106,7 +110,7 @@ class Register extends React.Component {
                         </FormControl>
 
                         <FormControl>
-                            <Button variant="contained" color="secondary"  fullWidth type="submit"
+                            <Button variant="contained" color="primary"  fullWidth type="submit"
                                 disabled={this.props.authStore.inProgress}>Register
                             </Button>
                         </FormControl>

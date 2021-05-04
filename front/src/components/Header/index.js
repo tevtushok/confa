@@ -20,7 +20,7 @@ class Header extends React.Component {
 				admin_links = <Link component={RouterLink} to="/rooms">Rooms</Link>
 			}
 			return (
-				<AppBar position="static" color="primary">
+				<AppBar position="static" color="default">
 					<Toolbar>
 						<LogoutLink/>
 						{admin_links}
@@ -32,7 +32,7 @@ class Header extends React.Component {
 		}
 		else {
 			return (
-				<AppBar position="static">
+				<AppBar position="static" color="default">
 					<Toolbar>
 						<Link component={RouterLink} to="/login">Login</Link>
 						<Link component={RouterLink} to="/register">Register</Link>

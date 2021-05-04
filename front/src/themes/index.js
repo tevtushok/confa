@@ -12,12 +12,12 @@ export const theme = createMuiTheme({
             default: paletteType === 'dark' ? '#191919' : '#fff'
         },
         primary: {
-            main: '#282828',
             textColor: textColor,
+            main: colors.green[700],
             contrastText: contrastText,
         },
         secondary: {
-            main: colors.green[700],
+            main: '#282828',
             contrastText: contrastText,
         },
         error: {

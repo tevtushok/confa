@@ -108,7 +108,7 @@ export default class EventForm extends React.Component {
                 </Grid>
                 <Grid item xs={12} className="btnContainer">
                     <Button disabled={this.props.isLoading} className="submit" variant="contained" fullWidth
-                        type="button" color="secondary" onClick={this.props.handleSubmit}>{this.props.action}
+                        type="button" color="primary" onClick={this.props.handleSubmit}>{this.props.action}
                     </Button>
                 </Grid>
             </Grid>

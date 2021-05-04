@@ -66,7 +66,7 @@ class Login extends React.Component {
 							<FormHelperText>{serviceMessage}</FormHelperText>
 						</FormControl>
 						<FormControl>
-							<Button variant="contained" color="secondary" fullWidth type="submit"
+							<Button variant="contained" color="primary" fullWidth type="submit"
                                 disabled={this.props.authStore.inProgress}>Login
                             </Button>
 						</FormControl>

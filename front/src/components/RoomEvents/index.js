@@ -585,7 +585,7 @@ function EventDetails(props) {
                 </div>
                 {renderEventInfo()}
                 <Grid container className="addEventWrapper">
-                    <Button onClick={props.onSubmit} variant="contained" color="secondary"
+                    <Button onClick={props.onSubmit} variant="contained" color="primary"
                         size="medium" fullWidth type="submit" className="addEvent">
                         Add event {renderSelectedTime()}
                     </Button>
