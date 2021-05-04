@@ -381,9 +381,12 @@ class RoomEvents extends React.Component {
         console.log('newTimeData', newTimeData);
         console.log('timeLine', this.timeLine);
         if (newTimeData[0] && newTimeData[1]) {
-            for(let i = newTimeData[0]; i <= newTimeData[1]; i++) {
+            console.warn('check intermediate availablity');
+            const sortedIndexes = Array.from(newTimeData).sort();
+            for(let i = sortedIndexes[0]; i <= sortedIndexes[1]; i++) {
                 const label = this.timeLineData.items[i].label;
                 const status = this.timeLine[label].status;
+                console.warn('check', label, status);
                 if (STATUSES.AVAILABLE !== status) {
                     console.log('found not available', 'label', label, status);
                     return false;
@@ -552,10 +555,10 @@ function EventDetails(props) {
         let container = '';
         if (timeData.length) {
             let times = [];
-            times.push(<span>{timeData[0]}</span>);
+            times.push(<span key="start">{timeData[0]}</span>);
             if (timeData[1]) {
-                times.push(<span className="timesDivider"> - </span>);
-                times.push(<span>{timeData[1]}</span>);
+                times.push(<span key="divider" className="timesDivider"> - </span>);
+                times.push(<span key="end">{timeData[1]}</span>);
             }
             container = (
                 <span>
