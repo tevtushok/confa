@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import dayjs from 'dayjs';
 
-import { Button, } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import {
     ArrowLeft as ArrowLeftIcon,
     ArrowRight as ArrowRightIcon,
@@ -77,10 +77,7 @@ class RoomEvents extends React.Component {
     }
 
     initTimeData() {
-        this.timeData = {
-            timeIndex1: NaN,
-            timeIndex2: NaN,
-        };
+        this.timeData = [NaN, NaN];
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -320,11 +317,10 @@ class RoomEvents extends React.Component {
         this.prevClickedButton = e.currentTarget;
     };
 
-
     setIntermediate = () => {
         this.timeLineRef.current.querySelectorAll('.timebtn').forEach((btn, index) => {
-            if (this.timeData.timeIndex1 && index >= this.timeData.timeIndex1
-                && this.timeData.timeIndex2 && index <= this.timeData.timeIndex2) {
+            if (this.timeData[0] && index >= this.timeData[0]
+                && this.timeData[1] && index <= this.timeData[1]) {
                 btn.classList.add('intermediate');
             }
             else {
@@ -334,49 +330,91 @@ class RoomEvents extends React.Component {
         });
     };
 
-    getTimeData() {
-        return Object.values(this.timeData).filter(timeIndex => timeIndex).sort();
+    getTimeData = () => {
+        return this.timeData.filter(value => value).sort().map(timeIndex => {
+            let label = this.timeLineData.items[timeIndex].label;
+            return label;
+        });
     }
+
     setTimeData(clickedBtn) {
+        let newTimeData = Array.from(this.timeData);
         let status = clickedBtn.dataset.status
         let index = clickedBtn.dataset.index;
         if (status !== STATUSES.AVAILABLE) {
             return;
         }
 
-        if (index === this.timeData.timeIndex1) {
-            this.timeData.timeIndex1 = NaN;
-            console.log('index === index1');
-            clickedBtn.classList.remove('postData');
+        if (index === this.timeData[0]) {
+            // this.timeData.timeIndex1 = NaN;
+            newTimeData[0] = NaN;
+            // clickedBtn.classList.remove('postData');
         }
-        else if (index === this.timeData.timeIndex2) {
-            this.timeData.timeIndex2 = NaN;
-            console.log('index === index2');
-            clickedBtn.classList.remove('postData');
+        else if (index === this.timeData[1]) {
+            // this.timeData.timeIndex2 = NaN;
+            newTimeData[1] = NaN;
+            // clickedBtn.classList.remove('postData');
         }
 
-        else if(isNaN(this.timeData.timeIndex1)) {
+        else if(isNaN(this.timeData[0])) {
             this.timeData.timeIndex1 = index;
-            clickedBtn.classList.add('postData');
+            newTimeData[0] = index;
+            // clickedBtn.classList.add('postData');
         }
-        else if (isNaN(this.timeData.timeIndex2)) {
-            this.timeData.timeIndex2 = index;
-            clickedBtn.classList.add('postData');
+        else if (isNaN(this.timeData[1])) {
+            // this.timeData.timeIndex2 = index;
+            newTimeData[1] = index;
+            // clickedBtn.classList.add('postData');
         }
 
         else {
-            let prevBtn = null;
-            if (index < this.timeData.timeIndex1) {
-                prevBtn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.timeData.timeIndex1}"]`);
-                this.timeData.timeIndex1 = index;
+            if (index < this.timeData[0]) {
+                newTimeData[0] = index;
+                // this.timeData.timeIndex1 = index;
             }
-            else if (index > this.timeData.timeIndex1) {
-                prevBtn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.timeData.timeIndex2}"]`);
-                this.timeData.timeIndex2 = index;
+            else if (index > this.timeData[1]) {
+                newTimeData[1] = index;
+                // this.timeData.timeIndex2 = index;
             }
-            prevBtn.classList.remove('postData');
-            clickedBtn.classList.add('postData');
         }
+        // both date selected - check intermediate time statuses
+        console.log('newTimeData', newTimeData);
+        console.log('timeLine', this.timeLine);
+        if (newTimeData[0] && newTimeData[1]) {
+            for(let i = newTimeData[0]; i <= newTimeData[1]; i++) {
+                const label = this.timeLineData.items[i].label;
+                const status = this.timeLine[label].status;
+                if (STATUSES.AVAILABLE !== status) {
+                    console.log('found not available', 'label', label, status);
+                    return false;
+                }
+            }
+        }
+
+        for(let i = 0; i <= 1; i++) {
+            if (!this.timeData[i] && newTimeData[i]) {
+                // add new selection
+                const btn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${newTimeData[i]}"]`);
+                btn.classList.add('postData');
+            }
+            else if (this.timeData[i] && !newTimeData[i]) {
+                // remove old selection
+                const btn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.timeData[i]}"]`);
+                btn.classList.remove('postData');
+            }
+            else if (this.timeData[i] && newTimeData[i] && this.timeData[i] !== newTimeData[i]) {
+                // replace selection with new index
+                const prevBtn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${this.timeData[i]}"]`);
+                const newBtn = this.timeLineRef.current.querySelector(`.timebtn[data-index="${newTimeData[i]}"]`);
+                prevBtn.classList.remove('postData');
+                newBtn.classList.add('postData');
+            }
+        }
+
+        // clickedBtn.classList.add('postData');
+        console.log('setIntermediate');
+        this.timeData = newTimeData;
+        console.log('new', this.timeData);
         this.setIntermediate();
     }
 
@@ -391,10 +429,10 @@ class RoomEvents extends React.Component {
 
     handleAddEvent = () => {
         let args = [ this.room._id];
-        const timeIndexes = this.getTimeData();
-        timeIndexes.forEach(index => {
+        const timeLabels = this.getTimeData();
+        timeLabels.forEach(label => {
             args.push(
-                dayjs(`${dayjs(this.date).format('YYYY-MM-DD')} ${this.timeLineData.items[index].label}`).format('YYYY-MM-DDTHH:mm')
+                dayjs(`${dayjs(this.date).format('YYYY-MM-DD')} ${label}`).format('YYYY-MM-DDTHH:mm')
             );
         });
         const link = '/events/add/' + args.join('/');
@@ -427,7 +465,7 @@ class RoomEvents extends React.Component {
             <div className={`roomEvents mdc-theme--primary-bg`}>
                 <div className="baseWrapper">
                     <EventDetails onSubmit={this.handleAddEvent}
-                        timeData={this.timeData} timeLineData={this.timeLineData}
+                        timeData={this.getTimeData()}
                         room={this.room} selectedTime={this.state.selectedTime} />
                     {this.TimeLine()}
                 </div>
@@ -491,23 +529,16 @@ function EventDetails(props) {
     console.log('EventDetails render');
     const room = props.room;
     const selectedTime = props.selectedTime;
+    const timeData = props.timeData;
 
     const status = selectedTime.status;
 
     const renderEventInfo = () => {
         switch(status) {
             case STATUSES.PENDING:
-                return (
-                    <div className="pengindEvent">
-                        <div>Event is comming soon</div>
-                        <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
-                        <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
-                    </div>
-                );
             case STATUSES.RESERVED:
                 return (
-                    <div className="roomReserved">
-                        <div>Room is reserved</div>
+                    <div className="pengindEvent">
                         <div>Start in: {EventHelper.dateFormatClient(selectedTime.event.date_start, 'DD-MM-YYYY HH:mm')}</div>
                         <div>Ends in: {EventHelper.dateFormatClient(selectedTime.event.date_end, 'HH:mm')}</div>
                     </div>
@@ -516,6 +547,25 @@ function EventDetails(props) {
                 return '';
         }
     };
+
+    const renderSelectedTime = () => {
+        let container = '';
+        if (timeData.length) {
+            let times = [];
+            times.push(<span>{timeData[0]}</span>);
+            if (timeData[1]) {
+                times.push(<span className="timesDivider"> - </span>);
+                times.push(<span>{timeData[1]}</span>);
+            }
+            container = (
+                <span>
+                    ( {times} )
+                </span>
+            );
+        }
+        return container;
+    }
+
     return(
         <div className="infoWrapper">
             <div className={`statusBar ${status}`}></div>
@@ -526,12 +576,14 @@ function EventDetails(props) {
                     <div className="status">Status: {status}</div>
                 </div>
                 {renderEventInfo()}
-                {status === STATUSES.AVAILABLE && (
-                    <div className="addEventWrapper">
+                <div className="addEventWrapper">
+                    <Grid>
                         <Button onClick={props.onSubmit} variant="contained" color="secondary"
-                        size="medium" fullWidth type="submit" className="addEvent">Add event</Button>
-                    </div>
-                )}
+                            size="medium" fullWidth type="submit" className="addEvent">
+                            Add event {renderSelectedTime()}
+                        </Button>
+                    </Grid>
+                </div>
             </div>
         </div>
     );
