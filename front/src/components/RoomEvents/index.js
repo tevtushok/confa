@@ -344,40 +344,35 @@ class RoomEvents extends React.Component {
         if (status !== STATUSES.AVAILABLE) {
             return;
         }
-
+        // unselect when maches with first
         if (index === this.timeData[0]) {
-            // this.timeData.timeIndex1 = NaN;
             newTimeData[0] = NaN;
-            // clickedBtn.classList.remove('postData');
         }
+        // unselect when maches with second
         else if (index === this.timeData[1]) {
-            // this.timeData.timeIndex2 = NaN;
             newTimeData[1] = NaN;
-            // clickedBtn.classList.remove('postData');
         }
-
-        else if(isNaN(this.timeData[0])) {
-            this.timeData.timeIndex1 = index;
+        // save to first if first is not set
+        else if(!(this.timeData[0])) {
             newTimeData[0] = index;
-            // clickedBtn.classList.add('postData');
         }
-        else if (isNaN(this.timeData[1])) {
-            // this.timeData.timeIndex2 = index;
+        // save to second if second is not set
+        else if (!(this.timeData[1])) {
             newTimeData[1] = index;
-            // clickedBtn.classList.add('postData');
         }
 
         else {
+            // if index less then first index change first index to new index
             if (index < this.timeData[0]) {
                 newTimeData[0] = index;
-                // this.timeData.timeIndex1 = index;
             }
+            // otherwise change secound index to new index
+            // in case when need to change time end its good logic but when need to change "time start" its confuse
             else if (index > this.timeData[1]) {
                 newTimeData[1] = index;
-                // this.timeData.timeIndex2 = index;
             }
         }
-        // both date selected - check intermediate time statuses
+        // both date selected - check intermediate times statuses
         console.log('newTimeData', newTimeData);
         console.log('timeLine', this.timeLine);
         if (newTimeData[0] && newTimeData[1]) {
@@ -579,14 +574,12 @@ function EventDetails(props) {
                     <div className="status">Status: {status}</div>
                 </div>
                 {renderEventInfo()}
-                <div className="addEventWrapper">
-                    <Grid>
-                        <Button onClick={props.onSubmit} variant="contained" color="secondary"
-                            size="medium" fullWidth type="submit" className="addEvent">
-                            Add event {renderSelectedTime()}
-                        </Button>
-                    </Grid>
-                </div>
+                <Grid container className="addEventWrapper">
+                    <Button onClick={props.onSubmit} variant="contained" color="secondary"
+                        size="medium" fullWidth type="submit" className="addEvent">
+                        Add event {renderSelectedTime()}
+                    </Button>
+                </Grid>
             </div>
         </div>
     );
