@@ -94,7 +94,7 @@ class DeleteEvent extends SaveEvent {
                 component = <AppError data="Application error"/>;
         }
         return (
-            <Container maxWidth="md" className={`addEvent page ${this.state.renderState}`}>
+            <Container maxWidth="md" className={`deleteEvent page ${this.state.renderState}`}>
                 {component}
             </Container>
         );
@@ -114,7 +114,7 @@ function DeleteComfirm(props) {
             </Grid>
             <Grid container className="btnContainer">
                 <Button disabled={props.isLoading} className="btnAddEvent" variant="contained" fullWidth
-                    type="button" color="secondary" onClick={props.handleDeleteEvent}>Delete event
+                    type="button" color="primary" onClick={props.handleDeleteEvent}>Delete event
                 </Button>
                 {props.isLoading && <Bayan/>}
             </Grid>
@@ -129,7 +129,7 @@ function EventDeleted(props) {
             <div className="created text-center">
                 <h2>Event deleted successfuly.</h2>
                 <Grid container className="btnContainer">
-                    <Button component={routerLink} to="/events/add" variant="contained" color="secondary" fullWidth type="submit">
+                    <Button component={routerLink} to="/events/add" variant="contained" color="primary" fullWidth type="submit">
                         Add event
                     </Button>
                 </Grid>

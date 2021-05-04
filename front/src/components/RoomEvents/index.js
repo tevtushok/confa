@@ -112,10 +112,9 @@ class RoomEvents extends React.Component {
 
     resetSelections() {
         this.setIntermediate();
-        const buttons = this.timeLineRef.current.querySelectorAll('.selected, .postData');
+        const buttons = this.timeLineRef.current.querySelectorAll('.postData');
         if (buttons) {
             buttons.forEach(button => {
-                button.classList.remove('selected');
                 button.classList.remove('postData');
             });
         }
@@ -299,7 +298,7 @@ class RoomEvents extends React.Component {
                 date: item.date,
                 event: crossedOrPengingEvent,
                 status: status,
-                className: selected ? 'selected' : '',
+                className: '',
                 disabled: status !== STATUSES.AVAILABLE,
             };
         });
@@ -307,10 +306,6 @@ class RoomEvents extends React.Component {
     }
 
     handleTimeClick = (e) => {
-        e.currentTarget.classList.toggle('selected');
-        if (this.prevClickedButton && e.currentTarget !== this.prevClickedButton) {
-            this.prevClickedButton.classList.remove('selected');
-        }
         const label = e.currentTarget.dataset.label;
         this.setTimeData(e.currentTarget);
         this.changeTime(label);
@@ -325,7 +320,6 @@ class RoomEvents extends React.Component {
             }
             else {
                 btn.classList.remove('intermediate');
-                btn.classList.remove('selected');
             }
         });
     };

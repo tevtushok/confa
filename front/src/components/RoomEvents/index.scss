@@ -160,11 +160,6 @@ $reservedColor: #CC3333;
                     @include arrow-available-up;
                 }
             }
-
-            &.selected {
-                opacity: .8;
-                cursor: default;
-            }
         }
     }
 
