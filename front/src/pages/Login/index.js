@@ -16,9 +16,18 @@ class Login extends React.Component {
 
 	handleSubmit = e => {
         e.preventDefault();
-        this.props.authStore.login().then(() => this.props.history.replace("/")).catch((e) => {
-            console.log(e);
-        });
+        this.props.authStore.login()
+            .then(() => {
+                const from = this.props.history.location.from;
+                if (from && false === from.startsWith('/login')) {
+                    this.props.history.replace(from);
+                    return;
+                }
+                this.props.history.replace("/");
+            })
+            .catch((e) => {
+                console.log(e);
+            });
 	};
 
 	handleEmailChange = e => {
