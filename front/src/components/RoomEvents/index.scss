@@ -21,37 +21,18 @@ $reservedColor: #CC3333;
 
 @mixin arrow-available-down {
     @include arrow-down;
-    border-color: $availableColor transparent transparent transparent;
+    border-color: transparent;
+    border-top-color: inherit;
 }
 
 @mixin arrow-available-up {
     @include arrow-up;
-    border-color: $availableColor transparent transparent transparent;
-}
-
-@mixin arrow-reserved-down {
-    @include arrow-down;
-    border-color: $reservedColor transparent transparent transparent;
-}
-@mixin arrow-reserved-up {
-    @include arrow-down;
-    border-color: $reservedColor transparent transparent transparent;
-}
-
-@mixin arrow-pending-down {
-    @include arrow-down;
-    border-color: $pendingColor transparent transparent transparent;
-}
-
-@mixin arrow-pending-up {
-    @include arrow-up;
-    border-color: $pendingColor transparent transparent transparent;
+    border-color: transparent;
+    border-top-color: inherit;
 }
 
 .roomEvents {
     .baseWrapper {
-        color: #c3c3c3;
-        background-color: #282828;
         min-height: 14.5rem;
         display: flex;
         flex-direction: column;
@@ -68,15 +49,6 @@ $reservedColor: #CC3333;
     .statusBar {
         width: 20px;
         margin-right: 1rem;
-        &.available {
-            background-color: $availableColor;
-        }
-        &.reserved {
-            background-color: $reservedColor;
-        }
-        &.pending {
-            background-color: $pendingColor;
-        }
     }
 
     .timeline {
@@ -85,7 +57,6 @@ $reservedColor: #CC3333;
         .prev, .next {
             width: 40px;
             min-width: auto;
-            background-color: #333;
             border-radius: 0;
         }
         .prev:disabled, .next:disabled {
@@ -98,7 +69,6 @@ $reservedColor: #CC3333;
             position: relative;
             overflow: hidden;
             display: flex;
-            background-color: #333;
             flex: 1;
             span {
                 color: inherit;
@@ -120,7 +90,6 @@ $reservedColor: #CC3333;
         .timebtn {
             border-radius: 0;
             color: #fff;
-            background-color: #333;
             min-height: auto;
             display: flex;
             flex: 1;
@@ -135,15 +104,6 @@ $reservedColor: #CC3333;
             padding: .5rem;
             cursor: pointer;
             transition: color .3s, opatity .3s, width .3s;
-            &.available {
-                border-bottom-color: $availableColor;
-            }
-            &.reserved {
-                border-bottom-color: $reservedColor;
-            }
-            &.pending {
-                border-bottom-color: $pendingColor;
-            }
 
             &.intermediate {
                 border-top-color: $availableColor;
@@ -182,5 +142,3 @@ $reservedColor: #CC3333;
     }
 
 }
-
-

@@ -9,7 +9,8 @@ export const theme = createMuiTheme({
     palette: {
         type: paletteType,
         background: {
-            default: paletteType === 'dark' ? '#191919' : '#fff'
+            default: '#191919',
+            paper: '#313131',
         },
         primary: {
             textColor: textColor,
@@ -27,6 +28,9 @@ export const theme = createMuiTheme({
         error: {
             main: colors.red[300],
             contrastText: contrastText,
+        },
+        text: {
+            primary: '#fff',
         },
     },
     overrides: {

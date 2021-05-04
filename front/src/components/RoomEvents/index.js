@@ -1,10 +1,11 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom';
+import { withTheme } from '@material-ui/core/styles';
 
 import { inject } from 'mobx-react';
 import dayjs from 'dayjs';
 
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Paper, Box } from '@material-ui/core';
 import {
     ArrowLeft as ArrowLeftIcon,
     ArrowRight as ArrowRightIcon,
@@ -464,12 +465,12 @@ class RoomEvents extends React.Component {
         console.info('  render RoomEvents room:', this.room.number);
         return (
             <div className={`roomEvents mdc-theme--primary-bg`}>
-                <div className="baseWrapper">
+                <Paper className="baseWrapper">
                     <EventDetails onSubmit={this.handleAddEvent}
                         timeData={this.getTimeData()}
                         room={this.room} selectedTime={this.state.selectedTime} />
                     {this.TimeLine()}
-                </div>
+                </Paper>
             </div>
         );
     }
@@ -480,6 +481,12 @@ class RoomEvents extends React.Component {
             const label = item.label;
             const status = this.timeLine[label]['status'];
             const className = `timebtn ${status} ${this.timeLine[label].className}`;
+            const theme = this.props.theme;
+            const borderStatusColorMap = {
+                [STATUSES.AVAILABLE]: theme.palette.success.main,
+                [STATUSES.PENDING]: theme.palette.warning.main,
+                [STATUSES.RESERVED]: theme.palette.error.main,
+            };
             return {
                 id: `${this.room.number}-scrollable-auto-tab-${index}`,
                 'aria-controls': `${this.room.number}-scrollable-auto-tab-${index}`,
@@ -487,6 +494,9 @@ class RoomEvents extends React.Component {
                 key: index,
                 'data-label': label,
                 'data-index': index,
+                style: {
+                    borderBottomColor: borderStatusColorMap[status],
+                },
                 'data-status': status,
                 label: item.label,
                 className: className,
@@ -495,7 +505,7 @@ class RoomEvents extends React.Component {
         };
 
         return(
-            <div ref={this.timeLineRef} className="timeline">
+            <Box ref={this.timeLineRef} className="timeline">
                 <Button data-direction="left" className="prev"
                     onMouseDown={e => {
                         this.handleScrollMouseDown(e, 'left');
@@ -521,7 +531,7 @@ class RoomEvents extends React.Component {
                     }}>
                     <ArrowRightIcon/>
                 </Button>
-            </div>
+            </Box>
         );
     }
 }
@@ -549,6 +559,12 @@ function EventDetails(props) {
         }
     };
 
+    const statusBarColorMap = {
+        [STATUSES.AVAILABLE]: 'success.main',
+        [STATUSES.PENDING]: 'warning.main',
+        [STATUSES.RESERVED]: 'error.main',
+    };
+
     const renderSelectedTime = () => {
         let container = '';
         if (timeData.length) {
@@ -569,7 +585,7 @@ function EventDetails(props) {
 
     return(
         <div className="infoWrapper">
-            <div className={`statusBar ${status}`}></div>
+            <Box bgcolor={statusBarColorMap[status]} className={`statusBar ${status}`}></Box>
             <div className="detailsWrapper">
                 <div className="details">
                     <div className="number">Number: <strong>{room.number}</strong></div>
@@ -588,4 +604,4 @@ function EventDetails(props) {
     );
 }
 
-export default RoomEvents;
+export default withTheme(RoomEvents);
