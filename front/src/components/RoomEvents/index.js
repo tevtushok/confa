@@ -347,30 +347,40 @@ class RoomEvents extends React.Component {
         // unselect when maches with first
         if (index === this.timeData[0]) {
             newTimeData[0] = NaN;
+            console.log('unselect when maches with first');
         }
         // unselect when maches with second
         else if (index === this.timeData[1]) {
             newTimeData[1] = NaN;
+            console.log('// unselect when maches with second');
         }
         // save to first if first is not set
         else if(!(this.timeData[0])) {
             newTimeData[0] = index;
+            console.log(' // save to first if first is not set ');
         }
         // save to second if second is not set
         else if (!(this.timeData[1])) {
             newTimeData[1] = index;
+            newTimeData = newTimeData.sort();
+            console.log(' // save to second if second is not set ');
         }
 
         else {
             // if index less then first index change first index to new index
-            if (index < this.timeData[0]) {
+            if (index < newTimeData[0]) {
                 newTimeData[0] = index;
+                console.error('qp');
+                console.log(' // if index less then first index change first index to new index ');
             }
             // otherwise change secound index to new index
             // in case when need to change time end its good logic but when need to change "time start" its confuse
-            else if (index > this.timeData[1]) {
+            else {
                 newTimeData[1] = index;
+                console.error('qb');
+                console.log(' // otherwise change secound index to new index');
             }
+            console.warn(index, newTimeData);
         }
         // both date selected - check intermediate times statuses
         console.log('newTimeData', newTimeData);
