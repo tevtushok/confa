@@ -7,8 +7,9 @@ import ThemeSwitcher from '../ThemeSwitcher';
 import './index.scss';
 
 
-@inject("userStore")
-class Header extends React.Component {
+@inject('userStore')
+@inject('appStore')
+class Header extends React.Component{
     render() {
         const userStore = this.props.userStore;
         let links = [];
@@ -16,23 +17,23 @@ class Header extends React.Component {
             case userStore.user:
             case userStore.isAdmin:
                 links.push(
-                    <LogoutLink/>,
-                    <Link component={RouterLink} to="/events">Events</Link>,
-                    <Link component={RouterLink} to={`/@${userStore.user.name}`}>Profile</Link>,
+                    <LogoutLink key="logout"/>,
+                    <Link key="events" component={RouterLink} to="/events">Events</Link>,
+                    <Link key="profile" component={RouterLink} to={`/@${userStore.user.name}`}>Profile</Link>,
                 );
                 if (userStore.isAdmin) {
-                    links.push(<Link component={RouterLink} to="/rooms">Rooms</Link>);
+                    links.push(<Link key="rooms" component={RouterLink} to="/rooms">Rooms</Link>);
                 }
                 break;
             default:
                 links.push(
-                    <Link component={RouterLink} to="/login">Login</Link>,
-                    <Link component={RouterLink} to="/register">Register</Link>,
+                    <Link key="login" component={RouterLink} to="/login">Login</Link>,
+                    <Link key="register" component={RouterLink} to="/register">Register</Link>,
                 );
 
         }
         return (
-            <AppBar position="static" color="default">
+            <AppBar position="static" color={this.props.appStore.darkMode ? 'default' : 'primary'}>
                 <Toolbar className="linksBar">
                     <div className="navLinks">
                         {links}

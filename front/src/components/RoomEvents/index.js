@@ -55,8 +55,6 @@ class RoomEvents extends React.Component {
     }
 
     setFirstVisibleIndex(index = false) {
-        console.log('setFirstVisibleIndex start');
-        console.log('index:', index);
         if (!index) {
             index = this.timeLineData.nowIndex;
             console.log(' 1 index:', index);
@@ -70,11 +68,7 @@ class RoomEvents extends React.Component {
             index = this.timeLineData.items.length - buttonsCount;
             console.log(' 3 index:', index);
         }
-        console.log('nowIndex:', this.timeLineData.nowIndex,
-            'buttonsCount', buttonsCount);
-        console.log('set this.firstVisibleTimeIndex', index);
         this.firstVisibleTimeIndex = index;
-        console.log('setFirstVisibleIndex end');
     }
 
     initTimeData() {
@@ -167,13 +161,11 @@ class RoomEvents extends React.Component {
         let left = 0;
         let rightPosLimit = timeButtons.offsetWidth - timeButtonsWidth;
         const buttonsCount = this.getVibisleTimeButtonsCount();
-        console.log('buttonsCount', buttonsCount, 'firstVisibleTimeIndex', this.firstVisibleTimeIndex);
         // if last button is visible stick to right
         if (buttonsCount >= this.timeLineData.items.length - this.firstVisibleTimeIndex) {
             left = rightPosLimit;
             this.firstVisibleTimeIndex = this.timeLineData.items.length - buttonsCount;
             nextBtn.setAttribute('disabled', true);
-            console.log('disable last');
         }
         else if (this.firstVisibleTimeIndex > 0) {
             nextBtn.removeAttribute('disabled');
@@ -187,8 +179,6 @@ class RoomEvents extends React.Component {
         else if (this.firstVisibleTimeIndex < 1) {
             prevBtn.setAttribute('disabled', true);
         }
-
-        console.log(this.firstVisibleTimeIndex);
 
         timeButtons.style.left = -left + 'px';
     }
@@ -261,11 +251,9 @@ class RoomEvents extends React.Component {
     handleScrollMouseDown = (e, direction) => {
         if (e.button !== 0) return;
         e.stopPropagation();
-        console.log('handleScrollMouseDown', direction);
         if (direction) {
             this.mouseDownOnScrollInterval = setInterval(() => {
                 this.isMouseHoldedOnScroll = true;
-                console.log('handleScrollMouseDown timer', direction);
                 this.scrollSwitch(direction);
             }, 300);
         }
@@ -374,18 +362,15 @@ class RoomEvents extends React.Component {
                 console.error('qb');
                 console.log(' // otherwise change secound index to new index');
             }
-            console.warn(index, newTimeData);
         }
         // both date selected - check intermediate times statuses
         console.log('newTimeData', newTimeData);
         console.log('timeLine', this.timeLine);
         if (newTimeData[0] && newTimeData[1]) {
-            console.warn('check intermediate availablity');
             const sortedIndexes = Array.from(newTimeData).sort();
             for(let i = sortedIndexes[0]; i <= sortedIndexes[1]; i++) {
                 const label = this.timeLineData.items[i].label;
                 const status = this.timeLine[label].status;
-                console.warn('check', label, status);
                 if (STATUSES.AVAILABLE !== status) {
                     console.log('found not available', 'label', label, status);
                     return false;
