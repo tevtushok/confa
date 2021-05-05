@@ -1,7 +1,3 @@
-$availableColor: #388e3c;
-$pendingColor: #B7B327;
-$reservedColor: #CC3333;
-
 @mixin arrow-down {
     content: "";
     position: absolute;
@@ -89,30 +85,29 @@ $reservedColor: #CC3333;
         }
         .timebtn {
             border-radius: 0;
-            color: #fff;
             min-height: auto;
             display: flex;
             flex: 1;
             justify-content: center;
             align-items: center;
             text-align: center;
-            border: 3px solid #333;
+            border: 3px solid transparent;
             border-left: none;
             border-right: none;
-            border-top: 3px solid transparent;
+            border-top: 0px solid transparent;
             font-size: .8rem;
             padding: .5rem;
             cursor: pointer;
             transition: color .3s, opatity .3s, width .3s;
 
             &.intermediate {
-                border-top-color: $availableColor;
+                border-top-width: 3px;
             }
 
             &.postData {
                 font-weight: bold;
                 text-decoration: underline;
-                border-top-color: $availableColor;
+                border-top-width: 3px;
                 &:after {
                     @include arrow-available-down;
                 }
@@ -133,6 +128,9 @@ $reservedColor: #CC3333;
         display: flex;
         align-items: flex-end;
         flex: 1;
+        .times {
+            padding-left: 2px;
+        }
     }
 
     .timeline .timebtn {

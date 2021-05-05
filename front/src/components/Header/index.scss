@@ -1,6 +1,20 @@
-.app header {
+header {
 	align-items: center;
-}
-.app header a {
-	padding: 0 15px;
+    .linksBar {
+        width: 100%;
+    }
+    a {
+        padding: 0 15px;
+    }
+    button {
+    }
+    .linkThemeSwitcher {
+        display: flex;
+    }
+    .navLinks {
+        padding-left: 48px;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+    }
 }

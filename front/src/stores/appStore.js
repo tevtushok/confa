@@ -22,6 +22,12 @@ class AppStore {
     }
     @observable isOnline = window.navigator.onLine
 
+    @observable darkMode = !!window.localStorage.getItem('darkMode');
+    @action setDarkMode(flag = true) {
+        this.darkMode = flag;
+        window.localStorage.setItem('darkMode', flag);
+    }
+
     @observable token = window.localStorage.getItem('token');
     @action setToken(token) {
         this.token = token;

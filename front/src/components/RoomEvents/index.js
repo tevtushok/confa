@@ -482,11 +482,7 @@ class RoomEvents extends React.Component {
             const status = this.timeLine[label]['status'];
             const className = `timebtn ${status} ${this.timeLine[label].className}`;
             const theme = this.props.theme;
-            const borderStatusColorMap = {
-                [STATUSES.AVAILABLE]: theme.palette.success.main,
-                [STATUSES.PENDING]: theme.palette.warning.main,
-                [STATUSES.RESERVED]: theme.palette.error.main,
-            };
+            const borderColor = theme.palette.status[status];
             return {
                 id: `${this.room.number}-scrollable-auto-tab-${index}`,
                 'aria-controls': `${this.room.number}-scrollable-auto-tab-${index}`,
@@ -495,7 +491,7 @@ class RoomEvents extends React.Component {
                 'data-label': label,
                 'data-index': index,
                 style: {
-                    borderBottomColor: borderStatusColorMap[status],
+                    borderColor: borderColor,
                 },
                 'data-status': status,
                 label: item.label,
@@ -559,12 +555,6 @@ function EventDetails(props) {
         }
     };
 
-    const statusBarColorMap = {
-        [STATUSES.AVAILABLE]: 'success.main',
-        [STATUSES.PENDING]: 'warning.main',
-        [STATUSES.RESERVED]: 'error.main',
-    };
-
     const renderSelectedTime = () => {
         let container = '';
         if (timeData.length) {
@@ -575,7 +565,7 @@ function EventDetails(props) {
                 times.push(<span key="end">{timeData[1]}</span>);
             }
             container = (
-                <span>
+                <span className="times">
                     ( {times} )
                 </span>
             );
@@ -585,7 +575,7 @@ function EventDetails(props) {
 
     return(
         <div className="infoWrapper">
-            <Box bgcolor={statusBarColorMap[status]} className={`statusBar ${status}`}></Box>
+            <Box bgcolor={`status.${status}`} className={`statusBar ${status}`}></Box>
             <div className="detailsWrapper">
                 <div className="details">
                     <div className="number">Number: <strong>{room.number}</strong></div>

@@ -27,7 +27,7 @@ import Container from '@material-ui/core/Container';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { theme } from './themes/';
+import getMuiTheme from './themes/';
 
 import './App.scss'
 
@@ -73,6 +73,7 @@ class App extends React.Component {
     render() {
         console.info('App render', this.props.appStore.renderState);
         const userStore = this.props.userStore;
+        const theme = getMuiTheme(this.props.appStore.darkMode);
         let page = null;
         switch(this.props.appStore.renderState) {
             case RENDER_STATES.LOADER:
