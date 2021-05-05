@@ -578,8 +578,8 @@ function EventDetails(props) {
             <Box bgcolor={`status.${status}`} className={`statusBar ${status}`}></Box>
             <div className="detailsWrapper">
                 <div className="details">
-                    <div className="number">Number: <strong>{room.number}</strong></div>
-                    <div className="title">Title: <strong>{room.title}</strong></div>
+                    <div className="number">Number: {room.number}</div>
+                    <div className="title">Title: {room.title}</div>
                     <div className="status">Status: {status}</div>
                 </div>
                 {renderEventInfo()}

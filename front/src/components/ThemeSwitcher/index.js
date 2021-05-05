@@ -6,7 +6,7 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 
 @inject('appStore')
 @observer
-class ThemeSwitcher extends React.Component {
+class ThemeSwitcher extends React.PureComponent {
     handleClick = event => {
         const newMode = !this.props.appStore.darkMode;
         console.warn(this.props.appStore.darkMode, newMode);
