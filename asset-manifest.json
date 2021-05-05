@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/confa/static/css/main.7bce8112.chunk.css",
-    "main.js": "/confa/static/js/main.6dec7890.chunk.js",
-    "main.js.map": "/confa/static/js/main.6dec7890.chunk.js.map",
+    "main.css": "/confa/static/css/main.a1d3f871.chunk.css",
+    "main.js": "/confa/static/js/main.ade75388.chunk.js",
+    "main.js.map": "/confa/static/js/main.ade75388.chunk.js.map",
     "runtime-main.js": "/confa/static/js/runtime-main.6fd71195.js",
     "runtime-main.js.map": "/confa/static/js/runtime-main.6fd71195.js.map",
-    "static/js/2.ec6e62f9.chunk.js": "/confa/static/js/2.ec6e62f9.chunk.js",
-    "static/js/2.ec6e62f9.chunk.js.map": "/confa/static/js/2.ec6e62f9.chunk.js.map",
+    "static/js/2.0171b5fa.chunk.js": "/confa/static/js/2.0171b5fa.chunk.js",
+    "static/js/2.0171b5fa.chunk.js.map": "/confa/static/js/2.0171b5fa.chunk.js.map",
     "index.html": "/confa/index.html",
-    "static/css/main.7bce8112.chunk.css.map": "/confa/static/css/main.7bce8112.chunk.css.map",
-    "static/js/2.ec6e62f9.chunk.js.LICENSE.txt": "/confa/static/js/2.ec6e62f9.chunk.js.LICENSE.txt"
+    "static/css/main.a1d3f871.chunk.css.map": "/confa/static/css/main.a1d3f871.chunk.css.map",
+    "static/js/2.0171b5fa.chunk.js.LICENSE.txt": "/confa/static/js/2.0171b5fa.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.6fd71195.js",
-    "static/js/2.ec6e62f9.chunk.js",
-    "static/css/main.7bce8112.chunk.css",
-    "static/js/main.6dec7890.chunk.js"
+    "static/js/2.0171b5fa.chunk.js",
+    "static/css/main.a1d3f871.chunk.css",
+    "static/js/main.ade75388.chunk.js"
   ]
 }
