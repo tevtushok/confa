@@ -10,23 +10,27 @@ export const RENDER_STATES = {
 
 class AppStore {
     constructor() {
-        window.addEventListener('online', () => {
+        window.addEventListener('online', action(() => {
             console.log('this.isOnline: true');
             this.isOnline = true;
-        });
-        window.addEventListener('offline', () => {
+        }));
+        window.addEventListener('offline', action(() => {
             console.log('this.isOnline: false');
             this.isOnline = false;
-        });
+        }));
         makeObservable(this);
     }
     @observable isOnline = window.navigator.onLine
 
-    @observable darkMode = !!window.localStorage.getItem('darkMode');
-    @action setDarkMode(flag = true) {
-        this.darkMode = flag;
-        window.localStorage.setItem('darkMode', flag);
+    @observable preferDarkMode = this.isPreferDarkMode();
+    @action setPreferDarkMode(flag = true) {
+        this.preferDarkMode = flag;
+        window.localStorage.setItem('preferDarkMode', flag);
     }
+	isPreferDarkMode() {
+		const value = JSON.parse(window.localStorage.getItem('preferDarkMode'));
+		return value === false ? false : true;
+	}
 
     @observable token = window.localStorage.getItem('token');
     @action setToken(token) {
