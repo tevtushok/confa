@@ -74,8 +74,6 @@ const getMuiTheme = memoizeOne((darkMode = true) => {
 export default getMuiTheme;
 
 
-
-
 // primary.main
 // secondary.main
 // error.main

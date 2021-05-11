@@ -73,7 +73,7 @@ class App extends React.Component {
     render() {
         console.info('App render', this.props.appStore.renderState);
         const userStore = this.props.userStore;
-        const theme = getMuiTheme(this.props.appStore.darkMode);
+        const theme = getMuiTheme(this.props.appStore.preferDarkMode);
         let page = null;
         switch(this.props.appStore.renderState) {
             case RENDER_STATES.LOADER:

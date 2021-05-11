@@ -33,7 +33,7 @@ class Header extends React.Component{
 
         }
         return (
-            <AppBar position="static" color={this.props.appStore.darkMode ? 'default' : 'primary'}>
+            <AppBar position="static" color={this.props.appStore.preferDarkMode ? 'default' : 'primary'}>
                 <Toolbar className="linksBar">
                     <div className="navLinks">
                         {links}

@@ -8,11 +8,11 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 @observer
 class ThemeSwitcher extends React.PureComponent {
     handleClick = event => {
-        const newMode = !this.props.appStore.darkMode;
-        this.props.appStore.setDarkMode(newMode);
+        const newMode = !this.props.appStore.preferDarkMode;
+        this.props.appStore.setPreferDarkMode(newMode);
     };
     render() {
-        let icon = this.props.appStore.darkMode? <Brightness7Icon/> : <Brightness4Icon/>;
+        let icon = this.props.appStore.preferDarkMode ? <Brightness7Icon/> : <Brightness4Icon/>;
         return <IconButton onClick={this.handleClick} className="themeSwitcher">{icon}</IconButton>;
     }
 }
