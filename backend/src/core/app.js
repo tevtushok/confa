@@ -64,7 +64,7 @@ const accessLogStream = rfs.createStream('access.log', {
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }))
 
-// jwt autorization stored in client cookies
+// jwt autorization stored in client localStorage
 app.use(
     jwt({
         secret: process.env.JWT_SECRET,
