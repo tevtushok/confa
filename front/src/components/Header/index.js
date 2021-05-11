@@ -14,8 +14,9 @@ class Header extends React.Component{
         const userStore = this.props.userStore;
         let links = [];
         switch(true) {
-            case userStore.user:
+            case userStore.isLoggedIn:
             case userStore.isAdmin:
+				console.warn('logg u', userStore.user, userStore.isAdmin);
                 links.push(
                     <LogoutLink key="logout"/>,
                     <Link key="events" component={RouterLink} to="/events">Events</Link>,
@@ -26,6 +27,7 @@ class Header extends React.Component{
                 }
                 break;
             default:
+				console.warn('logg defaultl');
                 links.push(
                     <Link key="login" component={RouterLink} to="/login">Login</Link>,
                     <Link key="register" component={RouterLink} to="/register">Register</Link>,
